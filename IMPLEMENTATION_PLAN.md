@@ -104,18 +104,21 @@ Set up the server and connect real authentication.
 
 ## Phase 4: Core Features Backend & Integration
 
-**Duration**: 5-6 days
+**Duration**: 6-7 days
 
 ### Goal
-Implement CRUD APIs for Groups, Projects, and Internships and connect them to the Frontend.
+Implement CRUD APIs for Groups, Projects, and Internships, ensuring the new "Discord-style" group structure is supported.
 
 ### Tasks
 - [ ] **Profiles**: Connect Profile View/Edit to API.
-- [ ] **Study Groups**:
-    *   Create Group/Member Prisma models.
-    *   Implement CRUD APIs.
-    *   Connect Frontend Group List & Detail pages.
+- [ ] **Study Groups (Enhanced)**:
+    *   Create `Group`, `GroupCategory`, `GroupChannel`, and `Member` Prisma models.
+    *   **Group Discovery**: Implement API to separate "Joined Groups" from "Discoverable Groups".
+    *   **Channel Management**:
+        *   Default channels on creation (e.g., #general, #resources).
+        *   APIs to create/edit channels (Admin only).
     *   Implement Join/Leave logic.
+    *   Connect Frontend "My Circles" and "Discover" tabs.
 - [ ] **Projects**:
     *   Create Project models.
     *   Implement CRUD APIs.
@@ -128,17 +131,22 @@ Implement CRUD APIs for Groups, Projects, and Internships and connect them to th
 
 ## Phase 5: Real-time Features (Socket.io)
 
-**Duration**: 4-5 days
+**Duration**: 5-6 days
 
 ### Goal
-Activate the Chat and Notification UIs with real-time data.
+Activate the Multi-Channel Chat and Notification UIs with real-time data.
 
 ### Tasks
 - [ ] Set up Socket.io server.
-- [ ] Implement `Message` model in Prisma.
-- [ ] Activate Chat UI in Study Groups (Real-time send/receive).
-- [ ] Activate Private Messaging (DM) system.
-- [ ] Implement Real-time Notifications.
+- [ ] Implement `Message` model in Prisma (linked to `GroupChannel` or `DirectMessage`).
+- [ ] **Multi-Channel Chat**:
+    *   Socket logic to join specific `channelId` rooms.
+    *   Real-time messaging within separate channels (#general, #announcements).
+    *   "Typing..." indicators per channel.
+- [ ] **Private Messaging**:
+    *   Activate Private Messaging (DM) system.
+- [ ] **Notifications**:
+    *   Real-time alerts for mentions and announcements.
 
 ---
 
