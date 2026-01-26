@@ -2,57 +2,204 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Briefcase, MapPin, Building2, ExternalLink } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Search, Briefcase, MapPin, Building2, ExternalLink, Plus, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { api } from "@/lib/api";
+import { toast } from "react-hot-toast";
+import { formatDistanceToNow } from "date-fns";
 
 export default function InternshipsPage() {
-  const internships = [
-    {
-      id: 1,
-      title: "Software Engineer Intern",
-      company: "TechCorp Inc.",
-      location: "San Francisco, CA (Remote)",
-      type: "Summer 2024",
-      tags: ["React", "Node.js", "AWS"],
-      posted: "2 days ago",
-      logo: "https://images.unsplash.com/photo-1549923746-c502d488b3ea?w=100&h=100&auto=format&fit=crop",
-    },
-    {
-      id: 2,
-      title: "Data Science Intern",
-      company: "DataFlow Analytics",
-      location: "New York, NY",
-      type: "Fall 2024",
-      tags: ["Python", "Pandas", "Machine Learning"],
-      posted: "1 week ago",
-      logo: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=100&h=100&auto=format&fit=crop",
-    },
-    {
-      id: 3,
-      title: "UX/UI Design Intern",
-      company: "Creative Studio",
-      location: "Austin, TX",
-      type: "Summer 2024",
-      tags: ["Figma", "User Research", "Prototyping"],
-      posted: "3 days ago",
-      logo: "https://images.unsplash.com/photo-1572044162444-ad60f128bdea?w=100&h=100&auto=format&fit=crop",
-    },
-    {
-      id: 4,
-      title: "Product Management Intern",
-      company: "Innovate Labs",
-      location: "Remote",
-      type: "Summer 2024",
-      tags: ["Product Strategy", "Agile", "Roadmapping"],
-      posted: "5 days ago",
-      logo: "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=100&h=100&auto=format&fit=crop",
-    },
-  ];
+  const [internships, setInternships] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [company, setCompany] = useState("");
+  const [role, setRole] = useState("");
+  const [description, setDescription] = useState("");
+  const [location, setLocation] = useState("");
+  const [type, setType] = useState("");
+  const [applyUrl, setApplyUrl] = useState("");
+
+  useEffect(() => {
+    fetchInternships();
+  }, []);
+
+  const fetchInternships = async () => {
+    try {
+      setLoading(true);
+      const data = await api.get("/internships");
+      setInternships(data);
+    } catch (error) {
+      console.error("Failed to fetch internships", error);
+      toast.error("Failed to load internships");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const resetForm = () => {
+    setCompany("");
+    setRole("");
+    setDescription("");
+    setLocation("");
+    setType("");
+    setApplyUrl("");
+  };
+
+  const handleCreateInternship = async (e) => {
+    e.preventDefault();
+    
+    if (!company || company.length < 2) {
+      toast.error("Company name must be at least 2 characters");
+      return;
+    }
+    if (!role || role.length < 2) {
+      toast.error("Role must be at least 2 characters");
+      return;
+    }
+    if (!description || description.length < 10) {
+      toast.error("Description must be at least 10 characters");
+      return;
+    }
+    if (!location || location.length < 2) {
+      toast.error("Location must be at least 2 characters");
+      return;
+    }
+    if (!type) {
+      toast.error("Please select a work type");
+      return;
+    }
+    try {
+      new URL(applyUrl);
+    } catch {
+      toast.error("Please enter a valid URL");
+      return;
+    }
+
+    try {
+      setCreating(true);
+      await api.post("/internships", {
+        company,
+        role,
+        description,
+        location,
+        type,
+        applyUrl,
+      });
+      toast.success("Internship posted successfully");
+      setIsCreateOpen(false);
+      resetForm();
+      fetchInternships();
+    } catch (error) {
+      console.error("Failed to create internship", error);
+      toast.error(error.message || "Failed to post internship");
+    } finally {
+      setCreating(false);
+    }
+  };
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight">Internships</h1>
-        <p className="text-muted-foreground">Discover opportunities to kickstart your career.</p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-3xl font-bold tracking-tight">Internships</h1>
+          <p className="text-muted-foreground">Discover opportunities to kickstart your career.</p>
+        </div>
+        <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+          <DialogTrigger asChild>
+            <Button>
+              <Plus className="h-4 w-4 mr-2" />
+              Post Internship
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle>Post New Internship</DialogTitle>
+              <DialogDescription>
+                Share an internship opportunity with the community.
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleCreateInternship} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="company">Company *</Label>
+                <Input
+                  id="company"
+                  placeholder="Company name"
+                  value={company}
+                  onChange={(e) => setCompany(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="role">Role / Position *</Label>
+                <Input
+                  id="role"
+                  placeholder="e.g. Software Engineering Intern"
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="description">Description *</Label>
+                <Textarea
+                  id="description"
+                  placeholder="Describe the internship role and requirements..."
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  rows={4}
+                  required
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="location">Location *</Label>
+                  <Input
+                    id="location"
+                    placeholder="e.g. San Francisco, CA"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="type">Type *</Label>
+                  <Select value={type} onValueChange={setType}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Remote">Remote</SelectItem>
+                      <SelectItem value="On-site">On-site</SelectItem>
+                      <SelectItem value="Hybrid">Hybrid</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="applyUrl">Apply URL *</Label>
+                <Input
+                  id="applyUrl"
+                  type="url"
+                  placeholder="https://example.com/apply"
+                  value={applyUrl}
+                  onChange={(e) => setApplyUrl(e.target.value)}
+                  required
+                />
+              </div>
+              <DialogFooter>
+                <Button type="submit" disabled={creating}>
+                  {creating && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                  {creating ? "Posting..." : "Post Internship"}
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <div className="flex items-center space-x-2 bg-card p-2 rounded-lg border border-border shadow-sm max-w-md">
@@ -64,40 +211,52 @@ export default function InternshipsPage() {
         />
       </div>
 
-      <div className="grid gap-4">
-        {internships.map((job) => (
-          <Card key={job.id} className="border border-border hover:shadow-md transition-shadow group">
-            <CardContent className="p-6">
-              <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
-                <div className="flex gap-4">
-                    <div className="h-12 w-12 rounded-lg overflow-hidden bg-muted flex items-center justify-center">
-                        <img src={job.logo} alt={job.company} className="h-full w-full object-cover" />
-                    </div>
-                    <div>
-                        <CardTitle className="text-lg group-hover:text-primary transition-colors">{job.title}</CardTitle>
-                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground mt-1">
-                            <span className="flex items-center gap-1"><Building2 className="h-3 w-3" /> {job.company}</span>
-                            <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {job.location}</span>
-                            <span className="flex items-center gap-1"><Briefcase className="h-3 w-3" /> {job.type}</span>
+      {loading ? (
+         <div className="text-center py-10">Loading internships...</div>
+      ) : (
+        <div className="grid gap-4">
+            {internships.map((job) => (
+            <Card key={job.id} className="border border-border hover:shadow-md transition-shadow group">
+                <CardContent className="p-6">
+                <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+                    <div className="flex gap-4">
+                        <div className="h-12 w-12 rounded-lg overflow-hidden bg-muted flex items-center justify-center">
+                            {/* Placeholder for company logo if not available */}
+                            <Building2 className="h-6 w-6 text-muted-foreground" />
                         </div>
+                        <div>
+                            <CardTitle className="text-lg group-hover:text-primary transition-colors">{job.role}</CardTitle>
+                            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground mt-1">
+                                <span className="flex items-center gap-1"><Building2 className="h-3 w-3" /> {job.company}</span>
+                                <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {job.location}</span>
+                                <span className="flex items-center gap-1"><Briefcase className="h-3 w-3" /> {job.type}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div className="flex flex-col items-end gap-2 w-full md:w-auto">
+                        <a href={job.applyUrl} target="_blank" rel="noopener noreferrer">
+                            <Button>Apply Now <ExternalLink className="ml-2 h-4 w-4" /></Button>
+                        </a>
+                        <span className="text-xs text-muted-foreground">Posted {formatDistanceToNow(new Date(job.createdAt), { addSuffix: true })}</span>
                     </div>
                 </div>
                 
-                <div className="flex flex-col items-end gap-2 w-full md:w-auto">
-                    <Button>Apply Now <ExternalLink className="ml-2 h-4 w-4" /></Button>
-                    <span className="text-xs text-muted-foreground">Posted {job.posted}</span>
+                <div className="flex gap-2 mt-4">
+                    {/* Assuming no tags field yet, or we can add it later. Using description excerpt for now if needed, or just Type */}
+                    <Badge variant="secondary" className="font-normal">{job.type}</Badge>
                 </div>
-              </div>
-              
-              <div className="flex gap-2 mt-4">
-                {job.tags.map((tag) => (
-                    <Badge key={tag} variant="secondary" className="font-normal">{tag}</Badge>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+                <p className="mt-4 text-sm text-muted-foreground line-clamp-2">{job.description}</p>
+                </CardContent>
+            </Card>
+            ))}
+            {internships.length === 0 && (
+                <div className="text-center py-10 text-muted-foreground">
+                    No internships posted yet.
+                </div>
+            )}
+        </div>
+      )}
     </div>
   );
 }

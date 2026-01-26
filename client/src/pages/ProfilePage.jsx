@@ -1,6 +1,16 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { 
   MapPin, 
   Link as LinkIcon, 
@@ -12,31 +22,126 @@ import {
   Github,
   Twitter,
   Linkedin,
-  Grid
+  Grid,
+  Loader2
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { api } from "@/lib/api";
+import toast from "react-hot-toast";
+import { format } from "date-fns";
 
 export default function ProfilePage() {
+  const { user: authUser, updateUser } = useAuth();
   const [activeTab, setActiveTab] = useState("about");
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
 
-  const user = {
-    name: "Alex Johnson",
-    handle: "@alexj",
-    role: "Computer Science Student",
-    bio: "Passionate about full-stack development and AI. Always learning new technologies and looking for cool projects to collaborate on.",
-    location: "New York, USA",
-    website: "alexj.dev",
-    joined: "September 2023",
-    followers: 245,
-    following: 120,
-    reputation: 1540,
-    avatar: "https://i.pravatar.cc/150?u=alex",
-    skills: ["React", "Node.js", "TypeScript", "Python", "PostgreSQL", "Tailwind CSS", "Docker", "AWS"],
-    experience: [
-       { role: "Frontend Intern", company: "TechCorp", period: "Summer 2023", desc: "Built reusable React components." },
-       { role: "Open Source Contributor", company: "GitHub", period: "2022 - Present", desc: "Contributed to various OSS projects." }
-    ]
+  const [formData, setFormData] = useState({
+    name: "",
+    bio: "",
+    course: "",
+    semester: "",
+    college: "",
+    skills: "",
+    interests: "",
+    avatarUrl: "",
+  });
+
+  const fetchProfile = useCallback(async () => {
+    if (!authUser?.id) return;
+    try {
+      setLoading(true);
+      const { user } = await api.get(`/users/${authUser.id}`);
+      setProfile(user);
+    } catch (error) {
+      console.error("Failed to fetch profile:", error);
+      toast.error("Failed to load profile");
+    } finally {
+      setLoading(false);
+    }
+  }, [authUser?.id]);
+
+  useEffect(() => {
+    fetchProfile();
+  }, [fetchProfile]);
+
+  const openEditDialog = () => {
+    setFormData({
+      name: profile?.name || "",
+      bio: profile?.bio || "",
+      course: profile?.course || "",
+      semester: profile?.semester?.toString() || "",
+      college: profile?.college || "",
+      skills: profile?.skills?.join(", ") || "",
+      interests: profile?.interests?.join(", ") || "",
+      avatarUrl: profile?.avatarUrl || "",
+    });
+    setIsEditOpen(true);
   };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSaveProfile = async () => {
+    if (!formData.name.trim()) {
+      toast.error("Name is required");
+      return;
+    }
+
+    try {
+      setSaving(true);
+      const payload = {
+        name: formData.name.trim(),
+        bio: formData.bio.trim() || null,
+        course: formData.course.trim() || null,
+        semester: formData.semester ? parseInt(formData.semester, 10) : null,
+        college: formData.college.trim() || null,
+        skills: formData.skills
+          ? formData.skills.split(",").map((s) => s.trim()).filter(Boolean)
+          : [],
+        interests: formData.interests
+          ? formData.interests.split(",").map((s) => s.trim()).filter(Boolean)
+          : [],
+        avatarUrl: formData.avatarUrl.trim() || null,
+      };
+
+      const updatedUser = await api.put(`/users/${authUser.id}`, payload);
+      setProfile(updatedUser);
+      updateUser(updatedUser);
+      setIsEditOpen(false);
+      toast.success("Profile updated successfully");
+    } catch (error) {
+      console.error("Failed to update profile:", error);
+      toast.error(error.message || "Failed to update profile");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <p className="text-muted-foreground">Profile not found</p>
+      </div>
+    );
+  }
+
+  const joinedDate = profile.createdAt
+    ? format(new Date(profile.createdAt), "MMMM yyyy")
+    : "Unknown";
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500 pb-10">
@@ -57,8 +162,8 @@ export default function ProfilePage() {
               <div className="relative -mt-20 md:-mt-24 mb-2 md:mb-0 shrink-0">
                  <div className="h-32 w-32 md:h-40 md:w-40 rounded-[2.5rem] p-1.5 bg-white/80 backdrop-blur-sm shadow-xl ring-1 ring-white/50">
                     <Avatar className="h-full w-full rounded-[2rem]">
-                        <AvatarImage src={user.avatar} className="object-cover" />
-                        <AvatarFallback className="text-4xl font-serif bg-primary/10 text-primary">{user.name[0]}</AvatarFallback>
+                        <AvatarImage src={profile.avatarUrl || `https://i.pravatar.cc/150?u=${profile.id}`} className="object-cover" />
+                        <AvatarFallback className="text-4xl font-serif bg-primary/10 text-primary">{profile.name?.[0] || "?"}</AvatarFallback>
                     </Avatar>
                  </div>
                  <div className="absolute bottom-2 right-2 h-6 w-6 rounded-full bg-green-500 border-4 border-white shadow-sm" title="Online" />
@@ -68,28 +173,32 @@ export default function ProfilePage() {
               <div className="flex-1 space-y-2 min-w-0">
                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                        <h1 className="text-3xl md:text-4xl font-serif font-bold tracking-tight text-foreground">{user.name}</h1>
-                        <p className="text-muted-foreground font-medium text-lg">{user.role}</p>
+                        <h1 className="text-3xl md:text-4xl font-serif font-bold tracking-tight text-foreground">{profile.name}</h1>
+                        <p className="text-muted-foreground font-medium text-lg">
+                          {profile.course || "Student"} {profile.semester ? `• Semester ${profile.semester}` : ""}
+                        </p>
                     </div>
                     <div className="flex gap-2">
                         <Button variant="outline" className="rounded-xl border-primary/20 hover:bg-primary/5 hover:text-primary hover:border-primary/50 transition-all">
                             <Github className="h-4 w-4 mr-2" /> GitHub
                         </Button>
-                        <Button className="rounded-xl shadow-lg shadow-primary/25 bg-primary hover:bg-primary/90">
+                        <Button 
+                          onClick={openEditDialog}
+                          className="rounded-xl shadow-lg shadow-primary/25 bg-primary hover:bg-primary/90"
+                        >
                             <Edit className="h-4 w-4 mr-2" /> Edit Profile
                         </Button>
                     </div>
                  </div>
                  
                  <div className="flex flex-wrap gap-4 text-sm text-muted-foreground pt-1">
-                    <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/5 hover:bg-black/10 transition-colors cursor-default">
-                        <MapPin className="h-3.5 w-3.5" /> {user.location}
-                    </span>
-                    <a href={`https://${user.website}`} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/5 hover:bg-primary/10 hover:text-primary transition-colors">
-                        <LinkIcon className="h-3.5 w-3.5" /> {user.website}
-                    </a>
+                    {profile.college && (
+                      <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/5 hover:bg-black/10 transition-colors cursor-default">
+                          <MapPin className="h-3.5 w-3.5" /> {profile.college}
+                      </span>
+                    )}
                     <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/5 cursor-default">
-                        <Calendar className="h-3.5 w-3.5" /> Joined {user.joined}
+                        <Calendar className="h-3.5 w-3.5" /> Joined {joinedDate}
                     </span>
                  </div>
               </div>
@@ -105,15 +214,15 @@ export default function ProfilePage() {
            {/* Stats Widget */}
            <div className="glass-card rounded-[2rem] p-6 flex justify-between items-center text-center divide-x divide-black/5">
               <div className="flex-1 px-2">
-                 <div className="text-2xl font-bold font-serif text-foreground">{user.followers}</div>
+                 <div className="text-2xl font-bold font-serif text-foreground">0</div>
                  <div className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground">Followers</div>
               </div>
               <div className="flex-1 px-2">
-                 <div className="text-2xl font-bold font-serif text-foreground">{user.following}</div>
+                 <div className="text-2xl font-bold font-serif text-foreground">0</div>
                  <div className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground">Following</div>
               </div>
               <div className="flex-1 px-2">
-                 <div className="text-2xl font-bold font-serif text-emerald-600">{user.reputation}</div>
+                 <div className="text-2xl font-bold font-serif text-emerald-600">0</div>
                  <div className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground">Reputation</div>
               </div>
            </div>
@@ -122,19 +231,38 @@ export default function ProfilePage() {
            <div className="glass-card rounded-[2rem] p-8 space-y-6">
               <div>
                  <h3 className="font-serif font-bold text-lg mb-3">About</h3>
-                 <p className="text-muted-foreground leading-relaxed text-sm">{user.bio}</p>
+                 <p className="text-muted-foreground leading-relaxed text-sm">
+                   {profile.bio || "No bio added yet."}
+                 </p>
               </div>
               
               <div>
                  <h3 className="font-serif font-bold text-lg mb-3">Skills</h3>
                  <div className="flex flex-wrap gap-2">
-                    {user.skills.map(skill => (
+                    {profile.skills?.length > 0 ? (
+                      profile.skills.map((skill) => (
                         <Badge key={skill} variant="secondary" className="bg-white/50 hover:bg-white border-none shadow-sm px-3 py-1 rounded-lg transition-all">
                             {skill}
                         </Badge>
-                    ))}
+                      ))
+                    ) : (
+                      <p className="text-muted-foreground text-sm">No skills added yet.</p>
+                    )}
                  </div>
               </div>
+
+              {profile.interests?.length > 0 && (
+                <div>
+                   <h3 className="font-serif font-bold text-lg mb-3">Interests</h3>
+                   <div className="flex flex-wrap gap-2">
+                      {profile.interests.map((interest) => (
+                        <Badge key={interest} variant="outline" className="bg-white/30 border-primary/20 px-3 py-1 rounded-lg">
+                            {interest}
+                        </Badge>
+                      ))}
+                   </div>
+                </div>
+              )}
 
               <div>
                   <h3 className="font-serif font-bold text-lg mb-3">Socials</h3>
@@ -175,55 +303,43 @@ export default function ProfilePage() {
                        <h3 className="text-xl font-serif font-bold flex items-center gap-2">
                            <Briefcase className="h-5 w-5 text-primary" /> Experience
                        </h3>
-                       <div className="space-y-4">
-                           {user.experience.map((exp, i) => (
-                               <div key={i} className="glass-card p-6 rounded-[1.5rem] flex gap-4 items-start group">
-                                   <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shrink-0 group-hover:scale-110 transition-transform">
-                                       <Briefcase className="h-6 w-6" />
-                                   </div>
-                                   <div>
-                                       <h4 className="font-bold text-lg">{exp.role}</h4>
-                                       <p className="text-sm font-medium text-foreground/80">{exp.company} • {exp.period}</p>
-                                       <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{exp.desc}</p>
-                                   </div>
-                               </div>
-                           ))}
+                       <div className="glass-card p-12 rounded-[2rem] text-center border-dashed border-2 border-white/30">
+                           <Briefcase className="h-16 w-16 mx-auto mb-4 text-muted-foreground/30" />
+                           <h3 className="text-lg font-bold text-foreground">No experience added</h3>
+                           <p className="text-muted-foreground">Experience entries will appear here.</p>
                        </div>
 
                        <h3 className="text-xl font-serif font-bold flex items-center gap-2 mt-8">
                            <Award className="h-5 w-5 text-primary" /> Education
                        </h3>
-                       <div className="glass-card p-6 rounded-[1.5rem] flex gap-4 items-start group">
-                            <div className="h-12 w-12 rounded-2xl bg-secondary/30 flex items-center justify-center text-secondary-foreground shrink-0">
-                                <BookOpen className="h-6 w-6" />
-                            </div>
-                            <div>
-                                <h4 className="font-bold text-lg">B.S. Computer Science</h4>
-                                <p className="text-sm font-medium text-foreground/80">University of Technology • 2021 - Present</p>
-                                <p className="text-sm text-muted-foreground mt-2">GPA: 3.8/4.0 • Dean's List</p>
-                            </div>
-                        </div>
+                       {profile.college ? (
+                         <div className="glass-card p-6 rounded-[1.5rem] flex gap-4 items-start group">
+                              <div className="h-12 w-12 rounded-2xl bg-secondary/30 flex items-center justify-center text-secondary-foreground shrink-0">
+                                  <BookOpen className="h-6 w-6" />
+                              </div>
+                              <div>
+                                  <h4 className="font-bold text-lg">{profile.course || "Student"}</h4>
+                                  <p className="text-sm font-medium text-foreground/80">{profile.college}</p>
+                                  {profile.semester && (
+                                    <p className="text-sm text-muted-foreground mt-2">Currently in Semester {profile.semester}</p>
+                                  )}
+                              </div>
+                          </div>
+                       ) : (
+                         <div className="glass-card p-12 rounded-[2rem] text-center border-dashed border-2 border-white/30">
+                             <BookOpen className="h-16 w-16 mx-auto mb-4 text-muted-foreground/30" />
+                             <h3 className="text-lg font-bold text-foreground">No education added</h3>
+                             <p className="text-muted-foreground">Add your college details in Edit Profile.</p>
+                         </div>
+                       )}
                    </div>
                )}
 
                {activeTab === 'projects' && (
-                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                       {[1, 2, 3].map((_, i) => (
-                           <div key={i} className="glass-card rounded-[2rem] overflow-hidden group cursor-pointer hover:-translate-y-2 transition-transform duration-300">
-                               <div className="h-40 bg-muted relative">
-                                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6">
-                                       <h4 className="text-white font-bold text-lg">Project Alpha {i+1}</h4>
-                                   </div>
-                               </div>
-                               <div className="p-6">
-                                   <p className="text-sm text-muted-foreground mb-4">A cutting-edge AI tool for student productivity.</p>
-                                   <div className="flex gap-2">
-                                       <Badge variant="secondary" className="bg-black/5">React</Badge>
-                                       <Badge variant="secondary" className="bg-black/5">Python</Badge>
-                                   </div>
-                               </div>
-                           </div>
-                       ))}
+                   <div className="glass-card p-12 rounded-[2rem] text-center border-dashed border-2 border-white/30">
+                       <Grid className="h-16 w-16 mx-auto mb-4 text-muted-foreground/30" />
+                       <h3 className="text-lg font-bold text-foreground">No projects yet</h3>
+                       <p className="text-muted-foreground">Projects you create will appear here.</p>
                    </div>
                )}
                
@@ -231,12 +347,148 @@ export default function ProfilePage() {
                     <div className="glass-card p-12 rounded-[2rem] text-center border-dashed border-2 border-white/30">
                         <Grid className="h-16 w-16 mx-auto mb-4 text-muted-foreground/30" />
                         <h3 className="text-lg font-bold text-foreground">No posts yet</h3>
-                        <p className="text-muted-foreground">When {user.name.split(' ')[0]} posts something, it will appear here.</p>
+                        <p className="text-muted-foreground">When {profile.name.split(' ')[0]} posts something, it will appear here.</p>
                     </div>
                )}
            </div>
         </div>
       </div>
+
+      {/* Edit Profile Dialog */}
+      <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
+        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto rounded-[1.5rem]">
+          <DialogHeader>
+            <DialogTitle className="font-serif text-xl">Edit Profile</DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Name *</Label>
+              <Input
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                placeholder="Your full name"
+                className="rounded-xl"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="bio">Bio</Label>
+              <Textarea
+                id="bio"
+                name="bio"
+                value={formData.bio}
+                onChange={handleInputChange}
+                placeholder="Tell us about yourself..."
+                rows={3}
+                className="rounded-xl resize-none"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="course">Course</Label>
+                <Input
+                  id="course"
+                  name="course"
+                  value={formData.course}
+                  onChange={handleInputChange}
+                  placeholder="e.g., Computer Science"
+                  className="rounded-xl"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="semester">Semester</Label>
+                <Input
+                  id="semester"
+                  name="semester"
+                  type="number"
+                  min="1"
+                  max="10"
+                  value={formData.semester}
+                  onChange={handleInputChange}
+                  placeholder="e.g., 5"
+                  className="rounded-xl"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="college">College</Label>
+              <Input
+                id="college"
+                name="college"
+                value={formData.college}
+                onChange={handleInputChange}
+                placeholder="Your college or university"
+                className="rounded-xl"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="skills">Skills (comma-separated)</Label>
+              <Input
+                id="skills"
+                name="skills"
+                value={formData.skills}
+                onChange={handleInputChange}
+                placeholder="React, Node.js, Python, ..."
+                className="rounded-xl"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="interests">Interests (comma-separated)</Label>
+              <Input
+                id="interests"
+                name="interests"
+                value={formData.interests}
+                onChange={handleInputChange}
+                placeholder="AI, Web Dev, Machine Learning, ..."
+                className="rounded-xl"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="avatarUrl">Avatar URL</Label>
+              <Input
+                id="avatarUrl"
+                name="avatarUrl"
+                value={formData.avatarUrl}
+                onChange={handleInputChange}
+                placeholder="https://..."
+                className="rounded-xl"
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsEditOpen(false)}
+              className="rounded-xl"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSaveProfile}
+              disabled={saving}
+              className="rounded-xl bg-primary"
+            >
+              {saving ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                "Save Changes"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -3,47 +3,88 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
-import { Search, Plus, Github, ExternalLink } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Search, Plus, Github, ExternalLink, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { api } from "@/lib/api";
+import { toast } from "react-hot-toast";
 
 export default function ProjectsPage() {
-  const projects = [
-    {
-      id: 1,
-      title: "EcoTrack Mobile App",
-      description: "A Flutter application to track daily carbon footprint and suggest eco-friendly habits.",
-      author: { name: "Sarah Chen", avatar: "https://i.pravatar.cc/150?u=sarah" },
-      techStack: ["Flutter", "Firebase", "Dart"],
-      status: "Looking for Contributors",
-      statusColor: "bg-green-500/10 text-green-600",
-    },
-    {
-      id: 2,
-      title: "AI Study Buddy",
-      description: "An NLP-powered chatbot that helps students summarize lecture notes and generate quizzes.",
-      author: { name: "James Wilson", avatar: "https://i.pravatar.cc/150?u=james" },
-      techStack: ["Python", "OpenAI API", "React"],
-      status: "In Progress",
-      statusColor: "bg-blue-500/10 text-blue-600",
-    },
-    {
-      id: 3,
-      title: "Campus Marketplace",
-      description: "A web platform for students to buy and sell textbooks and furniture securely.",
-      author: { name: "Emily Davis", avatar: "https://i.pravatar.cc/150?u=emily" },
-      techStack: ["Next.js", "PostgreSQL", "Stripe"],
-      status: "Planning",
-      statusColor: "bg-yellow-500/10 text-yellow-600",
-    },
-    {
-      id: 4,
-      title: "Smart Dorm Automation",
-      description: "IoT system for controlling dorm lights and thermostat via a web dashboard.",
-      author: { name: "Michael Brown", avatar: "https://i.pravatar.cc/150?u=michael" },
-      techStack: ["Arduino", "Node.js", "WebSockets"],
-      status: "Looking for Contributors",
-      statusColor: "bg-green-500/10 text-green-600",
-    },
-  ];
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [tags, setTags] = useState("");
+  const [githubUrl, setGithubUrl] = useState("");
+  const [demoUrl, setDemoUrl] = useState("");
+
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
+  const fetchProjects = async () => {
+    try {
+      setLoading(true);
+      const data = await api.get("/projects");
+      setProjects(data);
+    } catch (error) {
+      console.error("Failed to fetch projects", error);
+      toast.error("Failed to load projects");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const resetForm = () => {
+    setTitle("");
+    setDescription("");
+    setTags("");
+    setGithubUrl("");
+    setDemoUrl("");
+  };
+
+  const handleCreateProject = async (e) => {
+    e.preventDefault();
+    
+    if (!title.trim() || title.trim().length < 2) {
+      toast.error("Title must be at least 2 characters");
+      return;
+    }
+    if (!description.trim() || description.trim().length < 10) {
+      toast.error("Description must be at least 10 characters");
+      return;
+    }
+
+    setCreating(true);
+    try {
+      const tagsArray = tags
+        .split(",")
+        .map((t) => t.trim())
+        .filter((t) => t.length > 0);
+
+      await api.post("/projects", {
+        title: title.trim(),
+        description: description.trim(),
+        tags: tagsArray,
+        githubUrl: githubUrl.trim(),
+        demoUrl: demoUrl.trim(),
+      });
+
+      toast.success("Project created successfully!");
+      setIsCreateOpen(false);
+      resetForm();
+      fetchProjects();
+    } catch (error) {
+      console.error("Failed to create project", error);
+      toast.error(error.message || "Failed to create project");
+    } finally {
+      setCreating(false);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -52,7 +93,7 @@ export default function ProjectsPage() {
           <h1 className="text-3xl font-bold tracking-tight">Student Projects</h1>
           <p className="text-muted-foreground">Showcase your work and find collaborators.</p>
         </div>
-        <Button className="gap-2">
+        <Button className="gap-2" onClick={() => setIsCreateOpen(true)}>
             <Plus className="h-4 w-4" /> New Project
         </Button>
       </div>
@@ -66,52 +107,141 @@ export default function ProjectsPage() {
         />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {projects.map((project) => (
-          <Card key={project.id} className="border border-border hover:shadow-md transition-all">
-            <CardHeader>
-              <div className="flex justify-between items-start">
-                 <div className="flex items-center gap-3">
-                    <Avatar className="h-10 w-10 border border-border">
-                        <AvatarImage src={project.author.avatar} />
-                        <AvatarFallback>{project.author.name[0]}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                        <CardTitle className="text-lg">{project.title}</CardTitle>
-                        <p className="text-xs text-muted-foreground">by {project.author.name}</p>
+      {loading ? (
+        <div className="text-center py-10">Loading projects...</div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {projects.map((project) => (
+            <Card key={project.id} className="border border-border hover:shadow-md transition-all">
+                <CardHeader>
+                <div className="flex justify-between items-start">
+                    <div className="flex items-center gap-3">
+                        <Avatar className="h-10 w-10 border border-border">
+                            <AvatarImage src={project.author?.avatarUrl} />
+                            <AvatarFallback>{project.author?.name?.[0] || 'U'}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                            <CardTitle className="text-lg">{project.title}</CardTitle>
+                            <p className="text-xs text-muted-foreground">by {project.author?.name || 'Unknown'}</p>
+                        </div>
                     </div>
-                 </div>
-                 <Badge variant="secondary" className={`${project.statusColor} hover:${project.statusColor} border-0`}>
-                    {project.status}
-                 </Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-sm text-muted-foreground">
-                {project.description}
-              </p>
-              <div className="flex gap-2 flex-wrap">
-                {project.techStack.map((tech) => (
-                    <Badge key={tech} variant="outline" className="text-xs font-normal">
-                        {tech}
+                    {/* Status badge logic would go here if status was in schema, for now omitting or assuming open */}
+                    <Badge variant="secondary" className="bg-green-500/10 text-green-600 border-0">
+                        Active
                     </Badge>
-                ))}
-              </div>
-            </CardContent>
-            <CardFooter className="flex justify-between border-t border-border pt-4">
-               <div className="flex gap-2">
-                   <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
-                        <Github className="h-4 w-4" />
-                   </Button>
-                   <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
-                        <ExternalLink className="h-4 w-4" />
-                   </Button>
-               </div>
-               <Button size="sm">Request to Join</Button>
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
+                </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                    {project.description}
+                </p>
+                <div className="flex gap-2 flex-wrap">
+                    {project.tags.map((tech) => (
+                        <Badge key={tech} variant="outline" className="text-xs font-normal">
+                            {tech}
+                        </Badge>
+                    ))}
+                </div>
+                </CardContent>
+                <CardFooter className="flex justify-between border-t border-border pt-4">
+                <div className="flex gap-2">
+                    {project.githubUrl && (
+                        <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
+                                    <Github className="h-4 w-4" />
+                            </Button>
+                        </a>
+                    )}
+                    {project.demoUrl && (
+                        <a href={project.demoUrl} target="_blank" rel="noopener noreferrer">
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
+                                    <ExternalLink className="h-4 w-4" />
+                            </Button>
+                        </a>
+                    )}
+                </div>
+                <Button size="sm">Request to Join</Button>
+                </CardFooter>
+            </Card>
+            ))}
+            {projects.length === 0 && (
+                <div className="col-span-1 lg:col-span-2 text-center py-10 text-muted-foreground">
+                    No projects found. Be the first to create one!
+                </div>
+            )}
+        </div>
+      )}
+
+      <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Create New Project</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleCreateProject} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="title">Title *</Label>
+              <Input
+                id="title"
+                placeholder="My Awesome Project"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                disabled={creating}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="description">Description *</Label>
+              <Textarea
+                id="description"
+                placeholder="Describe your project (min 10 characters)"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                disabled={creating}
+                className="min-h-24"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="tags">Tags</Label>
+              <Input
+                id="tags"
+                placeholder="React, Node.js, Machine Learning"
+                value={tags}
+                onChange={(e) => setTags(e.target.value)}
+                disabled={creating}
+              />
+              <p className="text-xs text-muted-foreground">Separate tags with commas</p>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="githubUrl">GitHub URL</Label>
+              <Input
+                id="githubUrl"
+                placeholder="https://github.com/username/repo"
+                value={githubUrl}
+                onChange={(e) => setGithubUrl(e.target.value)}
+                disabled={creating}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="demoUrl">Demo URL</Label>
+              <Input
+                id="demoUrl"
+                placeholder="https://myproject.vercel.app"
+                value={demoUrl}
+                onChange={(e) => setDemoUrl(e.target.value)}
+                disabled={creating}
+              />
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setIsCreateOpen(false)} disabled={creating}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={creating}>
+                {creating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Create Project
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

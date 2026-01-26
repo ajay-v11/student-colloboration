@@ -7,18 +7,118 @@ datasource db {
   provider = "postgresql"
 }
 
+enum GroupRole {
+  MEMBER
+  ADMIN
+}
+
+enum ChannelType {
+  TEXT
+  ANNOUNCEMENT
+}
+
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
-  name      String
-  course    String?
-  semester  Int?
-  college   String?
-  skills    String[] @default([])
-  interests String[] @default([])
-  bio       String?
-  avatarUrl String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id               String            @id @default(cuid())
+  email            String            @unique
+  password         String
+  name             String
+  course           String?
+  semester         Int?
+  college          String?
+  skills           String[]          @default([])
+  interests        String[]          @default([])
+  bio              String?
+  avatarUrl        String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  GroupMemberShip  GroupMemberShip[]
+  Group            Group[]
+  GroupMessage     GroupMessage[]
+  sentMessages     DirectMessage[]   @relation("SentMessages")
+  receivedMessages DirectMessage[]   @relation("ReceivedMessages")
+  projects         Project[]
+  postedInternships Internship[]
+}
+
+model Group {
+  id              String            @id @default(cuid())
+  name            String            @unique
+  description     String
+  interests       String[]
+  adminId         String
+  groupIconUrl    String?
+  user            User              @relation(fields: [adminId], references: [id])
+  GroupMemberShip GroupMemberShip[]
+  Channel         Channel[]
+  createdAt       DateTime          @default(now())
+}
+
+model GroupMemberShip {
+  id       String    @id @default(cuid())
+  user     User      @relation(fields: [userId], references: [id])
+  userId   String
+  group    Group     @relation(fields: [groupId], references: [id])
+  groupId  String
+  role     GroupRole @default(MEMBER)
+  joinedAt DateTime  @default(now())
+
+  @@unique([userId, groupId])
+}
+
+model Channel {
+  id           String         @id @default(cuid())
+  name         String         @unique
+  type         ChannelType    @default(TEXT)
+  position     Int
+  group        Group          @relation(fields: [groupId], references: [id])
+  groupId      String
+  createdAt    DateTime       @default(now())
+  GroupMessage GroupMessage[]
+}
+
+model GroupMessage {
+  id       String @id @default(cuid())
+  content  String
+  sender   User   @relation(fields: [senderId], references: [id])
+  senderId String
+
+  channel   Channel @relation(fields: [channelId], references: [id])
+  channelId String
+}
+
+model DirectMessage {
+  id         String   @id @default(cuid())
+  content    String
+  sender     User     @relation("SentMessages", fields: [senderId], references: [id])
+  senderId   String
+  receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  receiverId String
+  createdAt  DateTime @default(now())
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  tags        String[]
+  githubUrl   String?
+  demoUrl     String?
+  author      User     @relation(fields: [authorId], references: [id])
+  authorId    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Internship {
+  id          String   @id @default(cuid())
+  company     String
+  role        String
+  description String
+  location    String
+  type        String   // Remote, On-site, Hybrid
+  applyUrl    String
+  postedBy    User     @relation(fields: [postedById], references: [id])
+  postedById  String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

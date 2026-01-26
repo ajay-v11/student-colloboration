@@ -272,6 +272,13 @@ export type UserWhereInput = {
   avatarUrl?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  GroupMemberShip?: Prisma.GroupMemberShipListRelationFilter
+  Group?: Prisma.GroupListRelationFilter
+  GroupMessage?: Prisma.GroupMessageListRelationFilter
+  sentMessages?: Prisma.DirectMessageListRelationFilter
+  receivedMessages?: Prisma.DirectMessageListRelationFilter
+  projects?: Prisma.ProjectListRelationFilter
+  postedInternships?: Prisma.InternshipListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -288,6 +295,13 @@ export type UserOrderByWithRelationInput = {
   avatarUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  GroupMemberShip?: Prisma.GroupMemberShipOrderByRelationAggregateInput
+  Group?: Prisma.GroupOrderByRelationAggregateInput
+  GroupMessage?: Prisma.GroupMessageOrderByRelationAggregateInput
+  sentMessages?: Prisma.DirectMessageOrderByRelationAggregateInput
+  receivedMessages?: Prisma.DirectMessageOrderByRelationAggregateInput
+  projects?: Prisma.ProjectOrderByRelationAggregateInput
+  postedInternships?: Prisma.InternshipOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -307,6 +321,13 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   avatarUrl?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  GroupMemberShip?: Prisma.GroupMemberShipListRelationFilter
+  Group?: Prisma.GroupListRelationFilter
+  GroupMessage?: Prisma.GroupMessageListRelationFilter
+  sentMessages?: Prisma.DirectMessageListRelationFilter
+  receivedMessages?: Prisma.DirectMessageListRelationFilter
+  projects?: Prisma.ProjectListRelationFilter
+  postedInternships?: Prisma.InternshipListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -363,6 +384,13 @@ export type UserCreateInput = {
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  GroupMemberShip?: Prisma.GroupMemberShipCreateNestedManyWithoutUserInput
+  Group?: Prisma.GroupCreateNestedManyWithoutUserInput
+  GroupMessage?: Prisma.GroupMessageCreateNestedManyWithoutSenderInput
+  sentMessages?: Prisma.DirectMessageCreateNestedManyWithoutSenderInput
+  receivedMessages?: Prisma.DirectMessageCreateNestedManyWithoutReceiverInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutAuthorInput
+  postedInternships?: Prisma.InternshipCreateNestedManyWithoutPostedByInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -379,6 +407,13 @@ export type UserUncheckedCreateInput = {
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  GroupMemberShip?: Prisma.GroupMemberShipUncheckedCreateNestedManyWithoutUserInput
+  Group?: Prisma.GroupUncheckedCreateNestedManyWithoutUserInput
+  GroupMessage?: Prisma.GroupMessageUncheckedCreateNestedManyWithoutSenderInput
+  sentMessages?: Prisma.DirectMessageUncheckedCreateNestedManyWithoutSenderInput
+  receivedMessages?: Prisma.DirectMessageUncheckedCreateNestedManyWithoutReceiverInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutAuthorInput
+  postedInternships?: Prisma.InternshipUncheckedCreateNestedManyWithoutPostedByInput
 }
 
 export type UserUpdateInput = {
@@ -395,6 +430,13 @@ export type UserUpdateInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  GroupMemberShip?: Prisma.GroupMemberShipUpdateManyWithoutUserNestedInput
+  Group?: Prisma.GroupUpdateManyWithoutUserNestedInput
+  GroupMessage?: Prisma.GroupMessageUpdateManyWithoutSenderNestedInput
+  sentMessages?: Prisma.DirectMessageUpdateManyWithoutSenderNestedInput
+  receivedMessages?: Prisma.DirectMessageUpdateManyWithoutReceiverNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutAuthorNestedInput
+  postedInternships?: Prisma.InternshipUpdateManyWithoutPostedByNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -411,6 +453,13 @@ export type UserUncheckedUpdateInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  GroupMemberShip?: Prisma.GroupMemberShipUncheckedUpdateManyWithoutUserNestedInput
+  Group?: Prisma.GroupUncheckedUpdateManyWithoutUserNestedInput
+  GroupMessage?: Prisma.GroupMessageUncheckedUpdateManyWithoutSenderNestedInput
+  sentMessages?: Prisma.DirectMessageUncheckedUpdateManyWithoutSenderNestedInput
+  receivedMessages?: Prisma.DirectMessageUncheckedUpdateManyWithoutReceiverNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutAuthorNestedInput
+  postedInternships?: Prisma.InternshipUncheckedUpdateManyWithoutPostedByNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -521,6 +570,11 @@ export type UserSumOrderByAggregateInput = {
   semester?: Prisma.SortOrder
 }
 
+export type UserScalarRelationFilter = {
+  is?: Prisma.UserWhereInput
+  isNot?: Prisma.UserWhereInput
+}
+
 export type UserCreateskillsInput = {
   set: string[]
 }
@@ -559,6 +613,915 @@ export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
 }
 
+export type UserCreateNestedOneWithoutGroupInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutGroupInput, Prisma.UserUncheckedCreateWithoutGroupInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutGroupInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutGroupNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutGroupInput, Prisma.UserUncheckedCreateWithoutGroupInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutGroupInput
+  upsert?: Prisma.UserUpsertWithoutGroupInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutGroupInput, Prisma.UserUpdateWithoutGroupInput>, Prisma.UserUncheckedUpdateWithoutGroupInput>
+}
+
+export type UserCreateNestedOneWithoutGroupMemberShipInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutGroupMemberShipInput, Prisma.UserUncheckedCreateWithoutGroupMemberShipInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutGroupMemberShipInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutGroupMemberShipNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutGroupMemberShipInput, Prisma.UserUncheckedCreateWithoutGroupMemberShipInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutGroupMemberShipInput
+  upsert?: Prisma.UserUpsertWithoutGroupMemberShipInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutGroupMemberShipInput, Prisma.UserUpdateWithoutGroupMemberShipInput>, Prisma.UserUncheckedUpdateWithoutGroupMemberShipInput>
+}
+
+export type UserCreateNestedOneWithoutGroupMessageInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutGroupMessageInput, Prisma.UserUncheckedCreateWithoutGroupMessageInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutGroupMessageInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutGroupMessageNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutGroupMessageInput, Prisma.UserUncheckedCreateWithoutGroupMessageInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutGroupMessageInput
+  upsert?: Prisma.UserUpsertWithoutGroupMessageInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutGroupMessageInput, Prisma.UserUpdateWithoutGroupMessageInput>, Prisma.UserUncheckedUpdateWithoutGroupMessageInput>
+}
+
+export type UserCreateNestedOneWithoutSentMessagesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSentMessagesInput, Prisma.UserUncheckedCreateWithoutSentMessagesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSentMessagesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserCreateNestedOneWithoutReceivedMessagesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutReceivedMessagesInput, Prisma.UserUncheckedCreateWithoutReceivedMessagesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutReceivedMessagesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutSentMessagesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSentMessagesInput, Prisma.UserUncheckedCreateWithoutSentMessagesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSentMessagesInput
+  upsert?: Prisma.UserUpsertWithoutSentMessagesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSentMessagesInput, Prisma.UserUpdateWithoutSentMessagesInput>, Prisma.UserUncheckedUpdateWithoutSentMessagesInput>
+}
+
+export type UserUpdateOneRequiredWithoutReceivedMessagesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutReceivedMessagesInput, Prisma.UserUncheckedCreateWithoutReceivedMessagesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutReceivedMessagesInput
+  upsert?: Prisma.UserUpsertWithoutReceivedMessagesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutReceivedMessagesInput, Prisma.UserUpdateWithoutReceivedMessagesInput>, Prisma.UserUncheckedUpdateWithoutReceivedMessagesInput>
+}
+
+export type UserCreateNestedOneWithoutProjectsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutProjectsInput, Prisma.UserUncheckedCreateWithoutProjectsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutProjectsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutProjectsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutProjectsInput, Prisma.UserUncheckedCreateWithoutProjectsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutProjectsInput
+  upsert?: Prisma.UserUpsertWithoutProjectsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutProjectsInput, Prisma.UserUpdateWithoutProjectsInput>, Prisma.UserUncheckedUpdateWithoutProjectsInput>
+}
+
+export type UserCreateNestedOneWithoutPostedInternshipsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPostedInternshipsInput, Prisma.UserUncheckedCreateWithoutPostedInternshipsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPostedInternshipsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutPostedInternshipsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPostedInternshipsInput, Prisma.UserUncheckedCreateWithoutPostedInternshipsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPostedInternshipsInput
+  upsert?: Prisma.UserUpsertWithoutPostedInternshipsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPostedInternshipsInput, Prisma.UserUpdateWithoutPostedInternshipsInput>, Prisma.UserUncheckedUpdateWithoutPostedInternshipsInput>
+}
+
+export type UserCreateWithoutGroupInput = {
+  id?: string
+  email: string
+  password: string
+  name: string
+  course?: string | null
+  semester?: number | null
+  college?: string | null
+  skills?: Prisma.UserCreateskillsInput | string[]
+  interests?: Prisma.UserCreateinterestsInput | string[]
+  bio?: string | null
+  avatarUrl?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  GroupMemberShip?: Prisma.GroupMemberShipCreateNestedManyWithoutUserInput
+  GroupMessage?: Prisma.GroupMessageCreateNestedManyWithoutSenderInput
+  sentMessages?: Prisma.DirectMessageCreateNestedManyWithoutSenderInput
+  receivedMessages?: Prisma.DirectMessageCreateNestedManyWithoutReceiverInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutAuthorInput
+  postedInternships?: Prisma.InternshipCreateNestedManyWithoutPostedByInput
+}
+
+export type UserUncheckedCreateWithoutGroupInput = {
+  id?: string
+  email: string
+  password: string
+  name: string
+  course?: string | null
+  semester?: number | null
+  college?: string | null
+  skills?: Prisma.UserCreateskillsInput | string[]
+  interests?: Prisma.UserCreateinterestsInput | string[]
+  bio?: string | null
+  avatarUrl?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  GroupMemberShip?: Prisma.GroupMemberShipUncheckedCreateNestedManyWithoutUserInput
+  GroupMessage?: Prisma.GroupMessageUncheckedCreateNestedManyWithoutSenderInput
+  sentMessages?: Prisma.DirectMessageUncheckedCreateNestedManyWithoutSenderInput
+  receivedMessages?: Prisma.DirectMessageUncheckedCreateNestedManyWithoutReceiverInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutAuthorInput
+  postedInternships?: Prisma.InternshipUncheckedCreateNestedManyWithoutPostedByInput
+}
+
+export type UserCreateOrConnectWithoutGroupInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutGroupInput, Prisma.UserUncheckedCreateWithoutGroupInput>
+}
+
+export type UserUpsertWithoutGroupInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutGroupInput, Prisma.UserUncheckedUpdateWithoutGroupInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutGroupInput, Prisma.UserUncheckedCreateWithoutGroupInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutGroupInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutGroupInput, Prisma.UserUncheckedUpdateWithoutGroupInput>
+}
+
+export type UserUpdateWithoutGroupInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  course?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  semester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  college?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  skills?: Prisma.UserUpdateskillsInput | string[]
+  interests?: Prisma.UserUpdateinterestsInput | string[]
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  GroupMemberShip?: Prisma.GroupMemberShipUpdateManyWithoutUserNestedInput
+  GroupMessage?: Prisma.GroupMessageUpdateManyWithoutSenderNestedInput
+  sentMessages?: Prisma.DirectMessageUpdateManyWithoutSenderNestedInput
+  receivedMessages?: Prisma.DirectMessageUpdateManyWithoutReceiverNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutAuthorNestedInput
+  postedInternships?: Prisma.InternshipUpdateManyWithoutPostedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutGroupInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  course?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  semester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  college?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  skills?: Prisma.UserUpdateskillsInput | string[]
+  interests?: Prisma.UserUpdateinterestsInput | string[]
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  GroupMemberShip?: Prisma.GroupMemberShipUncheckedUpdateManyWithoutUserNestedInput
+  GroupMessage?: Prisma.GroupMessageUncheckedUpdateManyWithoutSenderNestedInput
+  sentMessages?: Prisma.DirectMessageUncheckedUpdateManyWithoutSenderNestedInput
+  receivedMessages?: Prisma.DirectMessageUncheckedUpdateManyWithoutReceiverNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutAuthorNestedInput
+  postedInternships?: Prisma.InternshipUncheckedUpdateManyWithoutPostedByNestedInput
+}
+
+export type UserCreateWithoutGroupMemberShipInput = {
+  id?: string
+  email: string
+  password: string
+  name: string
+  course?: string | null
+  semester?: number | null
+  college?: string | null
+  skills?: Prisma.UserCreateskillsInput | string[]
+  interests?: Prisma.UserCreateinterestsInput | string[]
+  bio?: string | null
+  avatarUrl?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  Group?: Prisma.GroupCreateNestedManyWithoutUserInput
+  GroupMessage?: Prisma.GroupMessageCreateNestedManyWithoutSenderInput
+  sentMessages?: Prisma.DirectMessageCreateNestedManyWithoutSenderInput
+  receivedMessages?: Prisma.DirectMessageCreateNestedManyWithoutReceiverInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutAuthorInput
+  postedInternships?: Prisma.InternshipCreateNestedManyWithoutPostedByInput
+}
+
+export type UserUncheckedCreateWithoutGroupMemberShipInput = {
+  id?: string
+  email: string
+  password: string
+  name: string
+  course?: string | null
+  semester?: number | null
+  college?: string | null
+  skills?: Prisma.UserCreateskillsInput | string[]
+  interests?: Prisma.UserCreateinterestsInput | string[]
+  bio?: string | null
+  avatarUrl?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  Group?: Prisma.GroupUncheckedCreateNestedManyWithoutUserInput
+  GroupMessage?: Prisma.GroupMessageUncheckedCreateNestedManyWithoutSenderInput
+  sentMessages?: Prisma.DirectMessageUncheckedCreateNestedManyWithoutSenderInput
+  receivedMessages?: Prisma.DirectMessageUncheckedCreateNestedManyWithoutReceiverInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutAuthorInput
+  postedInternships?: Prisma.InternshipUncheckedCreateNestedManyWithoutPostedByInput
+}
+
+export type UserCreateOrConnectWithoutGroupMemberShipInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutGroupMemberShipInput, Prisma.UserUncheckedCreateWithoutGroupMemberShipInput>
+}
+
+export type UserUpsertWithoutGroupMemberShipInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutGroupMemberShipInput, Prisma.UserUncheckedUpdateWithoutGroupMemberShipInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutGroupMemberShipInput, Prisma.UserUncheckedCreateWithoutGroupMemberShipInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutGroupMemberShipInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutGroupMemberShipInput, Prisma.UserUncheckedUpdateWithoutGroupMemberShipInput>
+}
+
+export type UserUpdateWithoutGroupMemberShipInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  course?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  semester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  college?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  skills?: Prisma.UserUpdateskillsInput | string[]
+  interests?: Prisma.UserUpdateinterestsInput | string[]
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  Group?: Prisma.GroupUpdateManyWithoutUserNestedInput
+  GroupMessage?: Prisma.GroupMessageUpdateManyWithoutSenderNestedInput
+  sentMessages?: Prisma.DirectMessageUpdateManyWithoutSenderNestedInput
+  receivedMessages?: Prisma.DirectMessageUpdateManyWithoutReceiverNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutAuthorNestedInput
+  postedInternships?: Prisma.InternshipUpdateManyWithoutPostedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutGroupMemberShipInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  course?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  semester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  college?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  skills?: Prisma.UserUpdateskillsInput | string[]
+  interests?: Prisma.UserUpdateinterestsInput | string[]
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  Group?: Prisma.GroupUncheckedUpdateManyWithoutUserNestedInput
+  GroupMessage?: Prisma.GroupMessageUncheckedUpdateManyWithoutSenderNestedInput
+  sentMessages?: Prisma.DirectMessageUncheckedUpdateManyWithoutSenderNestedInput
+  receivedMessages?: Prisma.DirectMessageUncheckedUpdateManyWithoutReceiverNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutAuthorNestedInput
+  postedInternships?: Prisma.InternshipUncheckedUpdateManyWithoutPostedByNestedInput
+}
+
+export type UserCreateWithoutGroupMessageInput = {
+  id?: string
+  email: string
+  password: string
+  name: string
+  course?: string | null
+  semester?: number | null
+  college?: string | null
+  skills?: Prisma.UserCreateskillsInput | string[]
+  interests?: Prisma.UserCreateinterestsInput | string[]
+  bio?: string | null
+  avatarUrl?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  GroupMemberShip?: Prisma.GroupMemberShipCreateNestedManyWithoutUserInput
+  Group?: Prisma.GroupCreateNestedManyWithoutUserInput
+  sentMessages?: Prisma.DirectMessageCreateNestedManyWithoutSenderInput
+  receivedMessages?: Prisma.DirectMessageCreateNestedManyWithoutReceiverInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutAuthorInput
+  postedInternships?: Prisma.InternshipCreateNestedManyWithoutPostedByInput
+}
+
+export type UserUncheckedCreateWithoutGroupMessageInput = {
+  id?: string
+  email: string
+  password: string
+  name: string
+  course?: string | null
+  semester?: number | null
+  college?: string | null
+  skills?: Prisma.UserCreateskillsInput | string[]
+  interests?: Prisma.UserCreateinterestsInput | string[]
+  bio?: string | null
+  avatarUrl?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  GroupMemberShip?: Prisma.GroupMemberShipUncheckedCreateNestedManyWithoutUserInput
+  Group?: Prisma.GroupUncheckedCreateNestedManyWithoutUserInput
+  sentMessages?: Prisma.DirectMessageUncheckedCreateNestedManyWithoutSenderInput
+  receivedMessages?: Prisma.DirectMessageUncheckedCreateNestedManyWithoutReceiverInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutAuthorInput
+  postedInternships?: Prisma.InternshipUncheckedCreateNestedManyWithoutPostedByInput
+}
+
+export type UserCreateOrConnectWithoutGroupMessageInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutGroupMessageInput, Prisma.UserUncheckedCreateWithoutGroupMessageInput>
+}
+
+export type UserUpsertWithoutGroupMessageInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutGroupMessageInput, Prisma.UserUncheckedUpdateWithoutGroupMessageInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutGroupMessageInput, Prisma.UserUncheckedCreateWithoutGroupMessageInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutGroupMessageInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutGroupMessageInput, Prisma.UserUncheckedUpdateWithoutGroupMessageInput>
+}
+
+export type UserUpdateWithoutGroupMessageInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  course?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  semester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  college?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  skills?: Prisma.UserUpdateskillsInput | string[]
+  interests?: Prisma.UserUpdateinterestsInput | string[]
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  GroupMemberShip?: Prisma.GroupMemberShipUpdateManyWithoutUserNestedInput
+  Group?: Prisma.GroupUpdateManyWithoutUserNestedInput
+  sentMessages?: Prisma.DirectMessageUpdateManyWithoutSenderNestedInput
+  receivedMessages?: Prisma.DirectMessageUpdateManyWithoutReceiverNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutAuthorNestedInput
+  postedInternships?: Prisma.InternshipUpdateManyWithoutPostedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutGroupMessageInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  course?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  semester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  college?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  skills?: Prisma.UserUpdateskillsInput | string[]
+  interests?: Prisma.UserUpdateinterestsInput | string[]
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  GroupMemberShip?: Prisma.GroupMemberShipUncheckedUpdateManyWithoutUserNestedInput
+  Group?: Prisma.GroupUncheckedUpdateManyWithoutUserNestedInput
+  sentMessages?: Prisma.DirectMessageUncheckedUpdateManyWithoutSenderNestedInput
+  receivedMessages?: Prisma.DirectMessageUncheckedUpdateManyWithoutReceiverNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutAuthorNestedInput
+  postedInternships?: Prisma.InternshipUncheckedUpdateManyWithoutPostedByNestedInput
+}
+
+export type UserCreateWithoutSentMessagesInput = {
+  id?: string
+  email: string
+  password: string
+  name: string
+  course?: string | null
+  semester?: number | null
+  college?: string | null
+  skills?: Prisma.UserCreateskillsInput | string[]
+  interests?: Prisma.UserCreateinterestsInput | string[]
+  bio?: string | null
+  avatarUrl?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  GroupMemberShip?: Prisma.GroupMemberShipCreateNestedManyWithoutUserInput
+  Group?: Prisma.GroupCreateNestedManyWithoutUserInput
+  GroupMessage?: Prisma.GroupMessageCreateNestedManyWithoutSenderInput
+  receivedMessages?: Prisma.DirectMessageCreateNestedManyWithoutReceiverInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutAuthorInput
+  postedInternships?: Prisma.InternshipCreateNestedManyWithoutPostedByInput
+}
+
+export type UserUncheckedCreateWithoutSentMessagesInput = {
+  id?: string
+  email: string
+  password: string
+  name: string
+  course?: string | null
+  semester?: number | null
+  college?: string | null
+  skills?: Prisma.UserCreateskillsInput | string[]
+  interests?: Prisma.UserCreateinterestsInput | string[]
+  bio?: string | null
+  avatarUrl?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  GroupMemberShip?: Prisma.GroupMemberShipUncheckedCreateNestedManyWithoutUserInput
+  Group?: Prisma.GroupUncheckedCreateNestedManyWithoutUserInput
+  GroupMessage?: Prisma.GroupMessageUncheckedCreateNestedManyWithoutSenderInput
+  receivedMessages?: Prisma.DirectMessageUncheckedCreateNestedManyWithoutReceiverInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutAuthorInput
+  postedInternships?: Prisma.InternshipUncheckedCreateNestedManyWithoutPostedByInput
+}
+
+export type UserCreateOrConnectWithoutSentMessagesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutSentMessagesInput, Prisma.UserUncheckedCreateWithoutSentMessagesInput>
+}
+
+export type UserCreateWithoutReceivedMessagesInput = {
+  id?: string
+  email: string
+  password: string
+  name: string
+  course?: string | null
+  semester?: number | null
+  college?: string | null
+  skills?: Prisma.UserCreateskillsInput | string[]
+  interests?: Prisma.UserCreateinterestsInput | string[]
+  bio?: string | null
+  avatarUrl?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  GroupMemberShip?: Prisma.GroupMemberShipCreateNestedManyWithoutUserInput
+  Group?: Prisma.GroupCreateNestedManyWithoutUserInput
+  GroupMessage?: Prisma.GroupMessageCreateNestedManyWithoutSenderInput
+  sentMessages?: Prisma.DirectMessageCreateNestedManyWithoutSenderInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutAuthorInput
+  postedInternships?: Prisma.InternshipCreateNestedManyWithoutPostedByInput
+}
+
+export type UserUncheckedCreateWithoutReceivedMessagesInput = {
+  id?: string
+  email: string
+  password: string
+  name: string
+  course?: string | null
+  semester?: number | null
+  college?: string | null
+  skills?: Prisma.UserCreateskillsInput | string[]
+  interests?: Prisma.UserCreateinterestsInput | string[]
+  bio?: string | null
+  avatarUrl?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  GroupMemberShip?: Prisma.GroupMemberShipUncheckedCreateNestedManyWithoutUserInput
+  Group?: Prisma.GroupUncheckedCreateNestedManyWithoutUserInput
+  GroupMessage?: Prisma.GroupMessageUncheckedCreateNestedManyWithoutSenderInput
+  sentMessages?: Prisma.DirectMessageUncheckedCreateNestedManyWithoutSenderInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutAuthorInput
+  postedInternships?: Prisma.InternshipUncheckedCreateNestedManyWithoutPostedByInput
+}
+
+export type UserCreateOrConnectWithoutReceivedMessagesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutReceivedMessagesInput, Prisma.UserUncheckedCreateWithoutReceivedMessagesInput>
+}
+
+export type UserUpsertWithoutSentMessagesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutSentMessagesInput, Prisma.UserUncheckedUpdateWithoutSentMessagesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutSentMessagesInput, Prisma.UserUncheckedCreateWithoutSentMessagesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutSentMessagesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutSentMessagesInput, Prisma.UserUncheckedUpdateWithoutSentMessagesInput>
+}
+
+export type UserUpdateWithoutSentMessagesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  course?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  semester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  college?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  skills?: Prisma.UserUpdateskillsInput | string[]
+  interests?: Prisma.UserUpdateinterestsInput | string[]
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  GroupMemberShip?: Prisma.GroupMemberShipUpdateManyWithoutUserNestedInput
+  Group?: Prisma.GroupUpdateManyWithoutUserNestedInput
+  GroupMessage?: Prisma.GroupMessageUpdateManyWithoutSenderNestedInput
+  receivedMessages?: Prisma.DirectMessageUpdateManyWithoutReceiverNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutAuthorNestedInput
+  postedInternships?: Prisma.InternshipUpdateManyWithoutPostedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutSentMessagesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  course?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  semester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  college?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  skills?: Prisma.UserUpdateskillsInput | string[]
+  interests?: Prisma.UserUpdateinterestsInput | string[]
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  GroupMemberShip?: Prisma.GroupMemberShipUncheckedUpdateManyWithoutUserNestedInput
+  Group?: Prisma.GroupUncheckedUpdateManyWithoutUserNestedInput
+  GroupMessage?: Prisma.GroupMessageUncheckedUpdateManyWithoutSenderNestedInput
+  receivedMessages?: Prisma.DirectMessageUncheckedUpdateManyWithoutReceiverNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutAuthorNestedInput
+  postedInternships?: Prisma.InternshipUncheckedUpdateManyWithoutPostedByNestedInput
+}
+
+export type UserUpsertWithoutReceivedMessagesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutReceivedMessagesInput, Prisma.UserUncheckedUpdateWithoutReceivedMessagesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutReceivedMessagesInput, Prisma.UserUncheckedCreateWithoutReceivedMessagesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutReceivedMessagesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutReceivedMessagesInput, Prisma.UserUncheckedUpdateWithoutReceivedMessagesInput>
+}
+
+export type UserUpdateWithoutReceivedMessagesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  course?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  semester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  college?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  skills?: Prisma.UserUpdateskillsInput | string[]
+  interests?: Prisma.UserUpdateinterestsInput | string[]
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  GroupMemberShip?: Prisma.GroupMemberShipUpdateManyWithoutUserNestedInput
+  Group?: Prisma.GroupUpdateManyWithoutUserNestedInput
+  GroupMessage?: Prisma.GroupMessageUpdateManyWithoutSenderNestedInput
+  sentMessages?: Prisma.DirectMessageUpdateManyWithoutSenderNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutAuthorNestedInput
+  postedInternships?: Prisma.InternshipUpdateManyWithoutPostedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutReceivedMessagesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  course?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  semester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  college?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  skills?: Prisma.UserUpdateskillsInput | string[]
+  interests?: Prisma.UserUpdateinterestsInput | string[]
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  GroupMemberShip?: Prisma.GroupMemberShipUncheckedUpdateManyWithoutUserNestedInput
+  Group?: Prisma.GroupUncheckedUpdateManyWithoutUserNestedInput
+  GroupMessage?: Prisma.GroupMessageUncheckedUpdateManyWithoutSenderNestedInput
+  sentMessages?: Prisma.DirectMessageUncheckedUpdateManyWithoutSenderNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutAuthorNestedInput
+  postedInternships?: Prisma.InternshipUncheckedUpdateManyWithoutPostedByNestedInput
+}
+
+export type UserCreateWithoutProjectsInput = {
+  id?: string
+  email: string
+  password: string
+  name: string
+  course?: string | null
+  semester?: number | null
+  college?: string | null
+  skills?: Prisma.UserCreateskillsInput | string[]
+  interests?: Prisma.UserCreateinterestsInput | string[]
+  bio?: string | null
+  avatarUrl?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  GroupMemberShip?: Prisma.GroupMemberShipCreateNestedManyWithoutUserInput
+  Group?: Prisma.GroupCreateNestedManyWithoutUserInput
+  GroupMessage?: Prisma.GroupMessageCreateNestedManyWithoutSenderInput
+  sentMessages?: Prisma.DirectMessageCreateNestedManyWithoutSenderInput
+  receivedMessages?: Prisma.DirectMessageCreateNestedManyWithoutReceiverInput
+  postedInternships?: Prisma.InternshipCreateNestedManyWithoutPostedByInput
+}
+
+export type UserUncheckedCreateWithoutProjectsInput = {
+  id?: string
+  email: string
+  password: string
+  name: string
+  course?: string | null
+  semester?: number | null
+  college?: string | null
+  skills?: Prisma.UserCreateskillsInput | string[]
+  interests?: Prisma.UserCreateinterestsInput | string[]
+  bio?: string | null
+  avatarUrl?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  GroupMemberShip?: Prisma.GroupMemberShipUncheckedCreateNestedManyWithoutUserInput
+  Group?: Prisma.GroupUncheckedCreateNestedManyWithoutUserInput
+  GroupMessage?: Prisma.GroupMessageUncheckedCreateNestedManyWithoutSenderInput
+  sentMessages?: Prisma.DirectMessageUncheckedCreateNestedManyWithoutSenderInput
+  receivedMessages?: Prisma.DirectMessageUncheckedCreateNestedManyWithoutReceiverInput
+  postedInternships?: Prisma.InternshipUncheckedCreateNestedManyWithoutPostedByInput
+}
+
+export type UserCreateOrConnectWithoutProjectsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutProjectsInput, Prisma.UserUncheckedCreateWithoutProjectsInput>
+}
+
+export type UserUpsertWithoutProjectsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutProjectsInput, Prisma.UserUncheckedUpdateWithoutProjectsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutProjectsInput, Prisma.UserUncheckedCreateWithoutProjectsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutProjectsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutProjectsInput, Prisma.UserUncheckedUpdateWithoutProjectsInput>
+}
+
+export type UserUpdateWithoutProjectsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  course?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  semester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  college?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  skills?: Prisma.UserUpdateskillsInput | string[]
+  interests?: Prisma.UserUpdateinterestsInput | string[]
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  GroupMemberShip?: Prisma.GroupMemberShipUpdateManyWithoutUserNestedInput
+  Group?: Prisma.GroupUpdateManyWithoutUserNestedInput
+  GroupMessage?: Prisma.GroupMessageUpdateManyWithoutSenderNestedInput
+  sentMessages?: Prisma.DirectMessageUpdateManyWithoutSenderNestedInput
+  receivedMessages?: Prisma.DirectMessageUpdateManyWithoutReceiverNestedInput
+  postedInternships?: Prisma.InternshipUpdateManyWithoutPostedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutProjectsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  course?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  semester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  college?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  skills?: Prisma.UserUpdateskillsInput | string[]
+  interests?: Prisma.UserUpdateinterestsInput | string[]
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  GroupMemberShip?: Prisma.GroupMemberShipUncheckedUpdateManyWithoutUserNestedInput
+  Group?: Prisma.GroupUncheckedUpdateManyWithoutUserNestedInput
+  GroupMessage?: Prisma.GroupMessageUncheckedUpdateManyWithoutSenderNestedInput
+  sentMessages?: Prisma.DirectMessageUncheckedUpdateManyWithoutSenderNestedInput
+  receivedMessages?: Prisma.DirectMessageUncheckedUpdateManyWithoutReceiverNestedInput
+  postedInternships?: Prisma.InternshipUncheckedUpdateManyWithoutPostedByNestedInput
+}
+
+export type UserCreateWithoutPostedInternshipsInput = {
+  id?: string
+  email: string
+  password: string
+  name: string
+  course?: string | null
+  semester?: number | null
+  college?: string | null
+  skills?: Prisma.UserCreateskillsInput | string[]
+  interests?: Prisma.UserCreateinterestsInput | string[]
+  bio?: string | null
+  avatarUrl?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  GroupMemberShip?: Prisma.GroupMemberShipCreateNestedManyWithoutUserInput
+  Group?: Prisma.GroupCreateNestedManyWithoutUserInput
+  GroupMessage?: Prisma.GroupMessageCreateNestedManyWithoutSenderInput
+  sentMessages?: Prisma.DirectMessageCreateNestedManyWithoutSenderInput
+  receivedMessages?: Prisma.DirectMessageCreateNestedManyWithoutReceiverInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutAuthorInput
+}
+
+export type UserUncheckedCreateWithoutPostedInternshipsInput = {
+  id?: string
+  email: string
+  password: string
+  name: string
+  course?: string | null
+  semester?: number | null
+  college?: string | null
+  skills?: Prisma.UserCreateskillsInput | string[]
+  interests?: Prisma.UserCreateinterestsInput | string[]
+  bio?: string | null
+  avatarUrl?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  GroupMemberShip?: Prisma.GroupMemberShipUncheckedCreateNestedManyWithoutUserInput
+  Group?: Prisma.GroupUncheckedCreateNestedManyWithoutUserInput
+  GroupMessage?: Prisma.GroupMessageUncheckedCreateNestedManyWithoutSenderInput
+  sentMessages?: Prisma.DirectMessageUncheckedCreateNestedManyWithoutSenderInput
+  receivedMessages?: Prisma.DirectMessageUncheckedCreateNestedManyWithoutReceiverInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutAuthorInput
+}
+
+export type UserCreateOrConnectWithoutPostedInternshipsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutPostedInternshipsInput, Prisma.UserUncheckedCreateWithoutPostedInternshipsInput>
+}
+
+export type UserUpsertWithoutPostedInternshipsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutPostedInternshipsInput, Prisma.UserUncheckedUpdateWithoutPostedInternshipsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutPostedInternshipsInput, Prisma.UserUncheckedCreateWithoutPostedInternshipsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutPostedInternshipsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutPostedInternshipsInput, Prisma.UserUncheckedUpdateWithoutPostedInternshipsInput>
+}
+
+export type UserUpdateWithoutPostedInternshipsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  course?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  semester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  college?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  skills?: Prisma.UserUpdateskillsInput | string[]
+  interests?: Prisma.UserUpdateinterestsInput | string[]
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  GroupMemberShip?: Prisma.GroupMemberShipUpdateManyWithoutUserNestedInput
+  Group?: Prisma.GroupUpdateManyWithoutUserNestedInput
+  GroupMessage?: Prisma.GroupMessageUpdateManyWithoutSenderNestedInput
+  sentMessages?: Prisma.DirectMessageUpdateManyWithoutSenderNestedInput
+  receivedMessages?: Prisma.DirectMessageUpdateManyWithoutReceiverNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutAuthorNestedInput
+}
+
+export type UserUncheckedUpdateWithoutPostedInternshipsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  course?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  semester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  college?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  skills?: Prisma.UserUpdateskillsInput | string[]
+  interests?: Prisma.UserUpdateinterestsInput | string[]
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  GroupMemberShip?: Prisma.GroupMemberShipUncheckedUpdateManyWithoutUserNestedInput
+  Group?: Prisma.GroupUncheckedUpdateManyWithoutUserNestedInput
+  GroupMessage?: Prisma.GroupMessageUncheckedUpdateManyWithoutSenderNestedInput
+  sentMessages?: Prisma.DirectMessageUncheckedUpdateManyWithoutSenderNestedInput
+  receivedMessages?: Prisma.DirectMessageUncheckedUpdateManyWithoutReceiverNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutAuthorNestedInput
+}
+
+
+/**
+ * Count Type UserCountOutputType
+ */
+
+export type UserCountOutputType = {
+  GroupMemberShip: number
+  Group: number
+  GroupMessage: number
+  sentMessages: number
+  receivedMessages: number
+  projects: number
+  postedInternships: number
+}
+
+export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  GroupMemberShip?: boolean | UserCountOutputTypeCountGroupMemberShipArgs
+  Group?: boolean | UserCountOutputTypeCountGroupArgs
+  GroupMessage?: boolean | UserCountOutputTypeCountGroupMessageArgs
+  sentMessages?: boolean | UserCountOutputTypeCountSentMessagesArgs
+  receivedMessages?: boolean | UserCountOutputTypeCountReceivedMessagesArgs
+  projects?: boolean | UserCountOutputTypeCountProjectsArgs
+  postedInternships?: boolean | UserCountOutputTypeCountPostedInternshipsArgs
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the UserCountOutputType
+   */
+  select?: Prisma.UserCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountGroupMemberShipArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.GroupMemberShipWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountGroupArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.GroupWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountGroupMessageArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.GroupMessageWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountSentMessagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DirectMessageWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountReceivedMessagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DirectMessageWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountProjectsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProjectWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountPostedInternshipsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.InternshipWhereInput
+}
 
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -575,6 +1538,14 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   avatarUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  GroupMemberShip?: boolean | Prisma.User$GroupMemberShipArgs<ExtArgs>
+  Group?: boolean | Prisma.User$GroupArgs<ExtArgs>
+  GroupMessage?: boolean | Prisma.User$GroupMessageArgs<ExtArgs>
+  sentMessages?: boolean | Prisma.User$sentMessagesArgs<ExtArgs>
+  receivedMessages?: boolean | Prisma.User$receivedMessagesArgs<ExtArgs>
+  projects?: boolean | Prisma.User$projectsArgs<ExtArgs>
+  postedInternships?: boolean | Prisma.User$postedInternshipsArgs<ExtArgs>
+  _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -626,10 +1597,30 @@ export type UserSelectScalar = {
 }
 
 export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "password" | "name" | "course" | "semester" | "college" | "skills" | "interests" | "bio" | "avatarUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  GroupMemberShip?: boolean | Prisma.User$GroupMemberShipArgs<ExtArgs>
+  Group?: boolean | Prisma.User$GroupArgs<ExtArgs>
+  GroupMessage?: boolean | Prisma.User$GroupMessageArgs<ExtArgs>
+  sentMessages?: boolean | Prisma.User$sentMessagesArgs<ExtArgs>
+  receivedMessages?: boolean | Prisma.User$receivedMessagesArgs<ExtArgs>
+  projects?: boolean | Prisma.User$projectsArgs<ExtArgs>
+  postedInternships?: boolean | Prisma.User$postedInternshipsArgs<ExtArgs>
+  _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
+}
+export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type UserIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
 
 export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "User"
-  objects: {}
+  objects: {
+    GroupMemberShip: Prisma.$GroupMemberShipPayload<ExtArgs>[]
+    Group: Prisma.$GroupPayload<ExtArgs>[]
+    GroupMessage: Prisma.$GroupMessagePayload<ExtArgs>[]
+    sentMessages: Prisma.$DirectMessagePayload<ExtArgs>[]
+    receivedMessages: Prisma.$DirectMessagePayload<ExtArgs>[]
+    projects: Prisma.$ProjectPayload<ExtArgs>[]
+    postedInternships: Prisma.$InternshipPayload<ExtArgs>[]
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     email: string
@@ -1038,6 +2029,13 @@ readonly fields: UserFieldRefs;
  */
 export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  GroupMemberShip<T extends Prisma.User$GroupMemberShipArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$GroupMemberShipArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GroupMemberShipPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  Group<T extends Prisma.User$GroupArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$GroupArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GroupPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  GroupMessage<T extends Prisma.User$GroupMessageArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$GroupMessageArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GroupMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  sentMessages<T extends Prisma.User$sentMessagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$sentMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DirectMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  receivedMessages<T extends Prisma.User$receivedMessagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$receivedMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DirectMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  projects<T extends Prisma.User$projectsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$projectsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  postedInternships<T extends Prisma.User$postedInternshipsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$postedInternshipsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InternshipPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1097,6 +2095,10 @@ export type UserFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.Internal
    */
   omit?: Prisma.UserOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  /**
    * Filter, which User to fetch.
    */
   where: Prisma.UserWhereUniqueInput
@@ -1115,6 +2117,10 @@ export type UserFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extensions.I
    */
   omit?: Prisma.UserOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  /**
    * Filter, which User to fetch.
    */
   where: Prisma.UserWhereUniqueInput
@@ -1132,6 +2138,10 @@ export type UserFindFirstArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    * Omit specific fields from the User
    */
   omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
   /**
    * Filter, which User to fetch.
    */
@@ -1181,6 +2191,10 @@ export type UserFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions.In
    */
   omit?: Prisma.UserOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  /**
    * Filter, which User to fetch.
    */
   where?: Prisma.UserWhereInput
@@ -1229,6 +2243,10 @@ export type UserFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
    */
   omit?: Prisma.UserOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  /**
    * Filter, which Users to fetch.
    */
   where?: Prisma.UserWhereInput
@@ -1271,6 +2289,10 @@ export type UserCreateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    * Omit specific fields from the User
    */
   omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
   /**
    * The data needed to create a User.
    */
@@ -1319,6 +2341,10 @@ export type UserUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    * Omit specific fields from the User
    */
   omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
   /**
    * The data needed to update a User.
    */
@@ -1386,6 +2412,10 @@ export type UserUpsertArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    */
   omit?: Prisma.UserOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  /**
    * The filter to search for the User to update in case it exists.
    */
   where: Prisma.UserWhereUniqueInput
@@ -1412,6 +2442,10 @@ export type UserDeleteArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    */
   omit?: Prisma.UserOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  /**
    * Filter which User to delete.
    */
   where: Prisma.UserWhereUniqueInput
@@ -1432,6 +2466,174 @@ export type UserDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
 }
 
 /**
+ * User.GroupMemberShip
+ */
+export type User$GroupMemberShipArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the GroupMemberShip
+   */
+  select?: Prisma.GroupMemberShipSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the GroupMemberShip
+   */
+  omit?: Prisma.GroupMemberShipOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.GroupMemberShipInclude<ExtArgs> | null
+  where?: Prisma.GroupMemberShipWhereInput
+  orderBy?: Prisma.GroupMemberShipOrderByWithRelationInput | Prisma.GroupMemberShipOrderByWithRelationInput[]
+  cursor?: Prisma.GroupMemberShipWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.GroupMemberShipScalarFieldEnum | Prisma.GroupMemberShipScalarFieldEnum[]
+}
+
+/**
+ * User.Group
+ */
+export type User$GroupArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Group
+   */
+  select?: Prisma.GroupSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Group
+   */
+  omit?: Prisma.GroupOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.GroupInclude<ExtArgs> | null
+  where?: Prisma.GroupWhereInput
+  orderBy?: Prisma.GroupOrderByWithRelationInput | Prisma.GroupOrderByWithRelationInput[]
+  cursor?: Prisma.GroupWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.GroupScalarFieldEnum | Prisma.GroupScalarFieldEnum[]
+}
+
+/**
+ * User.GroupMessage
+ */
+export type User$GroupMessageArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the GroupMessage
+   */
+  select?: Prisma.GroupMessageSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the GroupMessage
+   */
+  omit?: Prisma.GroupMessageOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.GroupMessageInclude<ExtArgs> | null
+  where?: Prisma.GroupMessageWhereInput
+  orderBy?: Prisma.GroupMessageOrderByWithRelationInput | Prisma.GroupMessageOrderByWithRelationInput[]
+  cursor?: Prisma.GroupMessageWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.GroupMessageScalarFieldEnum | Prisma.GroupMessageScalarFieldEnum[]
+}
+
+/**
+ * User.sentMessages
+ */
+export type User$sentMessagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DirectMessage
+   */
+  select?: Prisma.DirectMessageSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DirectMessage
+   */
+  omit?: Prisma.DirectMessageOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DirectMessageInclude<ExtArgs> | null
+  where?: Prisma.DirectMessageWhereInput
+  orderBy?: Prisma.DirectMessageOrderByWithRelationInput | Prisma.DirectMessageOrderByWithRelationInput[]
+  cursor?: Prisma.DirectMessageWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DirectMessageScalarFieldEnum | Prisma.DirectMessageScalarFieldEnum[]
+}
+
+/**
+ * User.receivedMessages
+ */
+export type User$receivedMessagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DirectMessage
+   */
+  select?: Prisma.DirectMessageSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DirectMessage
+   */
+  omit?: Prisma.DirectMessageOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DirectMessageInclude<ExtArgs> | null
+  where?: Prisma.DirectMessageWhereInput
+  orderBy?: Prisma.DirectMessageOrderByWithRelationInput | Prisma.DirectMessageOrderByWithRelationInput[]
+  cursor?: Prisma.DirectMessageWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DirectMessageScalarFieldEnum | Prisma.DirectMessageScalarFieldEnum[]
+}
+
+/**
+ * User.projects
+ */
+export type User$projectsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Project
+   */
+  select?: Prisma.ProjectSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Project
+   */
+  omit?: Prisma.ProjectOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProjectInclude<ExtArgs> | null
+  where?: Prisma.ProjectWhereInput
+  orderBy?: Prisma.ProjectOrderByWithRelationInput | Prisma.ProjectOrderByWithRelationInput[]
+  cursor?: Prisma.ProjectWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProjectScalarFieldEnum | Prisma.ProjectScalarFieldEnum[]
+}
+
+/**
+ * User.postedInternships
+ */
+export type User$postedInternshipsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Internship
+   */
+  select?: Prisma.InternshipSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Internship
+   */
+  omit?: Prisma.InternshipOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InternshipInclude<ExtArgs> | null
+  where?: Prisma.InternshipWhereInput
+  orderBy?: Prisma.InternshipOrderByWithRelationInput | Prisma.InternshipOrderByWithRelationInput[]
+  cursor?: Prisma.InternshipWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.InternshipScalarFieldEnum | Prisma.InternshipScalarFieldEnum[]
+}
+
+/**
  * User without action
  */
 export type UserDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1443,4 +2645,8 @@ export type UserDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
    * Omit specific fields from the User
    */
   omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
 }

@@ -20,7 +20,7 @@ const config: runtime.GetPrismaClientConfig = {
   "clientVersion": "7.2.0",
   "engineVersion": "0c8ef2ce45c83248ab3df073180d5eda9e8be7a3",
   "activeProvider": "postgresql",
-  "inlineSchema": "generator client {\n  provider = \"prisma-client\"\n  output   = \"./generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\nmodel User {\n  id        String   @id @default(cuid())\n  email     String   @unique\n  password  String\n  name      String\n  course    String?\n  semester  Int?\n  college   String?\n  skills    String[] @default([])\n  interests String[] @default([])\n  bio       String?\n  avatarUrl String?\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n}\n",
+  "inlineSchema": "generator client {\n  provider = \"prisma-client\"\n  output   = \"./generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\nenum GroupRole {\n  MEMBER\n  ADMIN\n}\n\nenum ChannelType {\n  TEXT\n  ANNOUNCEMENT\n}\n\nmodel User {\n  id                String            @id @default(cuid())\n  email             String            @unique\n  password          String\n  name              String\n  course            String?\n  semester          Int?\n  college           String?\n  skills            String[]          @default([])\n  interests         String[]          @default([])\n  bio               String?\n  avatarUrl         String?\n  createdAt         DateTime          @default(now())\n  updatedAt         DateTime          @updatedAt\n  GroupMemberShip   GroupMemberShip[]\n  Group             Group[]\n  GroupMessage      GroupMessage[]\n  sentMessages      DirectMessage[]   @relation(\"SentMessages\")\n  receivedMessages  DirectMessage[]   @relation(\"ReceivedMessages\")\n  projects          Project[]\n  postedInternships Internship[]\n}\n\nmodel Group {\n  id              String            @id @default(cuid())\n  name            String            @unique\n  description     String\n  interests       String[]\n  adminId         String\n  groupIconUrl    String?\n  user            User              @relation(fields: [adminId], references: [id])\n  GroupMemberShip GroupMemberShip[]\n  Channel         Channel[]\n  createdAt       DateTime          @default(now())\n}\n\nmodel GroupMemberShip {\n  id       String    @id @default(cuid())\n  user     User      @relation(fields: [userId], references: [id])\n  userId   String\n  group    Group     @relation(fields: [groupId], references: [id])\n  groupId  String\n  role     GroupRole @default(MEMBER)\n  joinedAt DateTime  @default(now())\n\n  @@unique([userId, groupId])\n}\n\nmodel Channel {\n  id           String         @id @default(cuid())\n  name         String         @unique\n  type         ChannelType    @default(TEXT)\n  position     Int\n  group        Group          @relation(fields: [groupId], references: [id])\n  groupId      String\n  createdAt    DateTime       @default(now())\n  GroupMessage GroupMessage[]\n}\n\nmodel GroupMessage {\n  id       String @id @default(cuid())\n  content  String\n  sender   User   @relation(fields: [senderId], references: [id])\n  senderId String\n\n  channel   Channel @relation(fields: [channelId], references: [id])\n  channelId String\n}\n\nmodel DirectMessage {\n  id         String   @id @default(cuid())\n  content    String\n  sender     User     @relation(\"SentMessages\", fields: [senderId], references: [id])\n  senderId   String\n  receiver   User     @relation(\"ReceivedMessages\", fields: [receiverId], references: [id])\n  receiverId String\n  createdAt  DateTime @default(now())\n}\n\nmodel Project {\n  id          String   @id @default(cuid())\n  title       String\n  description String\n  tags        String[]\n  githubUrl   String?\n  demoUrl     String?\n  author      User     @relation(fields: [authorId], references: [id])\n  authorId    String\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n}\n\nmodel Internship {\n  id          String   @id @default(cuid())\n  company     String\n  role        String\n  description String\n  location    String\n  type        String // Remote, On-site, Hybrid\n  applyUrl    String\n  postedBy    User     @relation(fields: [postedById], references: [id])\n  postedById  String\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n}\n",
   "runtimeDataModel": {
     "models": {},
     "enums": {},
@@ -28,7 +28,7 @@ const config: runtime.GetPrismaClientConfig = {
   }
 }
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"course\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"semester\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"college\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"skills\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"interests\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"bio\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"avatarUrl\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"course\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"semester\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"college\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"skills\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"interests\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"bio\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"avatarUrl\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"GroupMemberShip\",\"kind\":\"object\",\"type\":\"GroupMemberShip\",\"relationName\":\"GroupMemberShipToUser\"},{\"name\":\"Group\",\"kind\":\"object\",\"type\":\"Group\",\"relationName\":\"GroupToUser\"},{\"name\":\"GroupMessage\",\"kind\":\"object\",\"type\":\"GroupMessage\",\"relationName\":\"GroupMessageToUser\"},{\"name\":\"sentMessages\",\"kind\":\"object\",\"type\":\"DirectMessage\",\"relationName\":\"SentMessages\"},{\"name\":\"receivedMessages\",\"kind\":\"object\",\"type\":\"DirectMessage\",\"relationName\":\"ReceivedMessages\"},{\"name\":\"projects\",\"kind\":\"object\",\"type\":\"Project\",\"relationName\":\"ProjectToUser\"},{\"name\":\"postedInternships\",\"kind\":\"object\",\"type\":\"Internship\",\"relationName\":\"InternshipToUser\"}],\"dbName\":null},\"Group\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"interests\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"adminId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"groupIconUrl\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"GroupToUser\"},{\"name\":\"GroupMemberShip\",\"kind\":\"object\",\"type\":\"GroupMemberShip\",\"relationName\":\"GroupToGroupMemberShip\"},{\"name\":\"Channel\",\"kind\":\"object\",\"type\":\"Channel\",\"relationName\":\"ChannelToGroup\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"GroupMemberShip\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"GroupMemberShipToUser\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"group\",\"kind\":\"object\",\"type\":\"Group\",\"relationName\":\"GroupToGroupMemberShip\"},{\"name\":\"groupId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"role\",\"kind\":\"enum\",\"type\":\"GroupRole\"},{\"name\":\"joinedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"Channel\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"type\",\"kind\":\"enum\",\"type\":\"ChannelType\"},{\"name\":\"position\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"group\",\"kind\":\"object\",\"type\":\"Group\",\"relationName\":\"ChannelToGroup\"},{\"name\":\"groupId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"GroupMessage\",\"kind\":\"object\",\"type\":\"GroupMessage\",\"relationName\":\"ChannelToGroupMessage\"}],\"dbName\":null},\"GroupMessage\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"content\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"sender\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"GroupMessageToUser\"},{\"name\":\"senderId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"channel\",\"kind\":\"object\",\"type\":\"Channel\",\"relationName\":\"ChannelToGroupMessage\"},{\"name\":\"channelId\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":null},\"DirectMessage\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"content\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"sender\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"SentMessages\"},{\"name\":\"senderId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"receiver\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"ReceivedMessages\"},{\"name\":\"receiverId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"Project\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"tags\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"githubUrl\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"demoUrl\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"author\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"ProjectToUser\"},{\"name\":\"authorId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"Internship\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"company\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"role\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"location\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"type\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"applyUrl\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"postedBy\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"InternshipToUser\"},{\"name\":\"postedById\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
 
 async function decodeBase64AsWasm(wasmBase64: string): Promise<WebAssembly.Module> {
   const { Buffer } = await import('node:buffer')
@@ -183,6 +183,76 @@ export interface PrismaClient<
     * ```
     */
   get user(): Prisma.UserDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.group`: Exposes CRUD operations for the **Group** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Groups
+    * const groups = await prisma.group.findMany()
+    * ```
+    */
+  get group(): Prisma.GroupDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.groupMemberShip`: Exposes CRUD operations for the **GroupMemberShip** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more GroupMemberShips
+    * const groupMemberShips = await prisma.groupMemberShip.findMany()
+    * ```
+    */
+  get groupMemberShip(): Prisma.GroupMemberShipDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.channel`: Exposes CRUD operations for the **Channel** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Channels
+    * const channels = await prisma.channel.findMany()
+    * ```
+    */
+  get channel(): Prisma.ChannelDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.groupMessage`: Exposes CRUD operations for the **GroupMessage** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more GroupMessages
+    * const groupMessages = await prisma.groupMessage.findMany()
+    * ```
+    */
+  get groupMessage(): Prisma.GroupMessageDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.directMessage`: Exposes CRUD operations for the **DirectMessage** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more DirectMessages
+    * const directMessages = await prisma.directMessage.findMany()
+    * ```
+    */
+  get directMessage(): Prisma.DirectMessageDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.project`: Exposes CRUD operations for the **Project** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Projects
+    * const projects = await prisma.project.findMany()
+    * ```
+    */
+  get project(): Prisma.ProjectDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.internship`: Exposes CRUD operations for the **Internship** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Internships
+    * const internships = await prisma.internship.findMany()
+    * ```
+    */
+  get internship(): Prisma.InternshipDelegate<ExtArgs, { omit: OmitOpts }>;
 }
 
 export function getPrismaClientClass(): PrismaClientConstructor {

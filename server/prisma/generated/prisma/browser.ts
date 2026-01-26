@@ -22,3 +22,38 @@ export * from './enums.ts';
  * 
  */
 export type User = Prisma.UserModel
+/**
+ * Model Group
+ * 
+ */
+export type Group = Prisma.GroupModel
+/**
+ * Model GroupMemberShip
+ * 
+ */
+export type GroupMemberShip = Prisma.GroupMemberShipModel
+/**
+ * Model Channel
+ * 
+ */
+export type Channel = Prisma.ChannelModel
+/**
+ * Model GroupMessage
+ * 
+ */
+export type GroupMessage = Prisma.GroupMessageModel
+/**
+ * Model DirectMessage
+ * 
+ */
+export type DirectMessage = Prisma.DirectMessageModel
+/**
+ * Model Project
+ * 
+ */
+export type Project = Prisma.ProjectModel
+/**
+ * Model Internship
+ * 
+ */
+export type Internship = Prisma.InternshipModel

@@ -6,19 +6,33 @@ import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
+import { useAuth } from "@/context/AuthContext";
+
 export default function RegisterPage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const { register } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
     
-    setTimeout(() => {
+    try {
+      await register({
+        name: `${data.firstName} ${data.lastName}`,
+        email: data.email,
+        password: data.password
+      });
       toast.success("Account created successfully!");
       navigate("/dashboard");
+    } catch (error) {
+      toast.error(error.message || "Failed to create account");
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -34,20 +48,20 @@ export default function RegisterPage() {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="firstName">First name</Label>
-              <Input id="firstName" placeholder="John" required />
+              <Input id="firstName" name="firstName" placeholder="John" required />
             </div>
             <div className="space-y-2">
               <Label htmlFor="lastName">Last name</Label>
-              <Input id="lastName" placeholder="Doe" required />
+              <Input id="lastName" name="lastName" placeholder="Doe" required />
             </div>
           </div>
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="m@example.com" required />
+            <Input id="email" name="email" type="email" placeholder="m@example.com" required />
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" required />
+            <Input id="password" name="password" type="password" required />
           </div>
         </CardContent>
         <CardFooter className="flex flex-col gap-4">

@@ -51,7 +51,14 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
-  User: 'User'
+  User: 'User',
+  Group: 'Group',
+  GroupMemberShip: 'GroupMemberShip',
+  Channel: 'Channel',
+  GroupMessage: 'GroupMessage',
+  DirectMessage: 'DirectMessage',
+  Project: 'Project',
+  Internship: 'Internship'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -87,6 +94,94 @@ export const UserScalarFieldEnum = {
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const GroupScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  interests: 'interests',
+  adminId: 'adminId',
+  groupIconUrl: 'groupIconUrl',
+  createdAt: 'createdAt'
+} as const
+
+export type GroupScalarFieldEnum = (typeof GroupScalarFieldEnum)[keyof typeof GroupScalarFieldEnum]
+
+
+export const GroupMemberShipScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  groupId: 'groupId',
+  role: 'role',
+  joinedAt: 'joinedAt'
+} as const
+
+export type GroupMemberShipScalarFieldEnum = (typeof GroupMemberShipScalarFieldEnum)[keyof typeof GroupMemberShipScalarFieldEnum]
+
+
+export const ChannelScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  type: 'type',
+  position: 'position',
+  groupId: 'groupId',
+  createdAt: 'createdAt'
+} as const
+
+export type ChannelScalarFieldEnum = (typeof ChannelScalarFieldEnum)[keyof typeof ChannelScalarFieldEnum]
+
+
+export const GroupMessageScalarFieldEnum = {
+  id: 'id',
+  content: 'content',
+  senderId: 'senderId',
+  channelId: 'channelId'
+} as const
+
+export type GroupMessageScalarFieldEnum = (typeof GroupMessageScalarFieldEnum)[keyof typeof GroupMessageScalarFieldEnum]
+
+
+export const DirectMessageScalarFieldEnum = {
+  id: 'id',
+  content: 'content',
+  senderId: 'senderId',
+  receiverId: 'receiverId',
+  createdAt: 'createdAt'
+} as const
+
+export type DirectMessageScalarFieldEnum = (typeof DirectMessageScalarFieldEnum)[keyof typeof DirectMessageScalarFieldEnum]
+
+
+export const ProjectScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  description: 'description',
+  tags: 'tags',
+  githubUrl: 'githubUrl',
+  demoUrl: 'demoUrl',
+  authorId: 'authorId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProjectScalarFieldEnum = (typeof ProjectScalarFieldEnum)[keyof typeof ProjectScalarFieldEnum]
+
+
+export const InternshipScalarFieldEnum = {
+  id: 'id',
+  company: 'company',
+  role: 'role',
+  description: 'description',
+  location: 'location',
+  type: 'type',
+  applyUrl: 'applyUrl',
+  postedById: 'postedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InternshipScalarFieldEnum = (typeof InternshipScalarFieldEnum)[keyof typeof InternshipScalarFieldEnum]
 
 
 export const SortOrder = {

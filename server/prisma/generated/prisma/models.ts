@@ -9,4 +9,11 @@
  * 🟢 You can import this file directly.
  */
 export type * from './models/User.ts'
+export type * from './models/Group.ts'
+export type * from './models/GroupMemberShip.ts'
+export type * from './models/Channel.ts'
+export type * from './models/GroupMessage.ts'
+export type * from './models/DirectMessage.ts'
+export type * from './models/Project.ts'
+export type * from './models/Internship.ts'
 export type * from './commonInputTypes.ts'
