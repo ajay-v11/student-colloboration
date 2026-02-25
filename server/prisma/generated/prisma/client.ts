@@ -75,7 +75,17 @@ export type DirectMessage = Prisma.DirectMessageModel
  */
 export type Project = Prisma.ProjectModel
 /**
+ * Model ProjectResource
+ * 
+ */
+export type ProjectResource = Prisma.ProjectResourceModel
+/**
  * Model Internship
  * 
  */
 export type Internship = Prisma.InternshipModel
+/**
+ * Model Notification
+ * 
+ */
+export type Notification = Prisma.NotificationModel

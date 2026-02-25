@@ -1,22 +1,67 @@
 import { useAuth } from "@/context/AuthContext";
+import { useNotifications } from "@/context/NotificationContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { 
-  CalendarDays, 
-  Clock, 
   MoreHorizontal, 
   Plus, 
-  Search,
   Sparkles,
   ArrowUpRight,
   Zap,
-  Users
+  Users,
+  Loader2,
+  MessageCircle,
+  Bell
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect, useMemo } from "react";
+import { api } from "@/lib/api";
 
 export default function DashboardPage() {
   const { user } = useAuth();
+  const { notifications, unreadCount } = useNotifications();
+  const navigate = useNavigate();
+  const [suggestions, setSuggestions] = useState([]);
+  const [suggestionsLoading, setSuggestionsLoading] = useState(true);
+  const [showBriefing, setShowBriefing] = useState(true);
+
+  // Compute notification stats for briefing
+  const notificationStats = useMemo(() => {
+    const unreadNotifications = notifications.filter(n => !n.read);
+    const dmCount = unreadNotifications.filter(n => n.type === 'DM_MESSAGE').length;
+    const groupCount = unreadNotifications.filter(n => 
+      n.type === 'GROUP_MESSAGE' || n.type === 'GROUP_JOIN' || n.type === 'GROUP_INVITE'
+    ).length;
+    
+    // Get unique groups from notifications
+    const groupNames = [...new Set(
+      unreadNotifications
+        .filter(n => n.group?.name)
+        .map(n => n.group.name)
+    )].slice(0, 2);
+
+    return { dmCount, groupCount, groupNames, total: unreadCount };
+  }, [notifications, unreadCount]);
+
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      try {
+        setSuggestionsLoading(true);
+        const data = await api.get('/users/suggestions');
+        setSuggestions(data);
+      } catch (error) {
+        console.error('Failed to fetch suggestions:', error);
+      } finally {
+        setSuggestionsLoading(false);
+      }
+    };
+    fetchSuggestions();
+  }, []);
+
+  const handleConnectClick = (person) => {
+    navigate(`/messages/${person.id}`, { state: { selectedUser: person } });
+  };
 
   const exploreFeed = [
     {
@@ -69,39 +114,84 @@ export default function DashboardPage() {
           </div>
 
           {/* Active Context Card (Personalized Briefing) */}
-          <div className="glass rounded-[2rem] p-8 border border-white/40 shadow-xl relative overflow-hidden group">
-             {/* Background decoration */}
-             <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-gradient-to-br from-primary/10 to-transparent rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
-             
-             <div className="relative z-10 flex flex-col md:flex-row gap-8 items-start md:items-center justify-between">
-                <div className="space-y-4 max-w-lg">
-                   <div className="flex items-center gap-2 text-primary font-medium text-sm uppercase tracking-wider">
-                     <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse" />
-                     Morning Briefing
-                   </div>
-                   <h2 className="text-3xl font-serif font-bold leading-tight">
-                     You have <span className="text-primary">5 unread messages</span> <br/> from 2 project groups.
-                   </h2>
-                   <div className="flex items-center gap-4 text-muted-foreground">
-                      <span className="flex items-center gap-2 bg-white/40 px-3 py-1 rounded-full text-xs border border-white/20">
-                        <Users className="w-3 h-3" /> React Developers
-                      </span>
-                      <span className="flex items-center gap-2 bg-white/40 px-3 py-1 rounded-full text-xs border border-white/20">
-                        <Sparkles className="w-3 h-3" /> AI Research
-                      </span>
-                   </div>
-                </div>
-                
-                <div className="flex flex-col gap-3 w-full md:w-auto">
-                   <Button size="lg" className="rounded-2xl h-14 text-lg px-8 shadow-xl shadow-primary/20 hover:scale-105 transition-transform">
-                     Check Inbox <ArrowUpRight className="ml-2 w-5 h-5" />
-                   </Button>
-                   <Button variant="ghost" className="rounded-2xl h-12 hover:bg-white/40 text-muted-foreground hover:text-foreground">
-                     Dismiss
-                   </Button>
-                </div>
-             </div>
-          </div>
+          {showBriefing && notificationStats.total > 0 ? (
+            <div className="glass rounded-[2rem] p-8 border border-white/40 shadow-xl relative overflow-hidden group">
+               {/* Background decoration */}
+               <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-gradient-to-br from-primary/10 to-transparent rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
+               
+               <div className="relative z-10 flex flex-col md:flex-row gap-8 items-start md:items-center justify-between">
+                  <div className="space-y-4 max-w-lg">
+                     <div className="flex items-center gap-2 text-primary font-medium text-sm uppercase tracking-wider">
+                       <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse" />
+                       {new Date().getHours() < 12 ? 'Morning' : new Date().getHours() < 17 ? 'Afternoon' : 'Evening'} Briefing
+                     </div>
+                     <h2 className="text-3xl font-serif font-bold leading-tight">
+                       You have <span className="text-primary">{notificationStats.total} unread notification{notificationStats.total !== 1 ? 's' : ''}</span>
+                       {notificationStats.dmCount > 0 && notificationStats.groupCount > 0 ? (
+                         <><br/>including {notificationStats.dmCount} message{notificationStats.dmCount !== 1 ? 's' : ''} and {notificationStats.groupCount} group update{notificationStats.groupCount !== 1 ? 's' : ''}.</>
+                       ) : notificationStats.dmCount > 0 ? (
+                         <><br/>from direct messages.</>
+                       ) : notificationStats.groupCount > 0 ? (
+                         <><br/>from your groups.</>
+                       ) : null}
+                     </h2>
+                     {notificationStats.groupNames.length > 0 && (
+                       <div className="flex items-center gap-4 text-muted-foreground flex-wrap">
+                         {notificationStats.groupNames.map((name, i) => (
+                           <span key={i} className="flex items-center gap-2 bg-white/40 px-3 py-1 rounded-full text-xs border border-white/20">
+                             <Users className="w-3 h-3" /> {name}
+                           </span>
+                         ))}
+                       </div>
+                     )}
+                  </div>
+                  
+                  <div className="flex flex-col gap-3 w-full md:w-auto">
+                     <Button 
+                       size="lg" 
+                       className="rounded-2xl h-14 text-lg px-8 shadow-xl shadow-primary/20 hover:scale-105 transition-transform"
+                       onClick={() => navigate('/messages')}
+                     >
+                       Check Inbox <ArrowUpRight className="ml-2 w-5 h-5" />
+                     </Button>
+                     <Button 
+                       variant="ghost" 
+                       className="rounded-2xl h-12 hover:bg-white/40 text-muted-foreground hover:text-foreground"
+                       onClick={() => setShowBriefing(false)}
+                     >
+                       Dismiss
+                     </Button>
+                  </div>
+               </div>
+            </div>
+          ) : showBriefing ? (
+            <div className="glass rounded-[2rem] p-8 border border-white/40 shadow-xl relative overflow-hidden">
+               <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-gradient-to-br from-emerald-500/10 to-transparent rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
+               <div className="relative z-10 flex flex-col md:flex-row gap-8 items-start md:items-center justify-between">
+                  <div className="space-y-4 max-w-lg">
+                     <div className="flex items-center gap-2 text-emerald-600 font-medium text-sm uppercase tracking-wider">
+                       <span className="flex h-2 w-2 rounded-full bg-emerald-500" />
+                       All Caught Up
+                     </div>
+                     <h2 className="text-3xl font-serif font-bold leading-tight">
+                       You're all caught up! <span className="text-emerald-600">No new notifications.</span>
+                     </h2>
+                     <p className="text-muted-foreground">
+                       Take some time to explore new groups or connect with classmates.
+                     </p>
+                  </div>
+                  <div className="flex flex-col gap-3 w-full md:w-auto">
+                     <Button 
+                       size="lg" 
+                       className="rounded-2xl h-14 text-lg px-8 shadow-xl shadow-primary/20 hover:scale-105 transition-transform"
+                       onClick={() => navigate('/groups')}
+                     >
+                       Explore Groups <ArrowUpRight className="ml-2 w-5 h-5" />
+                     </Button>
+                  </div>
+               </div>
+            </div>
+          ) : null}
         </section>
 
         {/* Explore / Masonry Feed */}
@@ -171,32 +261,40 @@ export default function DashboardPage() {
            </div>
            
            <div className="space-y-4">
-             {[
-                 { name: "Sarah Chen", role: "UX Designer", mutuals: 12, img: "https://i.pravatar.cc/150?u=sarah" },
-                 { name: "David Kim", role: "React Developer", mutuals: 8, img: "https://i.pravatar.cc/150?u=david" },
-                 { name: "Emily Watson", role: "Product Manager", mutuals: 5, img: "https://i.pravatar.cc/150?u=emily" },
-                 { name: "Michael Ross", role: "Data Scientist", mutuals: 15, img: "https://i.pravatar.cc/150?u=michael" }
-             ].map((person, i) => (
-               <div key={i} className="flex items-center justify-between group p-2 rounded-2xl hover:bg-white/40 transition-colors cursor-pointer">
-                 <div className="flex items-center gap-3">
-                    <div className="relative">
-                        <Avatar className="w-10 h-10 border border-white/50">
-                            <AvatarImage src={person.img} />
-                            <AvatarFallback>{person.name[0]}</AvatarFallback>
-                        </Avatar>
-                        <div className="absolute -bottom-1 -right-1 bg-green-500 w-3 h-3 rounded-full border-2 border-white"></div>
-                    </div>
-                    <div>
-                        <h4 className="font-bold text-sm leading-none">{person.name}</h4>
-                        <p className="text-xs text-muted-foreground mt-1">{person.role}</p>
-                    </div>
-                 </div>
-                 <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full hover:bg-primary/10 hover:text-primary">
-                    <Plus className="w-4 h-4" />
-                 </Button>
-               </div>
-             ))}
-           </div>
+                         {suggestionsLoading ? (
+                           <div className="flex items-center justify-center py-8">
+                             <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                           </div>
+                         ) : suggestions.length === 0 ? (
+                           <p className="text-center text-muted-foreground text-sm py-4">No suggestions available</p>
+                         ) : (
+                           suggestions.slice(0, 4).map((person) => (
+                             <div key={person.id} className="flex items-center justify-between group p-2 rounded-2xl hover:bg-white/40 transition-colors cursor-pointer">
+                               <div className="flex items-center gap-3">
+                                  <div className="relative">
+                                      <Avatar className="w-10 h-10 border border-white/50">
+                                          <AvatarImage src={person.avatarUrl} />
+                                          <AvatarFallback>{person.name[0]}</AvatarFallback>
+                                      </Avatar>
+                                      <div className="absolute -bottom-1 -right-1 bg-green-500 w-3 h-3 rounded-full border-2 border-white"></div>
+                                  </div>
+                                  <div>
+                                      <h4 className="font-bold text-sm leading-none">{person.name}</h4>
+                                      <p className="text-xs text-muted-foreground mt-1">{person.email}</p>
+                                  </div>
+                               </div>
+                               <Button 
+                                 size="icon" 
+                                 variant="ghost" 
+                                 className="h-8 w-8 rounded-full hover:bg-primary/10 hover:text-primary"
+                                 onClick={() => handleConnectClick(person)}
+                               >
+                                  <Plus className="w-4 h-4" />
+                               </Button>
+                             </div>
+                           ))
+                         )}
+                       </div>
            
            <Button variant="outline" className="w-full mt-6 rounded-xl glass border-dashed hover:border-solid text-xs h-10">
              View All Suggestions

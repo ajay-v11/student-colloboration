@@ -1,7 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Bell, ChevronRight, Home, LogOut, User } from "lucide-react";
+import { ChevronRight, Home, LogOut, User } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import {
   DropdownMenu,
@@ -11,6 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import NotificationDropdown from "@/components/NotificationDropdown";
 
 export function Navbar() {
   const location = useLocation();
@@ -88,14 +88,7 @@ export function Navbar() {
 
       {/* Right Side Actions */}
       <div className="flex items-center gap-3 md:gap-4 ml-auto">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="relative rounded-full hover:bg-white/50 transition-colors h-10 w-10"
-        >
-          <Bell className="h-5 w-5 text-muted-foreground" />
-          <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-destructive ring-2 ring-white"></span>
-        </Button>
+        <NotificationDropdown />
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

@@ -1,27 +1,30 @@
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Search, Plus, Sparkles, Filter, Users, Zap, Hash, Layers, Loader2 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Search, Plus, Sparkles, Filter, Zap, Hash, Layers, Loader2, Users } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import { toast } from "react-hot-toast";
 
 export default function GroupsPage() {
+  const navigate = useNavigate();
   const [joinedGroups, setJoinedGroups] = useState([]);
   const [discoverGroups, setDiscoverGroups] = useState([]);
+  const [allGroups, setAllGroups] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [creating, setCreating] = useState(false);
   const [formName, setFormName] = useState("");
   const [formDescription, setFormDescription] = useState("");
   const [formInterests, setFormInterests] = useState("");
+  const [selectedGroup, setSelectedGroup] = useState(null);
+  const [joining, setJoining] = useState(false);
+  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     fetchGroups();
@@ -32,10 +35,17 @@ export default function GroupsPage() {
       setLoading(true);
       const [myGroupsRes, discoverRes] = await Promise.all([
         api.get("/groups/my-groups"),
-        api.get("/groups/discover")
+        api.get("/groups/discover"),
       ]);
       setJoinedGroups(myGroupsRes);
       setDiscoverGroups(discoverRes);
+
+      // Combine for "All Circles" view
+      const combined = [
+        ...myGroupsRes.map((g) => ({ ...g, isJoined: true })),
+        ...discoverRes.map((g) => ({ ...g, isJoined: false })),
+      ];
+      setAllGroups(combined);
     } catch (error) {
       console.error("Failed to fetch groups", error);
       toast.error("Failed to load groups");
@@ -44,13 +54,33 @@ export default function GroupsPage() {
     }
   };
 
-  const handleJoinGroup = async (groupId) => {
+  // Derived lists for display
+  // Trending = Newest (Latest)
+  const trendingGroups = [...allGroups]
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    .slice(0, 3);
+
+  // All Circles = Popularity (Member Count)
+  const allCirclesGroups = [...allGroups].sort(
+    (a, b) =>
+      (b._count?.GroupMemberShip || 0) - (a._count?.GroupMemberShip || 0),
+  );
+
+  const handleJoinGroup = async (groupId, shouldNavigate = false) => {
     try {
+      setJoining(true);
       await api.post(`/groups/${groupId}/join`);
       toast.success("Joined group successfully!");
-      fetchGroups();
+      if (shouldNavigate) {
+        navigate(`/groups/${groupId}`);
+      } else {
+        fetchGroups();
+      }
+      setSelectedGroup(null);
     } catch (error) {
       toast.error(error.message || "Failed to join group");
+    } finally {
+      setJoining(false);
     }
   };
 
@@ -125,106 +155,205 @@ export default function GroupsPage() {
         </TabsList>
 
         <TabsContent value="discover" className="space-y-8 mt-8">
-            {/* Search Bar */}
-            <div className="relative group max-w-2xl">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <Search className="h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                </div>
-                <Input 
-                    type="text" 
-                    placeholder="Search for 'Machine Learning', 'Calculus', 'Design'..." 
-                    className="pl-11 h-14 rounded-2xl border-white/40 bg-white/60 backdrop-blur-md shadow-sm text-lg focus-visible:ring-primary/20 transition-all hover:bg-white/80 focus:bg-white/90" 
-                />
+          {/* Search Bar */}
+          <div className="relative group max-w-2xl">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <Search className="h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
             </div>
+            <Input
+              type="text"
+              placeholder="Search for 'Machine Learning', 'Calculus', 'Design'..."
+              className="pl-11 h-14 rounded-2xl border-white/40 bg-white/60 backdrop-blur-md shadow-sm text-lg focus-visible:ring-primary/20 transition-all hover:bg-white/80 focus:bg-white/90"
+            />
+          </div>
 
-            {loading ? (
-                <div className="text-center py-10">Loading groups...</div>
-            ) : (
-                <>
-                {/* Featured / Trending Section */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="col-span-1 md:col-span-3">
-                        <h2 className="text-xl font-bold font-serif mb-4 flex items-center gap-2">
-                        <Zap className="h-5 w-5 text-yellow-500 fill-yellow-500" /> Trending Now
-                        </h2>
-                    </div>
-                    {discoverGroups.slice(0, 3).map((group) => (
-                        <div key={group.id} className="group relative cursor-pointer">
-                            <Link to={`/groups/${group.id}`} className="absolute inset-0 z-10" />
-                            <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent rounded-[2rem] blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                            <div className="relative h-full glass p-6 rounded-[2rem] border border-white/50 hover:border-primary/30 transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between">
-                                <div className="flex justify-between items-start mb-4">
-                                    <div className="h-14 w-14 rounded-2xl overflow-hidden shadow-md border-2 border-white bg-muted">
-                                        <img src={group.groupIconUrl || `https://ui-avatars.com/api/?name=${group.name}&background=random`} alt={group.name} className="h-full w-full object-cover" />
-                                    </div>
-                                    <Badge className="bg-green-500/10 text-green-600 border-green-200 hover:bg-green-500/20">Active Now</Badge>
-                                </div>
-                                
-                                <div>
-                                    <h3 className="text-xl font-bold font-serif mb-2 group-hover:text-primary transition-colors">{group.name}</h3>
-                                    <p className="text-muted-foreground text-sm line-clamp-2 mb-4">{group.description}</p>
-                                    
-                                    <div className="flex flex-wrap gap-2 mb-4">
-                                        {group.interests.slice(0, 2).map(tag => (
-                                            <span key={tag} className="text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded-md bg-white/50 text-muted-foreground border border-white/20">
-                                                {tag}
-                                            </span>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center justify-between pt-4 border-t border-white/20 relative z-20">
-                                    <div className="flex -space-x-2">
-                                        <div className="h-7 w-7 rounded-full bg-muted flex items-center justify-center text-[10px] font-bold border-2 border-white text-muted-foreground">
-                                            +{group._count?.GroupMemberShip || 0}
-                                        </div>
-                                    </div>
-                                    <Button 
-                                        size="sm" 
-                                        variant="ghost" 
-                                        className="text-xs font-bold text-primary flex items-center hover:bg-primary/10"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            handleJoinGroup(group.id);
-                                        }}
-                                    >
-                                        Join <Sparkles className="h-3 w-3 ml-1" />
-                                    </Button>
-                                </div>
-                            </div>
+          {loading ? (
+            <div className="text-center py-10">Loading groups...</div>
+          ) : (
+            <>
+              {/* Featured / Trending Section */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="col-span-1 md:col-span-3">
+                  <h2 className="text-xl font-bold font-serif mb-4 flex items-center gap-2">
+                    <Zap className="h-5 w-5 text-yellow-500 fill-yellow-500" />{" "}
+                    Trending Now
+                  </h2>
+                </div>
+                {trendingGroups.map((group) => (
+                  <div
+                    key={group.id}
+                    className="group relative cursor-pointer"
+                    onClick={() => setSelectedGroup(group)}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent rounded-[2rem] blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <div className="relative h-full glass p-6 rounded-[2rem] border border-white/50 hover:border-primary/30 transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between">
+                      <div className="flex justify-between items-start mb-4">
+                        <div className="h-14 w-14 rounded-2xl overflow-hidden shadow-md border-2 border-white bg-muted">
+                          <img
+                            src={
+                              group.groupIconUrl ||
+                              `https://ui-avatars.com/api/?name=${group.name}&background=random`
+                            }
+                            alt={group.name}
+                            className="h-full w-full object-cover"
+                          />
                         </div>
+                        {group.isJoined ? (
+                          <Badge
+                            variant="secondary"
+                            className="bg-primary/10 text-primary border-primary/20"
+                          >
+                            Member
+                          </Badge>
+                        ) : (
+                          <Badge className="bg-green-500/10 text-green-600 border-green-200 hover:bg-green-500/20">
+                            Active Now
+                          </Badge>
+                        )}
+                      </div>
+
+                      <div>
+                        <h3 className="text-xl font-bold font-serif mb-2 group-hover:text-primary transition-colors">
+                          {group.name}
+                        </h3>
+                        <p className="text-muted-foreground text-sm line-clamp-2 mb-4">
+                          {group.description}
+                        </p>
+
+                        <div className="flex flex-wrap gap-2 mb-4">
+                          {group.interests.slice(0, 2).map((tag) => (
+                            <span
+                              key={tag}
+                              className="text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded-md bg-white/50 text-muted-foreground border border-white/20"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between pt-4 border-t border-white/20">
+                        <div className="flex items-center gap-2">
+                          <Users className="h-4 w-4 text-muted-foreground" />
+                          <span className="text-sm text-muted-foreground">
+                            {group._count?.GroupMemberShip || 0} members
+                          </span>
+                        </div>
+                        {group.isJoined ? (
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            disabled
+                            className="text-xs font-bold opacity-80"
+                          >
+                            Joined
+                          </Button>
+                        ) : (
+                          <Button
+                            size="sm"
+                            className="text-xs font-bold bg-primary text-primary-foreground hover:bg-primary/90"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleJoinGroup(group.id, true);
+                            }}
+                          >
+                            Join <Sparkles className="h-3 w-3 ml-1" />
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* All Groups Grid */}
+              <div>
+                <h2 className="text-xl font-bold font-serif mb-6 flex items-center gap-2">
+                  <Hash className="h-5 w-5 text-primary" /> All Circles
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {allCirclesGroups
+                    .slice(0, showAll ? undefined : 3)
+                    .map((group) => (
+                      <div
+                        key={group.id}
+                        className="glass-card p-5 rounded-3xl border border-white/40 hover:border-primary/40 group flex flex-col h-full cursor-pointer"
+                        onClick={() => setSelectedGroup(group)}
+                      >
+                        <div className="flex items-center gap-4 mb-3">
+                          <div className="h-10 w-10 rounded-xl overflow-hidden shadow-sm bg-muted">
+                            <img
+                              src={
+                                group.groupIconUrl ||
+                                `https://ui-avatars.com/api/?name=${group.name}&background=random`
+                              }
+                              alt={group.name}
+                              className="h-full w-full object-cover"
+                            />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-bold text-base truncate group-hover:text-primary transition-colors">
+                              {group.name}
+                            </h4>
+                            <p className="text-xs text-muted-foreground">
+                              {group._count?.GroupMemberShip || 0} Members
+                            </p>
+                          </div>
+                        </div>
+                        <p className="text-sm text-muted-foreground line-clamp-2 mb-3 flex-1">
+                          {group.description}
+                        </p>
+                        <div className="flex items-center justify-between">
+                          <div className="flex gap-2 flex-wrap flex-1">
+                            {group.interests.slice(0, 2).map((tag) => (
+                              <Badge
+                                key={tag}
+                                variant="secondary"
+                                className="bg-white/50 text-[10px] px-1.5 h-5"
+                              >
+                                {tag}
+                              </Badge>
+                            ))}
+                          </div>
+                          {group.isJoined ? (
+                            <Button
+                              size="sm"
+                              variant="secondary"
+                              disabled
+                              className="text-xs h-7 px-3"
+                            >
+                              Joined
+                            </Button>
+                          ) : (
+                            <Button
+                              size="sm"
+                              className="text-xs h-7 px-3"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleJoinGroup(group.id, true);
+                              }}
+                            >
+                              Join
+                            </Button>
+                          )}
+                        </div>
+                      </div>
                     ))}
                 </div>
-
-                {/* All Groups Grid */}
-                <div>
-                    <h2 className="text-xl font-bold font-serif mb-6 flex items-center gap-2">
-                        <Hash className="h-5 w-5 text-primary" /> All Circles
-                    </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        {discoverGroups.slice(3).map((group) => (
-                            <Link to={`/groups/${group.id}`} key={group.id} className="glass-card p-5 rounded-3xl border border-white/40 hover:border-primary/40 group flex flex-col h-full">
-                                <div className="flex items-center gap-4 mb-3">
-                                    <div className="h-10 w-10 rounded-xl overflow-hidden shadow-sm bg-muted">
-                                        <img src={group.groupIconUrl || `https://ui-avatars.com/api/?name=${group.name}&background=random`} alt={group.name} className="h-full w-full object-cover" />
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <h4 className="font-bold text-base truncate group-hover:text-primary transition-colors">{group.name}</h4>
-                                        <p className="text-xs text-muted-foreground">{group._count?.GroupMemberShip || 0} Members</p>
-                                    </div>
-                                </div>
-                                <p className="text-sm text-muted-foreground line-clamp-2 mb-3 flex-1">{group.description}</p>
-                                <div className="flex gap-2">
-                                    {group.interests.map(tag => (
-                                        <Badge key={tag} variant="secondary" className="bg-white/50 text-[10px] px-1.5 h-5">{tag}</Badge>
-                                    ))}
-                                </div>
-                            </Link>
-                        ))}
-                    </div>
-                </div>
-                </>
-            )}
+                {!showAll && allCirclesGroups.length > 3 && (
+                  <div className="flex justify-center mt-6">
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowAll(true)}
+                      className="rounded-full px-8 glass border-primary/20 hover:bg-primary/5 text-primary"
+                    >
+                      Show All Circles
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
         </TabsContent>
 
         <TabsContent value="joined" className="mt-8">
@@ -317,6 +446,70 @@ export default function GroupsPage() {
               </Button>
             </DialogFooter>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Join Group Preview Dialog */}
+      <Dialog open={!!selectedGroup} onOpenChange={(open) => !open && setSelectedGroup(null)}>
+        <DialogContent className="rounded-[1.5rem] glass border-white/40 sm:max-w-lg">
+          <DialogHeader>
+            <div className="flex items-center gap-4 mb-2">
+              <div className="h-16 w-16 rounded-2xl overflow-hidden shadow-md border-2 border-white bg-muted">
+                <img 
+                  src={selectedGroup?.groupIconUrl || `https://ui-avatars.com/api/?name=${selectedGroup?.name}&background=random`} 
+                  alt={selectedGroup?.name} 
+                  className="h-full w-full object-cover" 
+                />
+              </div>
+              <div>
+                <DialogTitle className="text-2xl font-serif">{selectedGroup?.name}</DialogTitle>
+                <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
+                  <Users className="h-4 w-4" />
+                  {selectedGroup?._count?.GroupMemberShip || 0} members
+                </p>
+              </div>
+            </div>
+            <DialogDescription className="text-left">
+              {selectedGroup?.description}
+            </DialogDescription>
+          </DialogHeader>
+          
+          {selectedGroup?.interests?.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {selectedGroup.interests.map(tag => (
+                <Badge key={tag} variant="secondary" className="bg-white/50">
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+          )}
+          
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              variant="outline"
+              onClick={() => setSelectedGroup(null)}
+              className="rounded-xl"
+            >
+              Cancel
+            </Button>
+            {selectedGroup?.isJoined ? (
+              <Button
+                onClick={() => navigate(`/groups/${selectedGroup.id}`)}
+                className="rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground"
+              >
+                Enter Hub <Sparkles className="h-4 w-4 ml-2" />
+              </Button>
+            ) : (
+              <Button
+                onClick={() => handleJoinGroup(selectedGroup?.id, true)}
+                disabled={joining}
+                className="rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground"
+              >
+                {joining && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                Join Circle
+              </Button>
+            )}
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

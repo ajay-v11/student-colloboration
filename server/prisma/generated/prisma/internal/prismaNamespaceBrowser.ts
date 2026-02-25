@@ -58,7 +58,9 @@ export const ModelName = {
   GroupMessage: 'GroupMessage',
   DirectMessage: 'DirectMessage',
   Project: 'Project',
-  Internship: 'Internship'
+  ProjectResource: 'ProjectResource',
+  Internship: 'Internship',
+  Notification: 'Notification'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -136,7 +138,8 @@ export const GroupMessageScalarFieldEnum = {
   id: 'id',
   content: 'content',
   senderId: 'senderId',
-  channelId: 'channelId'
+  channelId: 'channelId',
+  createdAt: 'createdAt'
 } as const
 
 export type GroupMessageScalarFieldEnum = (typeof GroupMessageScalarFieldEnum)[keyof typeof GroupMessageScalarFieldEnum]
@@ -147,6 +150,7 @@ export const DirectMessageScalarFieldEnum = {
   content: 'content',
   senderId: 'senderId',
   receiverId: 'receiverId',
+  readAt: 'readAt',
   createdAt: 'createdAt'
 } as const
 
@@ -161,11 +165,25 @@ export const ProjectScalarFieldEnum = {
   githubUrl: 'githubUrl',
   demoUrl: 'demoUrl',
   authorId: 'authorId',
+  groupId: 'groupId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type ProjectScalarFieldEnum = (typeof ProjectScalarFieldEnum)[keyof typeof ProjectScalarFieldEnum]
+
+
+export const ProjectResourceScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  url: 'url',
+  type: 'type',
+  projectId: 'projectId',
+  addedById: 'addedById',
+  createdAt: 'createdAt'
+} as const
+
+export type ProjectResourceScalarFieldEnum = (typeof ProjectResourceScalarFieldEnum)[keyof typeof ProjectResourceScalarFieldEnum]
 
 
 export const InternshipScalarFieldEnum = {
@@ -184,12 +202,37 @@ export const InternshipScalarFieldEnum = {
 export type InternshipScalarFieldEnum = (typeof InternshipScalarFieldEnum)[keyof typeof InternshipScalarFieldEnum]
 
 
+export const NotificationScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  title: 'title',
+  content: 'content',
+  userId: 'userId',
+  senderId: 'senderId',
+  groupId: 'groupId',
+  channelId: 'channelId',
+  metadata: 'metadata',
+  read: 'read',
+  createdAt: 'createdAt'
+} as const
+
+export type NotificationScalarFieldEnum = (typeof NotificationScalarFieldEnum)[keyof typeof NotificationScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const NullableJsonNullValueInput = {
+  DbNull: 'DbNull',
+  JsonNull: 'JsonNull'
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
 export const QueryMode = {
@@ -206,4 +249,13 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: 'DbNull',
+  JsonNull: 'JsonNull',
+  AnyNull: 'AnyNull'
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 

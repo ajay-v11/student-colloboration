@@ -10,6 +10,7 @@ import DashboardPage from './pages/DashboardPage';
 import GroupsPage from './pages/GroupsPage';
 import GroupDetailsPage from './pages/GroupDetailsPage';
 import ProjectsPage from './pages/ProjectsPage';
+import ProjectDetailsPage from './pages/ProjectDetailsPage';
 import InternshipsPage from './pages/InternshipsPage';
 import MessagesPage from './pages/MessagesPage';
 import ProfilePage from './pages/ProfilePage';
@@ -31,8 +32,9 @@ export default function App() {
             <Route path="/groups" element={<GroupsPage />} />
             <Route path="/groups/:id" element={<GroupDetailsPage />} />
             <Route path="/projects" element={<ProjectsPage />} />
+            <Route path="/projects/:id" element={<ProjectDetailsPage />} />
             <Route path="/internships" element={<InternshipsPage />} />
-            <Route path="/messages" element={<MessagesPage />} />
+            <Route path="/messages/:userId?" element={<MessagesPage />} />
             <Route path="/profile" element={<ProfilePage />} />
           </Route>
         </Route>

@@ -2,6 +2,7 @@ import express from "express";
 import { z } from "zod";
 import prisma from "../lib/prisma.js";
 import authMiddleware from "../middleware/auth.js";
+import NotificationService from "../services/NotificationService.js";
 
 const router = express.Router();
 
@@ -74,7 +75,7 @@ router.post("/createGroup", authMiddleware, async (req, res) => {
   }
 });
 
-// Get My Groups (Joined)
+// Get My Groups (Joined) - excludes project-linked groups
 router.get("/my-groups", authMiddleware, async (req, res) => {
   try {
     const userId = req.user.id;
@@ -82,7 +83,8 @@ router.get("/my-groups", authMiddleware, async (req, res) => {
       where: {
         GroupMemberShip: {
           some: { userId: userId }
-        }
+        },
+        project: null // Exclude groups that are linked to a project
       },
       select: {
         id: true,
@@ -90,6 +92,7 @@ router.get("/my-groups", authMiddleware, async (req, res) => {
         description: true,
         interests: true,
         groupIconUrl: true,
+        createdAt: true,
         _count: {
           select: { GroupMemberShip: true }
         }
@@ -102,7 +105,7 @@ router.get("/my-groups", authMiddleware, async (req, res) => {
   }
 });
 
-// Get Discover Groups (Not Joined)
+// Get Discover Groups (Not Joined) - excludes project-linked groups
 router.get("/discover", authMiddleware, async (req, res) => {
   try {
     const userId = req.user.id;
@@ -110,7 +113,8 @@ router.get("/discover", authMiddleware, async (req, res) => {
       where: {
         GroupMemberShip: {
           none: { userId: userId }
-        }
+        },
+        project: null // Exclude groups that are linked to a project
       },
       select: {
         id: true,
@@ -118,6 +122,7 @@ router.get("/discover", authMiddleware, async (req, res) => {
         description: true,
         interests: true,
         groupIconUrl: true,
+        createdAt: true,
         _count: {
           select: { GroupMemberShip: true }
         }
@@ -206,6 +211,9 @@ router.post("/:id/join", authMiddleware, async (req, res) => {
         role: "MEMBER",
       },
     });
+
+    // Send notification for joining group
+    await NotificationService.notifyGroupJoin(userId, groupId, group.name);
 
     res.status(200).json({ message: "Joined group successfully", membership });
   } catch (error) {
@@ -349,6 +357,46 @@ router.post("/:id/channels", authMiddleware, async (req, res) => {
     }
     console.error("Create channel error:", error);
     res.status(500).json({ error: "Failed to create channel" });
+  }
+});
+
+// Delete a channel
+router.delete("/:groupId/channels/:channelId", authMiddleware, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { groupId, channelId } = req.params;
+
+    // Verify user is admin of the group
+    const membership = await prisma.groupMemberShip.findUnique({
+      where: {
+        userId_groupId: {
+          userId: userId,
+          groupId: groupId,
+        },
+      },
+    });
+
+    if (!membership || membership.role !== "ADMIN") {
+      return res.status(403).json({ error: "Only admins can delete channels" });
+    }
+
+    // Check if channel exists and belongs to group
+    const channel = await prisma.channel.findUnique({
+      where: { id: channelId },
+    });
+
+    if (!channel || channel.groupId !== groupId) {
+      return res.status(404).json({ error: "Channel not found" });
+    }
+
+    await prisma.channel.delete({
+      where: { id: channelId },
+    });
+
+    res.json({ message: "Channel deleted successfully" });
+  } catch (error) {
+    console.error("Delete channel error:", error);
+    res.status(500).json({ error: "Failed to delete channel" });
   }
 });
 

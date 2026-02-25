@@ -23,3 +23,15 @@ export const ChannelType = {
 } as const
 
 export type ChannelType = (typeof ChannelType)[keyof typeof ChannelType]
+
+
+export const NotificationType = {
+  DM_MESSAGE: 'DM_MESSAGE',
+  GROUP_MESSAGE: 'GROUP_MESSAGE',
+  GROUP_INVITE: 'GROUP_INVITE',
+  GROUP_JOIN: 'GROUP_JOIN',
+  MENTION: 'MENTION',
+  SYSTEM: 'SYSTEM'
+} as const
+
+export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType]

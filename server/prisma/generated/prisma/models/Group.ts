@@ -197,6 +197,8 @@ export type GroupWhereInput = {
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   GroupMemberShip?: Prisma.GroupMemberShipListRelationFilter
   Channel?: Prisma.ChannelListRelationFilter
+  notifications?: Prisma.NotificationListRelationFilter
+  project?: Prisma.XOR<Prisma.ProjectNullableScalarRelationFilter, Prisma.ProjectWhereInput> | null
 }
 
 export type GroupOrderByWithRelationInput = {
@@ -210,6 +212,8 @@ export type GroupOrderByWithRelationInput = {
   user?: Prisma.UserOrderByWithRelationInput
   GroupMemberShip?: Prisma.GroupMemberShipOrderByRelationAggregateInput
   Channel?: Prisma.ChannelOrderByRelationAggregateInput
+  notifications?: Prisma.NotificationOrderByRelationAggregateInput
+  project?: Prisma.ProjectOrderByWithRelationInput
 }
 
 export type GroupWhereUniqueInput = Prisma.AtLeast<{
@@ -226,6 +230,8 @@ export type GroupWhereUniqueInput = Prisma.AtLeast<{
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   GroupMemberShip?: Prisma.GroupMemberShipListRelationFilter
   Channel?: Prisma.ChannelListRelationFilter
+  notifications?: Prisma.NotificationListRelationFilter
+  project?: Prisma.XOR<Prisma.ProjectNullableScalarRelationFilter, Prisma.ProjectWhereInput> | null
 }, "id" | "name">
 
 export type GroupOrderByWithAggregationInput = {
@@ -264,6 +270,8 @@ export type GroupCreateInput = {
   user: Prisma.UserCreateNestedOneWithoutGroupInput
   GroupMemberShip?: Prisma.GroupMemberShipCreateNestedManyWithoutGroupInput
   Channel?: Prisma.ChannelCreateNestedManyWithoutGroupInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutGroupInput
+  project?: Prisma.ProjectCreateNestedOneWithoutGroupInput
 }
 
 export type GroupUncheckedCreateInput = {
@@ -276,6 +284,8 @@ export type GroupUncheckedCreateInput = {
   createdAt?: Date | string
   GroupMemberShip?: Prisma.GroupMemberShipUncheckedCreateNestedManyWithoutGroupInput
   Channel?: Prisma.ChannelUncheckedCreateNestedManyWithoutGroupInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutGroupInput
+  project?: Prisma.ProjectUncheckedCreateNestedOneWithoutGroupInput
 }
 
 export type GroupUpdateInput = {
@@ -288,6 +298,8 @@ export type GroupUpdateInput = {
   user?: Prisma.UserUpdateOneRequiredWithoutGroupNestedInput
   GroupMemberShip?: Prisma.GroupMemberShipUpdateManyWithoutGroupNestedInput
   Channel?: Prisma.ChannelUpdateManyWithoutGroupNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutGroupNestedInput
+  project?: Prisma.ProjectUpdateOneWithoutGroupNestedInput
 }
 
 export type GroupUncheckedUpdateInput = {
@@ -300,6 +312,8 @@ export type GroupUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   GroupMemberShip?: Prisma.GroupMemberShipUncheckedUpdateManyWithoutGroupNestedInput
   Channel?: Prisma.ChannelUncheckedUpdateManyWithoutGroupNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutGroupNestedInput
+  project?: Prisma.ProjectUncheckedUpdateOneWithoutGroupNestedInput
 }
 
 export type GroupCreateManyInput = {
@@ -372,6 +386,11 @@ export type GroupMinOrderByAggregateInput = {
 export type GroupScalarRelationFilter = {
   is?: Prisma.GroupWhereInput
   isNot?: Prisma.GroupWhereInput
+}
+
+export type GroupNullableScalarRelationFilter = {
+  is?: Prisma.GroupWhereInput | null
+  isNot?: Prisma.GroupWhereInput | null
 }
 
 export type GroupCreateNestedManyWithoutUserInput = {
@@ -453,6 +472,38 @@ export type GroupUpdateOneRequiredWithoutChannelNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.GroupUpdateToOneWithWhereWithoutChannelInput, Prisma.GroupUpdateWithoutChannelInput>, Prisma.GroupUncheckedUpdateWithoutChannelInput>
 }
 
+export type GroupCreateNestedOneWithoutProjectInput = {
+  create?: Prisma.XOR<Prisma.GroupCreateWithoutProjectInput, Prisma.GroupUncheckedCreateWithoutProjectInput>
+  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutProjectInput
+  connect?: Prisma.GroupWhereUniqueInput
+}
+
+export type GroupUpdateOneWithoutProjectNestedInput = {
+  create?: Prisma.XOR<Prisma.GroupCreateWithoutProjectInput, Prisma.GroupUncheckedCreateWithoutProjectInput>
+  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutProjectInput
+  upsert?: Prisma.GroupUpsertWithoutProjectInput
+  disconnect?: Prisma.GroupWhereInput | boolean
+  delete?: Prisma.GroupWhereInput | boolean
+  connect?: Prisma.GroupWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.GroupUpdateToOneWithWhereWithoutProjectInput, Prisma.GroupUpdateWithoutProjectInput>, Prisma.GroupUncheckedUpdateWithoutProjectInput>
+}
+
+export type GroupCreateNestedOneWithoutNotificationsInput = {
+  create?: Prisma.XOR<Prisma.GroupCreateWithoutNotificationsInput, Prisma.GroupUncheckedCreateWithoutNotificationsInput>
+  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutNotificationsInput
+  connect?: Prisma.GroupWhereUniqueInput
+}
+
+export type GroupUpdateOneWithoutNotificationsNestedInput = {
+  create?: Prisma.XOR<Prisma.GroupCreateWithoutNotificationsInput, Prisma.GroupUncheckedCreateWithoutNotificationsInput>
+  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutNotificationsInput
+  upsert?: Prisma.GroupUpsertWithoutNotificationsInput
+  disconnect?: Prisma.GroupWhereInput | boolean
+  delete?: Prisma.GroupWhereInput | boolean
+  connect?: Prisma.GroupWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.GroupUpdateToOneWithWhereWithoutNotificationsInput, Prisma.GroupUpdateWithoutNotificationsInput>, Prisma.GroupUncheckedUpdateWithoutNotificationsInput>
+}
+
 export type GroupCreateWithoutUserInput = {
   id?: string
   name: string
@@ -462,6 +513,8 @@ export type GroupCreateWithoutUserInput = {
   createdAt?: Date | string
   GroupMemberShip?: Prisma.GroupMemberShipCreateNestedManyWithoutGroupInput
   Channel?: Prisma.ChannelCreateNestedManyWithoutGroupInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutGroupInput
+  project?: Prisma.ProjectCreateNestedOneWithoutGroupInput
 }
 
 export type GroupUncheckedCreateWithoutUserInput = {
@@ -473,6 +526,8 @@ export type GroupUncheckedCreateWithoutUserInput = {
   createdAt?: Date | string
   GroupMemberShip?: Prisma.GroupMemberShipUncheckedCreateNestedManyWithoutGroupInput
   Channel?: Prisma.ChannelUncheckedCreateNestedManyWithoutGroupInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutGroupInput
+  project?: Prisma.ProjectUncheckedCreateNestedOneWithoutGroupInput
 }
 
 export type GroupCreateOrConnectWithoutUserInput = {
@@ -523,6 +578,8 @@ export type GroupCreateWithoutGroupMemberShipInput = {
   createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutGroupInput
   Channel?: Prisma.ChannelCreateNestedManyWithoutGroupInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutGroupInput
+  project?: Prisma.ProjectCreateNestedOneWithoutGroupInput
 }
 
 export type GroupUncheckedCreateWithoutGroupMemberShipInput = {
@@ -534,6 +591,8 @@ export type GroupUncheckedCreateWithoutGroupMemberShipInput = {
   groupIconUrl?: string | null
   createdAt?: Date | string
   Channel?: Prisma.ChannelUncheckedCreateNestedManyWithoutGroupInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutGroupInput
+  project?: Prisma.ProjectUncheckedCreateNestedOneWithoutGroupInput
 }
 
 export type GroupCreateOrConnectWithoutGroupMemberShipInput = {
@@ -561,6 +620,8 @@ export type GroupUpdateWithoutGroupMemberShipInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutGroupNestedInput
   Channel?: Prisma.ChannelUpdateManyWithoutGroupNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutGroupNestedInput
+  project?: Prisma.ProjectUpdateOneWithoutGroupNestedInput
 }
 
 export type GroupUncheckedUpdateWithoutGroupMemberShipInput = {
@@ -572,6 +633,8 @@ export type GroupUncheckedUpdateWithoutGroupMemberShipInput = {
   groupIconUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   Channel?: Prisma.ChannelUncheckedUpdateManyWithoutGroupNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutGroupNestedInput
+  project?: Prisma.ProjectUncheckedUpdateOneWithoutGroupNestedInput
 }
 
 export type GroupCreateWithoutChannelInput = {
@@ -583,6 +646,8 @@ export type GroupCreateWithoutChannelInput = {
   createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutGroupInput
   GroupMemberShip?: Prisma.GroupMemberShipCreateNestedManyWithoutGroupInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutGroupInput
+  project?: Prisma.ProjectCreateNestedOneWithoutGroupInput
 }
 
 export type GroupUncheckedCreateWithoutChannelInput = {
@@ -594,6 +659,8 @@ export type GroupUncheckedCreateWithoutChannelInput = {
   groupIconUrl?: string | null
   createdAt?: Date | string
   GroupMemberShip?: Prisma.GroupMemberShipUncheckedCreateNestedManyWithoutGroupInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutGroupInput
+  project?: Prisma.ProjectUncheckedCreateNestedOneWithoutGroupInput
 }
 
 export type GroupCreateOrConnectWithoutChannelInput = {
@@ -621,6 +688,8 @@ export type GroupUpdateWithoutChannelInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutGroupNestedInput
   GroupMemberShip?: Prisma.GroupMemberShipUpdateManyWithoutGroupNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutGroupNestedInput
+  project?: Prisma.ProjectUpdateOneWithoutGroupNestedInput
 }
 
 export type GroupUncheckedUpdateWithoutChannelInput = {
@@ -632,6 +701,144 @@ export type GroupUncheckedUpdateWithoutChannelInput = {
   groupIconUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   GroupMemberShip?: Prisma.GroupMemberShipUncheckedUpdateManyWithoutGroupNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutGroupNestedInput
+  project?: Prisma.ProjectUncheckedUpdateOneWithoutGroupNestedInput
+}
+
+export type GroupCreateWithoutProjectInput = {
+  id?: string
+  name: string
+  description: string
+  interests?: Prisma.GroupCreateinterestsInput | string[]
+  groupIconUrl?: string | null
+  createdAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutGroupInput
+  GroupMemberShip?: Prisma.GroupMemberShipCreateNestedManyWithoutGroupInput
+  Channel?: Prisma.ChannelCreateNestedManyWithoutGroupInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutGroupInput
+}
+
+export type GroupUncheckedCreateWithoutProjectInput = {
+  id?: string
+  name: string
+  description: string
+  interests?: Prisma.GroupCreateinterestsInput | string[]
+  adminId: string
+  groupIconUrl?: string | null
+  createdAt?: Date | string
+  GroupMemberShip?: Prisma.GroupMemberShipUncheckedCreateNestedManyWithoutGroupInput
+  Channel?: Prisma.ChannelUncheckedCreateNestedManyWithoutGroupInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutGroupInput
+}
+
+export type GroupCreateOrConnectWithoutProjectInput = {
+  where: Prisma.GroupWhereUniqueInput
+  create: Prisma.XOR<Prisma.GroupCreateWithoutProjectInput, Prisma.GroupUncheckedCreateWithoutProjectInput>
+}
+
+export type GroupUpsertWithoutProjectInput = {
+  update: Prisma.XOR<Prisma.GroupUpdateWithoutProjectInput, Prisma.GroupUncheckedUpdateWithoutProjectInput>
+  create: Prisma.XOR<Prisma.GroupCreateWithoutProjectInput, Prisma.GroupUncheckedCreateWithoutProjectInput>
+  where?: Prisma.GroupWhereInput
+}
+
+export type GroupUpdateToOneWithWhereWithoutProjectInput = {
+  where?: Prisma.GroupWhereInput
+  data: Prisma.XOR<Prisma.GroupUpdateWithoutProjectInput, Prisma.GroupUncheckedUpdateWithoutProjectInput>
+}
+
+export type GroupUpdateWithoutProjectInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  interests?: Prisma.GroupUpdateinterestsInput | string[]
+  groupIconUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutGroupNestedInput
+  GroupMemberShip?: Prisma.GroupMemberShipUpdateManyWithoutGroupNestedInput
+  Channel?: Prisma.ChannelUpdateManyWithoutGroupNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutGroupNestedInput
+}
+
+export type GroupUncheckedUpdateWithoutProjectInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  interests?: Prisma.GroupUpdateinterestsInput | string[]
+  adminId?: Prisma.StringFieldUpdateOperationsInput | string
+  groupIconUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  GroupMemberShip?: Prisma.GroupMemberShipUncheckedUpdateManyWithoutGroupNestedInput
+  Channel?: Prisma.ChannelUncheckedUpdateManyWithoutGroupNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutGroupNestedInput
+}
+
+export type GroupCreateWithoutNotificationsInput = {
+  id?: string
+  name: string
+  description: string
+  interests?: Prisma.GroupCreateinterestsInput | string[]
+  groupIconUrl?: string | null
+  createdAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutGroupInput
+  GroupMemberShip?: Prisma.GroupMemberShipCreateNestedManyWithoutGroupInput
+  Channel?: Prisma.ChannelCreateNestedManyWithoutGroupInput
+  project?: Prisma.ProjectCreateNestedOneWithoutGroupInput
+}
+
+export type GroupUncheckedCreateWithoutNotificationsInput = {
+  id?: string
+  name: string
+  description: string
+  interests?: Prisma.GroupCreateinterestsInput | string[]
+  adminId: string
+  groupIconUrl?: string | null
+  createdAt?: Date | string
+  GroupMemberShip?: Prisma.GroupMemberShipUncheckedCreateNestedManyWithoutGroupInput
+  Channel?: Prisma.ChannelUncheckedCreateNestedManyWithoutGroupInput
+  project?: Prisma.ProjectUncheckedCreateNestedOneWithoutGroupInput
+}
+
+export type GroupCreateOrConnectWithoutNotificationsInput = {
+  where: Prisma.GroupWhereUniqueInput
+  create: Prisma.XOR<Prisma.GroupCreateWithoutNotificationsInput, Prisma.GroupUncheckedCreateWithoutNotificationsInput>
+}
+
+export type GroupUpsertWithoutNotificationsInput = {
+  update: Prisma.XOR<Prisma.GroupUpdateWithoutNotificationsInput, Prisma.GroupUncheckedUpdateWithoutNotificationsInput>
+  create: Prisma.XOR<Prisma.GroupCreateWithoutNotificationsInput, Prisma.GroupUncheckedCreateWithoutNotificationsInput>
+  where?: Prisma.GroupWhereInput
+}
+
+export type GroupUpdateToOneWithWhereWithoutNotificationsInput = {
+  where?: Prisma.GroupWhereInput
+  data: Prisma.XOR<Prisma.GroupUpdateWithoutNotificationsInput, Prisma.GroupUncheckedUpdateWithoutNotificationsInput>
+}
+
+export type GroupUpdateWithoutNotificationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  interests?: Prisma.GroupUpdateinterestsInput | string[]
+  groupIconUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutGroupNestedInput
+  GroupMemberShip?: Prisma.GroupMemberShipUpdateManyWithoutGroupNestedInput
+  Channel?: Prisma.ChannelUpdateManyWithoutGroupNestedInput
+  project?: Prisma.ProjectUpdateOneWithoutGroupNestedInput
+}
+
+export type GroupUncheckedUpdateWithoutNotificationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  interests?: Prisma.GroupUpdateinterestsInput | string[]
+  adminId?: Prisma.StringFieldUpdateOperationsInput | string
+  groupIconUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  GroupMemberShip?: Prisma.GroupMemberShipUncheckedUpdateManyWithoutGroupNestedInput
+  Channel?: Prisma.ChannelUncheckedUpdateManyWithoutGroupNestedInput
+  project?: Prisma.ProjectUncheckedUpdateOneWithoutGroupNestedInput
 }
 
 export type GroupCreateManyUserInput = {
@@ -652,6 +859,8 @@ export type GroupUpdateWithoutUserInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   GroupMemberShip?: Prisma.GroupMemberShipUpdateManyWithoutGroupNestedInput
   Channel?: Prisma.ChannelUpdateManyWithoutGroupNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutGroupNestedInput
+  project?: Prisma.ProjectUpdateOneWithoutGroupNestedInput
 }
 
 export type GroupUncheckedUpdateWithoutUserInput = {
@@ -663,6 +872,8 @@ export type GroupUncheckedUpdateWithoutUserInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   GroupMemberShip?: Prisma.GroupMemberShipUncheckedUpdateManyWithoutGroupNestedInput
   Channel?: Prisma.ChannelUncheckedUpdateManyWithoutGroupNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutGroupNestedInput
+  project?: Prisma.ProjectUncheckedUpdateOneWithoutGroupNestedInput
 }
 
 export type GroupUncheckedUpdateManyWithoutUserInput = {
@@ -682,11 +893,13 @@ export type GroupUncheckedUpdateManyWithoutUserInput = {
 export type GroupCountOutputType = {
   GroupMemberShip: number
   Channel: number
+  notifications: number
 }
 
 export type GroupCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   GroupMemberShip?: boolean | GroupCountOutputTypeCountGroupMemberShipArgs
   Channel?: boolean | GroupCountOutputTypeCountChannelArgs
+  notifications?: boolean | GroupCountOutputTypeCountNotificationsArgs
 }
 
 /**
@@ -713,6 +926,13 @@ export type GroupCountOutputTypeCountChannelArgs<ExtArgs extends runtime.Types.E
   where?: Prisma.ChannelWhereInput
 }
 
+/**
+ * GroupCountOutputType without action
+ */
+export type GroupCountOutputTypeCountNotificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.NotificationWhereInput
+}
+
 
 export type GroupSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -725,6 +945,8 @@ export type GroupSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   GroupMemberShip?: boolean | Prisma.Group$GroupMemberShipArgs<ExtArgs>
   Channel?: boolean | Prisma.Group$ChannelArgs<ExtArgs>
+  notifications?: boolean | Prisma.Group$notificationsArgs<ExtArgs>
+  project?: boolean | Prisma.Group$projectArgs<ExtArgs>
   _count?: boolean | Prisma.GroupCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["group"]>
 
@@ -765,6 +987,8 @@ export type GroupInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   GroupMemberShip?: boolean | Prisma.Group$GroupMemberShipArgs<ExtArgs>
   Channel?: boolean | Prisma.Group$ChannelArgs<ExtArgs>
+  notifications?: boolean | Prisma.Group$notificationsArgs<ExtArgs>
+  project?: boolean | Prisma.Group$projectArgs<ExtArgs>
   _count?: boolean | Prisma.GroupCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type GroupIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -780,6 +1004,8 @@ export type $GroupPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     user: Prisma.$UserPayload<ExtArgs>
     GroupMemberShip: Prisma.$GroupMemberShipPayload<ExtArgs>[]
     Channel: Prisma.$ChannelPayload<ExtArgs>[]
+    notifications: Prisma.$NotificationPayload<ExtArgs>[]
+    project: Prisma.$ProjectPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1186,6 +1412,8 @@ export interface Prisma__GroupClient<T, Null = never, ExtArgs extends runtime.Ty
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   GroupMemberShip<T extends Prisma.Group$GroupMemberShipArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Group$GroupMemberShipArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GroupMemberShipPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   Channel<T extends Prisma.Group$ChannelArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Group$ChannelArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChannelPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  notifications<T extends Prisma.Group$notificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Group$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  project<T extends Prisma.Group$projectArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Group$projectArgs<ExtArgs>>): Prisma.Prisma__ProjectClient<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1663,6 +1891,49 @@ export type Group$ChannelArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   take?: number
   skip?: number
   distinct?: Prisma.ChannelScalarFieldEnum | Prisma.ChannelScalarFieldEnum[]
+}
+
+/**
+ * Group.notifications
+ */
+export type Group$notificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Notification
+   */
+  select?: Prisma.NotificationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Notification
+   */
+  omit?: Prisma.NotificationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NotificationInclude<ExtArgs> | null
+  where?: Prisma.NotificationWhereInput
+  orderBy?: Prisma.NotificationOrderByWithRelationInput | Prisma.NotificationOrderByWithRelationInput[]
+  cursor?: Prisma.NotificationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.NotificationScalarFieldEnum | Prisma.NotificationScalarFieldEnum[]
+}
+
+/**
+ * Group.project
+ */
+export type Group$projectArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Project
+   */
+  select?: Prisma.ProjectSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Project
+   */
+  omit?: Prisma.ProjectOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProjectInclude<ExtArgs> | null
+  where?: Prisma.ProjectWhereInput
 }
 
 /**

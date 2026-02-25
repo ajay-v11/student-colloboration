@@ -29,6 +29,7 @@ export type DirectMessageMinAggregateOutputType = {
   content: string | null
   senderId: string | null
   receiverId: string | null
+  readAt: Date | null
   createdAt: Date | null
 }
 
@@ -37,6 +38,7 @@ export type DirectMessageMaxAggregateOutputType = {
   content: string | null
   senderId: string | null
   receiverId: string | null
+  readAt: Date | null
   createdAt: Date | null
 }
 
@@ -45,6 +47,7 @@ export type DirectMessageCountAggregateOutputType = {
   content: number
   senderId: number
   receiverId: number
+  readAt: number
   createdAt: number
   _all: number
 }
@@ -55,6 +58,7 @@ export type DirectMessageMinAggregateInputType = {
   content?: true
   senderId?: true
   receiverId?: true
+  readAt?: true
   createdAt?: true
 }
 
@@ -63,6 +67,7 @@ export type DirectMessageMaxAggregateInputType = {
   content?: true
   senderId?: true
   receiverId?: true
+  readAt?: true
   createdAt?: true
 }
 
@@ -71,6 +76,7 @@ export type DirectMessageCountAggregateInputType = {
   content?: true
   senderId?: true
   receiverId?: true
+  readAt?: true
   createdAt?: true
   _all?: true
 }
@@ -152,6 +158,7 @@ export type DirectMessageGroupByOutputType = {
   content: string
   senderId: string
   receiverId: string
+  readAt: Date | null
   createdAt: Date
   _count: DirectMessageCountAggregateOutputType | null
   _min: DirectMessageMinAggregateOutputType | null
@@ -181,6 +188,7 @@ export type DirectMessageWhereInput = {
   content?: Prisma.StringFilter<"DirectMessage"> | string
   senderId?: Prisma.StringFilter<"DirectMessage"> | string
   receiverId?: Prisma.StringFilter<"DirectMessage"> | string
+  readAt?: Prisma.DateTimeNullableFilter<"DirectMessage"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"DirectMessage"> | Date | string
   sender?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   receiver?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -191,6 +199,7 @@ export type DirectMessageOrderByWithRelationInput = {
   content?: Prisma.SortOrder
   senderId?: Prisma.SortOrder
   receiverId?: Prisma.SortOrder
+  readAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   sender?: Prisma.UserOrderByWithRelationInput
   receiver?: Prisma.UserOrderByWithRelationInput
@@ -204,6 +213,7 @@ export type DirectMessageWhereUniqueInput = Prisma.AtLeast<{
   content?: Prisma.StringFilter<"DirectMessage"> | string
   senderId?: Prisma.StringFilter<"DirectMessage"> | string
   receiverId?: Prisma.StringFilter<"DirectMessage"> | string
+  readAt?: Prisma.DateTimeNullableFilter<"DirectMessage"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"DirectMessage"> | Date | string
   sender?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   receiver?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -214,6 +224,7 @@ export type DirectMessageOrderByWithAggregationInput = {
   content?: Prisma.SortOrder
   senderId?: Prisma.SortOrder
   receiverId?: Prisma.SortOrder
+  readAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.DirectMessageCountOrderByAggregateInput
   _max?: Prisma.DirectMessageMaxOrderByAggregateInput
@@ -228,12 +239,14 @@ export type DirectMessageScalarWhereWithAggregatesInput = {
   content?: Prisma.StringWithAggregatesFilter<"DirectMessage"> | string
   senderId?: Prisma.StringWithAggregatesFilter<"DirectMessage"> | string
   receiverId?: Prisma.StringWithAggregatesFilter<"DirectMessage"> | string
+  readAt?: Prisma.DateTimeNullableWithAggregatesFilter<"DirectMessage"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"DirectMessage"> | Date | string
 }
 
 export type DirectMessageCreateInput = {
   id?: string
   content: string
+  readAt?: Date | string | null
   createdAt?: Date | string
   sender: Prisma.UserCreateNestedOneWithoutSentMessagesInput
   receiver: Prisma.UserCreateNestedOneWithoutReceivedMessagesInput
@@ -244,12 +257,14 @@ export type DirectMessageUncheckedCreateInput = {
   content: string
   senderId: string
   receiverId: string
+  readAt?: Date | string | null
   createdAt?: Date | string
 }
 
 export type DirectMessageUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sender?: Prisma.UserUpdateOneRequiredWithoutSentMessagesNestedInput
   receiver?: Prisma.UserUpdateOneRequiredWithoutReceivedMessagesNestedInput
@@ -260,6 +275,7 @@ export type DirectMessageUncheckedUpdateInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   senderId?: Prisma.StringFieldUpdateOperationsInput | string
   receiverId?: Prisma.StringFieldUpdateOperationsInput | string
+  readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -268,12 +284,14 @@ export type DirectMessageCreateManyInput = {
   content: string
   senderId: string
   receiverId: string
+  readAt?: Date | string | null
   createdAt?: Date | string
 }
 
 export type DirectMessageUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -282,6 +300,7 @@ export type DirectMessageUncheckedUpdateManyInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   senderId?: Prisma.StringFieldUpdateOperationsInput | string
   receiverId?: Prisma.StringFieldUpdateOperationsInput | string
+  readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -300,6 +319,7 @@ export type DirectMessageCountOrderByAggregateInput = {
   content?: Prisma.SortOrder
   senderId?: Prisma.SortOrder
   receiverId?: Prisma.SortOrder
+  readAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -308,6 +328,7 @@ export type DirectMessageMaxOrderByAggregateInput = {
   content?: Prisma.SortOrder
   senderId?: Prisma.SortOrder
   receiverId?: Prisma.SortOrder
+  readAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -316,6 +337,7 @@ export type DirectMessageMinOrderByAggregateInput = {
   content?: Prisma.SortOrder
   senderId?: Prisma.SortOrder
   receiverId?: Prisma.SortOrder
+  readAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -403,9 +425,14 @@ export type DirectMessageUncheckedUpdateManyWithoutReceiverNestedInput = {
   deleteMany?: Prisma.DirectMessageScalarWhereInput | Prisma.DirectMessageScalarWhereInput[]
 }
 
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
+}
+
 export type DirectMessageCreateWithoutSenderInput = {
   id?: string
   content: string
+  readAt?: Date | string | null
   createdAt?: Date | string
   receiver: Prisma.UserCreateNestedOneWithoutReceivedMessagesInput
 }
@@ -414,6 +441,7 @@ export type DirectMessageUncheckedCreateWithoutSenderInput = {
   id?: string
   content: string
   receiverId: string
+  readAt?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -430,6 +458,7 @@ export type DirectMessageCreateManySenderInputEnvelope = {
 export type DirectMessageCreateWithoutReceiverInput = {
   id?: string
   content: string
+  readAt?: Date | string | null
   createdAt?: Date | string
   sender: Prisma.UserCreateNestedOneWithoutSentMessagesInput
 }
@@ -438,6 +467,7 @@ export type DirectMessageUncheckedCreateWithoutReceiverInput = {
   id?: string
   content: string
   senderId: string
+  readAt?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -475,6 +505,7 @@ export type DirectMessageScalarWhereInput = {
   content?: Prisma.StringFilter<"DirectMessage"> | string
   senderId?: Prisma.StringFilter<"DirectMessage"> | string
   receiverId?: Prisma.StringFilter<"DirectMessage"> | string
+  readAt?: Prisma.DateTimeNullableFilter<"DirectMessage"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"DirectMessage"> | Date | string
 }
 
@@ -498,6 +529,7 @@ export type DirectMessageCreateManySenderInput = {
   id?: string
   content: string
   receiverId: string
+  readAt?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -505,12 +537,14 @@ export type DirectMessageCreateManyReceiverInput = {
   id?: string
   content: string
   senderId: string
+  readAt?: Date | string | null
   createdAt?: Date | string
 }
 
 export type DirectMessageUpdateWithoutSenderInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   receiver?: Prisma.UserUpdateOneRequiredWithoutReceivedMessagesNestedInput
 }
@@ -519,6 +553,7 @@ export type DirectMessageUncheckedUpdateWithoutSenderInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
   receiverId?: Prisma.StringFieldUpdateOperationsInput | string
+  readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -526,12 +561,14 @@ export type DirectMessageUncheckedUpdateManyWithoutSenderInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
   receiverId?: Prisma.StringFieldUpdateOperationsInput | string
+  readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type DirectMessageUpdateWithoutReceiverInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sender?: Prisma.UserUpdateOneRequiredWithoutSentMessagesNestedInput
 }
@@ -540,6 +577,7 @@ export type DirectMessageUncheckedUpdateWithoutReceiverInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
   senderId?: Prisma.StringFieldUpdateOperationsInput | string
+  readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -547,6 +585,7 @@ export type DirectMessageUncheckedUpdateManyWithoutReceiverInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
   senderId?: Prisma.StringFieldUpdateOperationsInput | string
+  readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -557,6 +596,7 @@ export type DirectMessageSelect<ExtArgs extends runtime.Types.Extensions.Interna
   content?: boolean
   senderId?: boolean
   receiverId?: boolean
+  readAt?: boolean
   createdAt?: boolean
   sender?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   receiver?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -567,6 +607,7 @@ export type DirectMessageSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   content?: boolean
   senderId?: boolean
   receiverId?: boolean
+  readAt?: boolean
   createdAt?: boolean
   sender?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   receiver?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -577,6 +618,7 @@ export type DirectMessageSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   content?: boolean
   senderId?: boolean
   receiverId?: boolean
+  readAt?: boolean
   createdAt?: boolean
   sender?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   receiver?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -587,10 +629,11 @@ export type DirectMessageSelectScalar = {
   content?: boolean
   senderId?: boolean
   receiverId?: boolean
+  readAt?: boolean
   createdAt?: boolean
 }
 
-export type DirectMessageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "content" | "senderId" | "receiverId" | "createdAt", ExtArgs["result"]["directMessage"]>
+export type DirectMessageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "content" | "senderId" | "receiverId" | "readAt" | "createdAt", ExtArgs["result"]["directMessage"]>
 export type DirectMessageInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   sender?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   receiver?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -615,6 +658,7 @@ export type $DirectMessagePayload<ExtArgs extends runtime.Types.Extensions.Inter
     content: string
     senderId: string
     receiverId: string
+    readAt: Date | null
     createdAt: Date
   }, ExtArgs["result"]["directMessage"]>
   composites: {}
@@ -1045,6 +1089,7 @@ export interface DirectMessageFieldRefs {
   readonly content: Prisma.FieldRef<"DirectMessage", 'String'>
   readonly senderId: Prisma.FieldRef<"DirectMessage", 'String'>
   readonly receiverId: Prisma.FieldRef<"DirectMessage", 'String'>
+  readonly readAt: Prisma.FieldRef<"DirectMessage", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"DirectMessage", 'DateTime'>
 }
     

@@ -32,7 +32,6 @@ router.post("/register", async (req, res) => {
   try {
     const data = registerSchema.parse(req.body);
 
-    console.log(data);
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
       where: { email: data.email },

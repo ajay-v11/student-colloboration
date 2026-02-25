@@ -226,6 +226,7 @@ export type ChannelWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Channel"> | Date | string
   group?: Prisma.XOR<Prisma.GroupScalarRelationFilter, Prisma.GroupWhereInput>
   GroupMessage?: Prisma.GroupMessageListRelationFilter
+  notifications?: Prisma.NotificationListRelationFilter
 }
 
 export type ChannelOrderByWithRelationInput = {
@@ -237,6 +238,7 @@ export type ChannelOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   group?: Prisma.GroupOrderByWithRelationInput
   GroupMessage?: Prisma.GroupMessageOrderByRelationAggregateInput
+  notifications?: Prisma.NotificationOrderByRelationAggregateInput
 }
 
 export type ChannelWhereUniqueInput = Prisma.AtLeast<{
@@ -251,6 +253,7 @@ export type ChannelWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"Channel"> | Date | string
   group?: Prisma.XOR<Prisma.GroupScalarRelationFilter, Prisma.GroupWhereInput>
   GroupMessage?: Prisma.GroupMessageListRelationFilter
+  notifications?: Prisma.NotificationListRelationFilter
 }, "id" | "name">
 
 export type ChannelOrderByWithAggregationInput = {
@@ -287,6 +290,7 @@ export type ChannelCreateInput = {
   createdAt?: Date | string
   group: Prisma.GroupCreateNestedOneWithoutChannelInput
   GroupMessage?: Prisma.GroupMessageCreateNestedManyWithoutChannelInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutChannelInput
 }
 
 export type ChannelUncheckedCreateInput = {
@@ -297,6 +301,7 @@ export type ChannelUncheckedCreateInput = {
   groupId: string
   createdAt?: Date | string
   GroupMessage?: Prisma.GroupMessageUncheckedCreateNestedManyWithoutChannelInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutChannelInput
 }
 
 export type ChannelUpdateInput = {
@@ -307,6 +312,7 @@ export type ChannelUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   group?: Prisma.GroupUpdateOneRequiredWithoutChannelNestedInput
   GroupMessage?: Prisma.GroupMessageUpdateManyWithoutChannelNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutChannelNestedInput
 }
 
 export type ChannelUncheckedUpdateInput = {
@@ -317,6 +323,7 @@ export type ChannelUncheckedUpdateInput = {
   groupId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   GroupMessage?: Prisma.GroupMessageUncheckedUpdateManyWithoutChannelNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutChannelNestedInput
 }
 
 export type ChannelCreateManyInput = {
@@ -395,6 +402,11 @@ export type ChannelScalarRelationFilter = {
   isNot?: Prisma.ChannelWhereInput
 }
 
+export type ChannelNullableScalarRelationFilter = {
+  is?: Prisma.ChannelWhereInput | null
+  isNot?: Prisma.ChannelWhereInput | null
+}
+
 export type ChannelCreateNestedManyWithoutGroupInput = {
   create?: Prisma.XOR<Prisma.ChannelCreateWithoutGroupInput, Prisma.ChannelUncheckedCreateWithoutGroupInput> | Prisma.ChannelCreateWithoutGroupInput[] | Prisma.ChannelUncheckedCreateWithoutGroupInput[]
   connectOrCreate?: Prisma.ChannelCreateOrConnectWithoutGroupInput | Prisma.ChannelCreateOrConnectWithoutGroupInput[]
@@ -463,6 +475,22 @@ export type ChannelUpdateOneRequiredWithoutGroupMessageNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ChannelUpdateToOneWithWhereWithoutGroupMessageInput, Prisma.ChannelUpdateWithoutGroupMessageInput>, Prisma.ChannelUncheckedUpdateWithoutGroupMessageInput>
 }
 
+export type ChannelCreateNestedOneWithoutNotificationsInput = {
+  create?: Prisma.XOR<Prisma.ChannelCreateWithoutNotificationsInput, Prisma.ChannelUncheckedCreateWithoutNotificationsInput>
+  connectOrCreate?: Prisma.ChannelCreateOrConnectWithoutNotificationsInput
+  connect?: Prisma.ChannelWhereUniqueInput
+}
+
+export type ChannelUpdateOneWithoutNotificationsNestedInput = {
+  create?: Prisma.XOR<Prisma.ChannelCreateWithoutNotificationsInput, Prisma.ChannelUncheckedCreateWithoutNotificationsInput>
+  connectOrCreate?: Prisma.ChannelCreateOrConnectWithoutNotificationsInput
+  upsert?: Prisma.ChannelUpsertWithoutNotificationsInput
+  disconnect?: Prisma.ChannelWhereInput | boolean
+  delete?: Prisma.ChannelWhereInput | boolean
+  connect?: Prisma.ChannelWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ChannelUpdateToOneWithWhereWithoutNotificationsInput, Prisma.ChannelUpdateWithoutNotificationsInput>, Prisma.ChannelUncheckedUpdateWithoutNotificationsInput>
+}
+
 export type ChannelCreateWithoutGroupInput = {
   id?: string
   name: string
@@ -470,6 +498,7 @@ export type ChannelCreateWithoutGroupInput = {
   position: number
   createdAt?: Date | string
   GroupMessage?: Prisma.GroupMessageCreateNestedManyWithoutChannelInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutChannelInput
 }
 
 export type ChannelUncheckedCreateWithoutGroupInput = {
@@ -479,6 +508,7 @@ export type ChannelUncheckedCreateWithoutGroupInput = {
   position: number
   createdAt?: Date | string
   GroupMessage?: Prisma.GroupMessageUncheckedCreateNestedManyWithoutChannelInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutChannelInput
 }
 
 export type ChannelCreateOrConnectWithoutGroupInput = {
@@ -526,6 +556,7 @@ export type ChannelCreateWithoutGroupMessageInput = {
   position: number
   createdAt?: Date | string
   group: Prisma.GroupCreateNestedOneWithoutChannelInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutChannelInput
 }
 
 export type ChannelUncheckedCreateWithoutGroupMessageInput = {
@@ -535,6 +566,7 @@ export type ChannelUncheckedCreateWithoutGroupMessageInput = {
   position: number
   groupId: string
   createdAt?: Date | string
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutChannelInput
 }
 
 export type ChannelCreateOrConnectWithoutGroupMessageInput = {
@@ -560,6 +592,7 @@ export type ChannelUpdateWithoutGroupMessageInput = {
   position?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   group?: Prisma.GroupUpdateOneRequiredWithoutChannelNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutChannelNestedInput
 }
 
 export type ChannelUncheckedUpdateWithoutGroupMessageInput = {
@@ -569,6 +602,63 @@ export type ChannelUncheckedUpdateWithoutGroupMessageInput = {
   position?: Prisma.IntFieldUpdateOperationsInput | number
   groupId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutChannelNestedInput
+}
+
+export type ChannelCreateWithoutNotificationsInput = {
+  id?: string
+  name: string
+  type?: $Enums.ChannelType
+  position: number
+  createdAt?: Date | string
+  group: Prisma.GroupCreateNestedOneWithoutChannelInput
+  GroupMessage?: Prisma.GroupMessageCreateNestedManyWithoutChannelInput
+}
+
+export type ChannelUncheckedCreateWithoutNotificationsInput = {
+  id?: string
+  name: string
+  type?: $Enums.ChannelType
+  position: number
+  groupId: string
+  createdAt?: Date | string
+  GroupMessage?: Prisma.GroupMessageUncheckedCreateNestedManyWithoutChannelInput
+}
+
+export type ChannelCreateOrConnectWithoutNotificationsInput = {
+  where: Prisma.ChannelWhereUniqueInput
+  create: Prisma.XOR<Prisma.ChannelCreateWithoutNotificationsInput, Prisma.ChannelUncheckedCreateWithoutNotificationsInput>
+}
+
+export type ChannelUpsertWithoutNotificationsInput = {
+  update: Prisma.XOR<Prisma.ChannelUpdateWithoutNotificationsInput, Prisma.ChannelUncheckedUpdateWithoutNotificationsInput>
+  create: Prisma.XOR<Prisma.ChannelCreateWithoutNotificationsInput, Prisma.ChannelUncheckedCreateWithoutNotificationsInput>
+  where?: Prisma.ChannelWhereInput
+}
+
+export type ChannelUpdateToOneWithWhereWithoutNotificationsInput = {
+  where?: Prisma.ChannelWhereInput
+  data: Prisma.XOR<Prisma.ChannelUpdateWithoutNotificationsInput, Prisma.ChannelUncheckedUpdateWithoutNotificationsInput>
+}
+
+export type ChannelUpdateWithoutNotificationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumChannelTypeFieldUpdateOperationsInput | $Enums.ChannelType
+  position?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  group?: Prisma.GroupUpdateOneRequiredWithoutChannelNestedInput
+  GroupMessage?: Prisma.GroupMessageUpdateManyWithoutChannelNestedInput
+}
+
+export type ChannelUncheckedUpdateWithoutNotificationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumChannelTypeFieldUpdateOperationsInput | $Enums.ChannelType
+  position?: Prisma.IntFieldUpdateOperationsInput | number
+  groupId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  GroupMessage?: Prisma.GroupMessageUncheckedUpdateManyWithoutChannelNestedInput
 }
 
 export type ChannelCreateManyGroupInput = {
@@ -586,6 +676,7 @@ export type ChannelUpdateWithoutGroupInput = {
   position?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   GroupMessage?: Prisma.GroupMessageUpdateManyWithoutChannelNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutChannelNestedInput
 }
 
 export type ChannelUncheckedUpdateWithoutGroupInput = {
@@ -595,6 +686,7 @@ export type ChannelUncheckedUpdateWithoutGroupInput = {
   position?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   GroupMessage?: Prisma.GroupMessageUncheckedUpdateManyWithoutChannelNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutChannelNestedInput
 }
 
 export type ChannelUncheckedUpdateManyWithoutGroupInput = {
@@ -612,10 +704,12 @@ export type ChannelUncheckedUpdateManyWithoutGroupInput = {
 
 export type ChannelCountOutputType = {
   GroupMessage: number
+  notifications: number
 }
 
 export type ChannelCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   GroupMessage?: boolean | ChannelCountOutputTypeCountGroupMessageArgs
+  notifications?: boolean | ChannelCountOutputTypeCountNotificationsArgs
 }
 
 /**
@@ -635,6 +729,13 @@ export type ChannelCountOutputTypeCountGroupMessageArgs<ExtArgs extends runtime.
   where?: Prisma.GroupMessageWhereInput
 }
 
+/**
+ * ChannelCountOutputType without action
+ */
+export type ChannelCountOutputTypeCountNotificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.NotificationWhereInput
+}
+
 
 export type ChannelSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -645,6 +746,7 @@ export type ChannelSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   createdAt?: boolean
   group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
   GroupMessage?: boolean | Prisma.Channel$GroupMessageArgs<ExtArgs>
+  notifications?: boolean | Prisma.Channel$notificationsArgs<ExtArgs>
   _count?: boolean | Prisma.ChannelCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["channel"]>
 
@@ -681,6 +783,7 @@ export type ChannelOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
 export type ChannelInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
   GroupMessage?: boolean | Prisma.Channel$GroupMessageArgs<ExtArgs>
+  notifications?: boolean | Prisma.Channel$notificationsArgs<ExtArgs>
   _count?: boolean | Prisma.ChannelCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ChannelIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -695,6 +798,7 @@ export type $ChannelPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   objects: {
     group: Prisma.$GroupPayload<ExtArgs>
     GroupMessage: Prisma.$GroupMessagePayload<ExtArgs>[]
+    notifications: Prisma.$NotificationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1099,6 +1203,7 @@ export interface Prisma__ChannelClient<T, Null = never, ExtArgs extends runtime.
   readonly [Symbol.toStringTag]: "PrismaPromise"
   group<T extends Prisma.GroupDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GroupDefaultArgs<ExtArgs>>): Prisma.Prisma__GroupClient<runtime.Types.Result.GetResult<Prisma.$GroupPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   GroupMessage<T extends Prisma.Channel$GroupMessageArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Channel$GroupMessageArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GroupMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  notifications<T extends Prisma.Channel$notificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Channel$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1551,6 +1656,30 @@ export type Channel$GroupMessageArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.GroupMessageScalarFieldEnum | Prisma.GroupMessageScalarFieldEnum[]
+}
+
+/**
+ * Channel.notifications
+ */
+export type Channel$notificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Notification
+   */
+  select?: Prisma.NotificationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Notification
+   */
+  omit?: Prisma.NotificationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NotificationInclude<ExtArgs> | null
+  where?: Prisma.NotificationWhereInput
+  orderBy?: Prisma.NotificationOrderByWithRelationInput | Prisma.NotificationOrderByWithRelationInput[]
+  cursor?: Prisma.NotificationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.NotificationScalarFieldEnum | Prisma.NotificationScalarFieldEnum[]
 }
 
 /**

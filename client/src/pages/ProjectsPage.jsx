@@ -6,16 +6,19 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Search, Plus, Github, ExternalLink, Loader2 } from "lucide-react";
+import { Search, Plus, Github, ExternalLink, Loader2, MessageCircle } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { api } from "@/lib/api";
 import { toast } from "react-hot-toast";
 
 export default function ProjectsPage() {
+  const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [creating, setCreating] = useState(false);
+  const [joiningId, setJoiningId] = useState(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [tags, setTags] = useState("");
@@ -84,6 +87,25 @@ export default function ProjectsPage() {
     } finally {
       setCreating(false);
     }
+  };
+
+  const handleJoinProject = async (projectId) => {
+    setJoiningId(projectId);
+    try {
+      await api.post(`/projects/${projectId}/join`);
+      toast.success("Joined project!");
+      // Navigate to the project details page
+      navigate(`/projects/${projectId}`);
+    } catch (error) {
+      console.error("Failed to join project", error);
+      toast.error(error.message || "Failed to join project");
+    } finally {
+      setJoiningId(null);
+    }
+  };
+
+  const handleViewProject = (projectId) => {
+    navigate(`/projects/${projectId}`);
   };
 
   return (
@@ -160,7 +182,26 @@ export default function ProjectsPage() {
                         </a>
                     )}
                 </div>
-                <Button size="sm">Request to Join</Button>
+                {project.isMember ? (
+                  <Button 
+                    size="sm" 
+                    variant="secondary"
+                    className="gap-2"
+                    onClick={() => handleViewProject(project.id)}
+                  >
+                    <MessageCircle className="h-4 w-4" />
+                    View Project
+                  </Button>
+                ) : (
+                  <Button 
+                    size="sm"
+                    onClick={() => handleJoinProject(project.id)}
+                    disabled={joiningId === project.id}
+                  >
+                    {joiningId === project.id && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Join Project
+                  </Button>
+                )}
                 </CardFooter>
             </Card>
             ))}
