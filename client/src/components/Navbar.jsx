@@ -12,6 +12,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import NotificationDropdown from "@/components/NotificationDropdown";
 
+const API_BASE = import.meta.env.VITE_API_URL?.replace("/api", "") || "http://localhost:5000";
+
+function getAvatarSrc(url) {
+  if (!url) return undefined;
+  return url.startsWith("/media") ? `${API_BASE}${url}` : url;
+}
+
 export function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -94,7 +101,7 @@ export function Navbar() {
           <DropdownMenuTrigger asChild>
             <div className="flex items-center gap-3 pl-2 glass rounded-full p-1.5 pr-4 transition-all hover:shadow-md cursor-pointer group">
               <Avatar className="h-9 w-9 border-2 border-white shadow-sm group-hover:scale-105 transition-transform">
-                <AvatarImage src={user?.avatarUrl} />
+                <AvatarImage src={getAvatarSrc(user?.avatarUrl)} />
                 <AvatarFallback className="bg-primary/10 text-primary font-bold">
                   {user?.name?.[0] || "S"}
                 </AvatarFallback>

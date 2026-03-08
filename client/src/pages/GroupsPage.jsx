@@ -1,10 +1,27 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Search, Plus, Sparkles, Filter, Zap, Hash, Layers, Loader2, Users } from "lucide-react";
+import {
+  Search,
+  Plus,
+  Sparkles,
+  Filter,
+  Zap,
+  Hash,
+  Layers,
+  Loader2,
+  Users,
+} from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useEffect, useState } from "react";
@@ -116,41 +133,51 @@ export default function GroupsPage() {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
-      
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-           <div className="flex items-center gap-2 mb-2">
-             <Badge variant="outline" className="border-primary/20 bg-primary/5 text-primary">Academic Circles</Badge>
-             <span className="text-xs text-muted-foreground font-medium">{discoverGroups.length + joinedGroups.length} Active Groups</span>
-           </div>
-           <h1 className="text-4xl font-serif font-bold tracking-tight text-foreground">
-             Discover Your <span className="text-primary">Squad</span>
-           </h1>
-           <p className="text-muted-foreground mt-2 max-w-xl text-lg">
-             Join a circle of peers who share your passion. Collaborate, learn, and grow together.
-           </p>
+          <div className="flex items-center gap-2 mb-2">
+            <Badge
+              variant="outline"
+              className="border-primary/20 bg-primary/5 text-primary"
+            >
+              Academic Circles
+            </Badge>
+            <span className="text-xs text-muted-foreground font-medium">
+              {discoverGroups.length + joinedGroups.length} Active Groups
+            </span>
+          </div>
+          <h1 className="text-4xl font-serif font-bold tracking-tight text-foreground">
+            Discover Your <span className="text-primary">Squad</span>
+          </h1>
+          <p className="text-muted-foreground mt-2 max-w-xl text-lg">
+            Join a circle of peers who share your passion. Collaborate, learn,
+            and grow together.
+          </p>
         </div>
         <div className="flex gap-3">
-            <Button variant="outline" className="rounded-full h-12 px-6 glass hover:bg-white/50 border-white/40">
-                <Filter className="h-4 w-4 mr-2" /> Filters
-            </Button>
-            <Button 
-                onClick={() => setIsCreateOpen(true)}
-                className="rounded-full h-12 px-6 shadow-lg shadow-primary/20 bg-primary hover:bg-primary/90 text-primary-foreground"
-            >
-                <Plus className="h-4 w-4 mr-2" /> Create Circle
-            </Button>
+          <Button
+            onClick={() => setIsCreateOpen(true)}
+            className="rounded-full h-12 px-6 shadow-lg shadow-primary/20 bg-primary hover:bg-primary/90 text-primary-foreground"
+          >
+            <Plus className="h-4 w-4 mr-2" /> Create Circle
+          </Button>
         </div>
       </div>
 
       <Tabs defaultValue="discover" className="w-full">
         <TabsList className="bg-white/40 backdrop-blur-sm border border-white/20 p-1 rounded-full h-auto">
-          <TabsTrigger value="discover" className="rounded-full px-6 py-2.5 text-sm font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg shadow-primary/25 transition-all">
-             <Search className="w-4 h-4 mr-2" /> Discover
+          <TabsTrigger
+            value="discover"
+            className="rounded-full px-6 py-2.5 text-sm font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg shadow-primary/25 transition-all"
+          >
+            <Search className="w-4 h-4 mr-2" /> Discover
           </TabsTrigger>
-          <TabsTrigger value="joined" className="rounded-full px-6 py-2.5 text-sm font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg shadow-primary/25 transition-all">
-             <Layers className="w-4 h-4 mr-2" /> My Circles
+          <TabsTrigger
+            value="joined"
+            className="rounded-full px-6 py-2.5 text-sm font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg shadow-primary/25 transition-all"
+          >
+            <Layers className="w-4 h-4 mr-2" /> My Circles
           </TabsTrigger>
         </TabsList>
 
@@ -357,50 +384,71 @@ export default function GroupsPage() {
         </TabsContent>
 
         <TabsContent value="joined" className="mt-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {joinedGroups.map((group) => (
-                     <Link to={`/groups/${group.id}`} key={group.id} className="group relative">
-                        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent rounded-[2rem] blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                        <div className="relative h-full glass p-6 rounded-[2rem] border border-white/50 hover:border-primary/30 transition-all duration-300 flex flex-col justify-between">
-                            <div className="flex justify-between items-start mb-4">
-                                <div className="h-16 w-16 rounded-2xl overflow-hidden shadow-md border-2 border-white bg-muted">
-                                    <img src={group.groupIconUrl || `https://ui-avatars.com/api/?name=${group.name}&background=random`} alt={group.name} className="h-full w-full object-cover" />
-                                </div>
-                                <div className="flex flex-col items-end gap-1">
-                                    <Badge className="bg-primary/10 text-primary border-primary/20">Member</Badge>
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <h3 className="text-2xl font-bold font-serif mb-2 group-hover:text-primary transition-colors">{group.name}</h3>
-                                <p className="text-muted-foreground text-sm line-clamp-2 mb-6">{group.description}</p>
-                            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {joinedGroups.map((group) => (
+              <Link
+                to={`/groups/${group.id}`}
+                key={group.id}
+                className="group relative"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent rounded-[2rem] blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="relative h-full glass p-6 rounded-[2rem] border border-white/50 hover:border-primary/30 transition-all duration-300 flex flex-col justify-between">
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="h-16 w-16 rounded-2xl overflow-hidden shadow-md border-2 border-white bg-muted">
+                      <img
+                        src={
+                          group.groupIconUrl ||
+                          `https://ui-avatars.com/api/?name=${group.name}&background=random`
+                        }
+                        alt={group.name}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                    <div className="flex flex-col items-end gap-1">
+                      <Badge className="bg-primary/10 text-primary border-primary/20">
+                        Member
+                      </Badge>
+                    </div>
+                  </div>
 
-                            <Button className="w-full rounded-xl bg-white/50 hover:bg-white text-foreground shadow-sm">
-                                Enter Hub <Sparkles className="ml-2 h-4 w-4" />
-                            </Button>
-                        </div>
-                    </Link>
-                ))}
-                
-                {/* Create New Prompt */}
-                <div className="glass p-6 rounded-[2rem] border border-dashed border-white/40 flex flex-col items-center justify-center text-center gap-4 min-h-[250px] hover:bg-white/40 transition-colors cursor-pointer group">
-                    <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-                        <Plus className="h-8 w-8 text-muted-foreground group-hover:text-primary" />
-                    </div>
-                    <div>
-                        <h3 className="font-bold text-lg">Join More Circles</h3>
-                        <p className="text-sm text-muted-foreground max-w-[200px]">Browse the directory to find more communities.</p>
-                    </div>
+                  <div>
+                    <h3 className="text-2xl font-bold font-serif mb-2 group-hover:text-primary transition-colors">
+                      {group.name}
+                    </h3>
+                    <p className="text-muted-foreground text-sm line-clamp-2 mb-6">
+                      {group.description}
+                    </p>
+                  </div>
+
+                  <Button className="w-full rounded-xl bg-white/50 hover:bg-white text-foreground shadow-sm">
+                    Enter Hub <Sparkles className="ml-2 h-4 w-4" />
+                  </Button>
                 </div>
+              </Link>
+            ))}
+
+            {/* Create New Prompt */}
+            <div className="glass p-6 rounded-[2rem] border border-dashed border-white/40 flex flex-col items-center justify-center text-center gap-4 min-h-[250px] hover:bg-white/40 transition-colors cursor-pointer group">
+              <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                <Plus className="h-8 w-8 text-muted-foreground group-hover:text-primary" />
+              </div>
+              <div>
+                <h3 className="font-bold text-lg">Join More Circles</h3>
+                <p className="text-sm text-muted-foreground max-w-[200px]">
+                  Browse the directory to find more communities.
+                </p>
+              </div>
             </div>
+          </div>
         </TabsContent>
       </Tabs>
 
       <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
         <DialogContent className="rounded-[1.5rem] glass border-white/40 sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-xl font-serif">Create a New Circle</DialogTitle>
+            <DialogTitle className="text-xl font-serif">
+              Create a New Circle
+            </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleCreateGroup} className="space-y-4">
             <div className="space-y-2">
@@ -450,19 +498,27 @@ export default function GroupsPage() {
       </Dialog>
 
       {/* Join Group Preview Dialog */}
-      <Dialog open={!!selectedGroup} onOpenChange={(open) => !open && setSelectedGroup(null)}>
+      <Dialog
+        open={!!selectedGroup}
+        onOpenChange={(open) => !open && setSelectedGroup(null)}
+      >
         <DialogContent className="rounded-[1.5rem] glass border-white/40 sm:max-w-lg">
           <DialogHeader>
             <div className="flex items-center gap-4 mb-2">
               <div className="h-16 w-16 rounded-2xl overflow-hidden shadow-md border-2 border-white bg-muted">
-                <img 
-                  src={selectedGroup?.groupIconUrl || `https://ui-avatars.com/api/?name=${selectedGroup?.name}&background=random`} 
-                  alt={selectedGroup?.name} 
-                  className="h-full w-full object-cover" 
+                <img
+                  src={
+                    selectedGroup?.groupIconUrl ||
+                    `https://ui-avatars.com/api/?name=${selectedGroup?.name}&background=random`
+                  }
+                  alt={selectedGroup?.name}
+                  className="h-full w-full object-cover"
                 />
               </div>
               <div>
-                <DialogTitle className="text-2xl font-serif">{selectedGroup?.name}</DialogTitle>
+                <DialogTitle className="text-2xl font-serif">
+                  {selectedGroup?.name}
+                </DialogTitle>
                 <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
                   <Users className="h-4 w-4" />
                   {selectedGroup?._count?.GroupMemberShip || 0} members
@@ -473,17 +529,17 @@ export default function GroupsPage() {
               {selectedGroup?.description}
             </DialogDescription>
           </DialogHeader>
-          
+
           {selectedGroup?.interests?.length > 0 && (
             <div className="flex flex-wrap gap-2">
-              {selectedGroup.interests.map(tag => (
+              {selectedGroup.interests.map((tag) => (
                 <Badge key={tag} variant="secondary" className="bg-white/50">
                   {tag}
                 </Badge>
               ))}
             </div>
           )}
-          
+
           <DialogFooter className="gap-2 sm:gap-0">
             <Button
               variant="outline"

@@ -91,6 +91,10 @@ export const UserScalarFieldEnum = {
   interests: 'interests',
   bio: 'bio',
   avatarUrl: 'avatarUrl',
+  github: 'github',
+  linkedin: 'linkedin',
+  twitter: 'twitter',
+  experience: 'experience',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -139,6 +143,9 @@ export const GroupMessageScalarFieldEnum = {
   content: 'content',
   senderId: 'senderId',
   channelId: 'channelId',
+  fileUrl: 'fileUrl',
+  fileName: 'fileName',
+  fileType: 'fileType',
   createdAt: 'createdAt'
 } as const
 

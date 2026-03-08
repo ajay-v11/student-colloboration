@@ -1,6 +1,8 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
 import { createServer } from "http";
 import { initSocket } from "./socket/index.js";
 import authRoutes from "./routes/auth.js";
@@ -10,7 +12,11 @@ import projectRoutes from "./routes/projects.js";
 import internshipRoutes from "./routes/internships.js";
 import messagesRoutes from "./routes/messages.js";
 import notificationsRoutes from "./routes/notifications.js";
+import uploadRoutes from "./routes/uploads.js";
+import dashboardRoutes from "./routes/dashboard.js";
 import { setSocketIO } from "./services/NotificationService.js";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 const httpServer = createServer(app);
@@ -30,13 +36,18 @@ app.use(
 );
 app.use(express.json());
 
+// Serve uploaded media files
+app.use("/media", express.static(path.join(__dirname, "..", "media")));
+
 app.use("/api/auth", authRoutes);
+app.use("/api/uploads", uploadRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/groups", groupRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/internships", internshipRoutes);
 app.use("/api/messages", messagesRoutes);
 app.use("/api/notifications", notificationsRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok" });

@@ -95,6 +95,10 @@ router.get("/:id", authMiddleware, async (req, res) => {
         interests: true,
         bio: true,
         avatarUrl: true,
+        github: true,
+        linkedin: true,
+        twitter: true,
+        experience: true,
         createdAt: true,
       },
     });
@@ -119,7 +123,7 @@ router.put("/:id", authMiddleware, async (req, res) => {
       return res.status(403).json({ error: "Unauthorized to update this profile" });
     }
 
-    const { name, course, semester, college, skills, interests, bio, avatarUrl } = req.body;
+    const { name, course, semester, college, skills, interests, bio, avatarUrl, github, linkedin, twitter, experience } = req.body;
 
     const updatedUser = await prisma.user.update({
       where: { id: userId },
@@ -132,6 +136,10 @@ router.put("/:id", authMiddleware, async (req, res) => {
         interests,
         bio,
         avatarUrl,
+        github,
+        linkedin,
+        twitter,
+        experience,
       },
       select: {
         id: true,
@@ -144,6 +152,10 @@ router.put("/:id", authMiddleware, async (req, res) => {
         interests: true,
         bio: true,
         avatarUrl: true,
+        github: true,
+        linkedin: true,
+        twitter: true,
+        experience: true,
       },
     });
 

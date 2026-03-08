@@ -23,13 +23,17 @@ import {
   Twitter,
   Linkedin,
   Grid,
-  Loader2
+  Loader2,
+  Plus,
+  Trash2
 } from "lucide-react";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { api } from "@/lib/api";
 import toast from "react-hot-toast";
 import { format } from "date-fns";
+
+const API_BASE = import.meta.env.VITE_API_URL?.replace("/api", "") || "http://localhost:5000";
 
 export default function ProfilePage() {
   const { user: authUser, updateUser } = useAuth();
@@ -38,6 +42,10 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [avatarFile, setAvatarFile] = useState(null);
+  const [avatarPreview, setAvatarPreview] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -48,6 +56,10 @@ export default function ProfilePage() {
     skills: "",
     interests: "",
     avatarUrl: "",
+    github: "",
+    linkedin: "",
+    twitter: "",
+    experience: [],
   });
 
   const fetchProfile = useCallback(async () => {
@@ -78,13 +90,59 @@ export default function ProfilePage() {
       skills: profile?.skills?.join(", ") || "",
       interests: profile?.interests?.join(", ") || "",
       avatarUrl: profile?.avatarUrl || "",
+      github: profile?.github || "",
+      linkedin: profile?.linkedin || "",
+      twitter: profile?.twitter || "",
+      experience: profile?.experience || [],
     });
+    setAvatarFile(null);
+    setAvatarPreview(null);
     setIsEditOpen(true);
+  };
+
+  const handleAvatarChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!["image/png", "image/jpeg", "image/jpg"].includes(file.type)) {
+      toast.error("Only PNG, JPEG, and JPG images are allowed");
+      return;
+    }
+    if (file.size > 4 * 1024 * 1024) {
+      toast.error("Image must be under 4MB");
+      return;
+    }
+
+    setAvatarFile(file);
+    setAvatarPreview(URL.createObjectURL(file));
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const addExperience = () => {
+    setFormData((prev) => ({
+      ...prev,
+      experience: [...prev.experience, { title: "", company: "", duration: "", description: "" }],
+    }));
+  };
+
+  const updateExperience = (index, field, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      experience: prev.experience.map((exp, i) =>
+        i === index ? { ...exp, [field]: value } : exp
+      ),
+    }));
+  };
+
+  const removeExperience = (index) => {
+    setFormData((prev) => ({
+      ...prev,
+      experience: prev.experience.filter((_, i) => i !== index),
+    }));
   };
 
   const handleSaveProfile = async () => {
@@ -95,6 +153,20 @@ export default function ProfilePage() {
 
     try {
       setSaving(true);
+
+      let avatarUrl = formData.avatarUrl.trim() || null;
+
+      if (avatarFile) {
+        setUploading(true);
+        const uploadData = new FormData();
+        uploadData.append("image", avatarFile);
+        const { url } = await api.post("/uploads/profile", uploadData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        avatarUrl = url;
+        setUploading(false);
+      }
+
       const payload = {
         name: formData.name.trim(),
         bio: formData.bio.trim() || null,
@@ -107,7 +179,13 @@ export default function ProfilePage() {
         interests: formData.interests
           ? formData.interests.split(",").map((s) => s.trim()).filter(Boolean)
           : [],
-        avatarUrl: formData.avatarUrl.trim() || null,
+        avatarUrl,
+        github: formData.github.trim() || null,
+        linkedin: formData.linkedin.trim() || null,
+        twitter: formData.twitter.trim() || null,
+        experience: formData.experience.filter(
+          (exp) => exp.title?.trim() || exp.company?.trim()
+        ),
       };
 
       const updatedUser = await api.put(`/users/${authUser.id}`, payload);
@@ -162,7 +240,7 @@ export default function ProfilePage() {
               <div className="relative -mt-20 md:-mt-24 mb-2 md:mb-0 shrink-0">
                  <div className="h-32 w-32 md:h-40 md:w-40 rounded-[2.5rem] p-1.5 bg-white/80 backdrop-blur-sm shadow-xl ring-1 ring-white/50">
                     <Avatar className="h-full w-full rounded-[2rem]">
-                        <AvatarImage src={profile.avatarUrl || `https://i.pravatar.cc/150?u=${profile.id}`} className="object-cover" />
+                        <AvatarImage src={profile.avatarUrl ? (profile.avatarUrl.startsWith("/media") ? `${API_BASE}${profile.avatarUrl}` : profile.avatarUrl) : `https://i.pravatar.cc/150?u=${profile.id}`} className="object-cover" />
                         <AvatarFallback className="text-4xl font-serif bg-primary/10 text-primary">{profile.name?.[0] || "?"}</AvatarFallback>
                     </Avatar>
                  </div>
@@ -179,9 +257,11 @@ export default function ProfilePage() {
                         </p>
                     </div>
                     <div className="flex gap-2">
-                        <Button variant="outline" className="rounded-xl border-primary/20 hover:bg-primary/5 hover:text-primary hover:border-primary/50 transition-all">
-                            <Github className="h-4 w-4 mr-2" /> GitHub
-                        </Button>
+                        {profile.github && (
+                            <Button variant="outline" className="rounded-xl border-primary/20 hover:bg-primary/5 hover:text-primary hover:border-primary/50 transition-all" onClick={() => window.open(profile.github.startsWith('http') ? profile.github : `https://${profile.github}`, '_blank')}>
+                                <Github className="h-4 w-4 mr-2" /> GitHub
+                            </Button>
+                        )}
                         <Button 
                           onClick={openEditDialog}
                           className="rounded-xl shadow-lg shadow-primary/25 bg-primary hover:bg-primary/90"
@@ -267,9 +347,10 @@ export default function ProfilePage() {
               <div>
                   <h3 className="font-serif font-bold text-lg mb-3">Socials</h3>
                   <div className="flex gap-2">
-                      <Button variant="ghost" size="icon" className="rounded-full hover:bg-blue-50 hover:text-blue-600"><Twitter className="h-5 w-5" /></Button>
-                      <Button variant="ghost" size="icon" className="rounded-full hover:bg-blue-50 hover:text-blue-700"><Linkedin className="h-5 w-5" /></Button>
-                      <Button variant="ghost" size="icon" className="rounded-full hover:bg-gray-100 hover:text-black"><Github className="h-5 w-5" /></Button>
+                      {profile.twitter && <Button variant="ghost" size="icon" className="rounded-full hover:bg-blue-50 hover:text-blue-600" onClick={() => window.open(profile.twitter.startsWith('http') ? profile.twitter : `https://${profile.twitter}`, '_blank')}><Twitter className="h-5 w-5" /></Button>}
+                      {profile.linkedin && <Button variant="ghost" size="icon" className="rounded-full hover:bg-blue-50 hover:text-blue-700" onClick={() => window.open(profile.linkedin.startsWith('http') ? profile.linkedin : `https://${profile.linkedin}`, '_blank')}><Linkedin className="h-5 w-5" /></Button>}
+                      {profile.github && <Button variant="ghost" size="icon" className="rounded-full hover:bg-gray-100 hover:text-black" onClick={() => window.open(profile.github.startsWith('http') ? profile.github : `https://${profile.github}`, '_blank')}><Github className="h-5 w-5" /></Button>}
+                      {!profile.twitter && !profile.linkedin && !profile.github && <p className="text-muted-foreground text-sm">No socials added yet.</p>}
                   </div>
               </div>
            </div>
@@ -303,11 +384,29 @@ export default function ProfilePage() {
                        <h3 className="text-xl font-serif font-bold flex items-center gap-2">
                            <Briefcase className="h-5 w-5 text-primary" /> Experience
                        </h3>
-                       <div className="glass-card p-12 rounded-[2rem] text-center border-dashed border-2 border-white/30">
+                       {profile.experience?.length > 0 ? (
+                         <div className="space-y-4">
+                           {profile.experience.map((exp, i) => (
+                             <div key={i} className="glass-card p-6 rounded-[1.5rem] flex gap-4 items-start group">
+                               <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                                 <Briefcase className="h-6 w-6" />
+                               </div>
+                               <div>
+                                 <h4 className="font-bold text-lg">{exp.title}</h4>
+                                 {exp.company && <p className="text-sm font-medium text-foreground/80">{exp.company}</p>}
+                                 {exp.duration && <p className="text-sm text-muted-foreground mt-1">{exp.duration}</p>}
+                                 {exp.description && <p className="text-sm text-muted-foreground mt-2">{exp.description}</p>}
+                               </div>
+                             </div>
+                           ))}
+                         </div>
+                       ) : (
+                         <div className="glass-card p-12 rounded-[2rem] text-center border-dashed border-2 border-white/30">
                            <Briefcase className="h-16 w-16 mx-auto mb-4 text-muted-foreground/30" />
                            <h3 className="text-lg font-bold text-foreground">No experience added</h3>
                            <p className="text-muted-foreground">Experience entries will appear here.</p>
-                       </div>
+                         </div>
+                       )}
 
                        <h3 className="text-xl font-serif font-bold flex items-center gap-2 mt-8">
                            <Award className="h-5 w-5 text-primary" /> Education
@@ -451,16 +550,132 @@ export default function ProfilePage() {
               />
             </div>
 
+            <div className="space-y-4">
+              <Label className="text-base font-semibold">Social Links</Label>
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <Github className="h-5 w-5 text-muted-foreground shrink-0" />
+                  <Input
+                    id="github"
+                    name="github"
+                    value={formData.github}
+                    onChange={handleInputChange}
+                    placeholder="GitHub URL (e.g., https://github.com/username)"
+                    className="rounded-xl"
+                  />
+                </div>
+                <div className="flex items-center gap-3">
+                  <Linkedin className="h-5 w-5 text-muted-foreground shrink-0" />
+                  <Input
+                    id="linkedin"
+                    name="linkedin"
+                    value={formData.linkedin}
+                    onChange={handleInputChange}
+                    placeholder="LinkedIn URL (e.g., https://linkedin.com/in/username)"
+                    className="rounded-xl"
+                  />
+                </div>
+                <div className="flex items-center gap-3">
+                  <Twitter className="h-5 w-5 text-muted-foreground shrink-0" />
+                  <Input
+                    id="twitter"
+                    name="twitter"
+                    value={formData.twitter}
+                    onChange={handleInputChange}
+                    placeholder="Twitter/X URL (e.g., https://x.com/username)"
+                    className="rounded-xl"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <Label className="text-base font-semibold">Experience</Label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={addExperience}
+                  className="rounded-xl gap-1"
+                >
+                  <Plus className="h-4 w-4" /> Add
+                </Button>
+              </div>
+              {formData.experience.map((exp, index) => (
+                <div key={index} className="space-y-2 p-4 rounded-xl border border-border bg-muted/30 relative">
+                  <button
+                    type="button"
+                    onClick={() => removeExperience(index)}
+                    className="absolute top-3 right-3 text-muted-foreground hover:text-destructive transition-colors"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                  <Input
+                    value={exp.title}
+                    onChange={(e) => updateExperience(index, "title", e.target.value)}
+                    placeholder="Title (e.g., Frontend Intern)"
+                    className="rounded-xl"
+                  />
+                  <Input
+                    value={exp.company}
+                    onChange={(e) => updateExperience(index, "company", e.target.value)}
+                    placeholder="Company / Organization"
+                    className="rounded-xl"
+                  />
+                  <Input
+                    value={exp.duration}
+                    onChange={(e) => updateExperience(index, "duration", e.target.value)}
+                    placeholder="Duration (e.g., Jan 2025 - Mar 2025)"
+                    className="rounded-xl"
+                  />
+                  <Textarea
+                    value={exp.description}
+                    onChange={(e) => updateExperience(index, "description", e.target.value)}
+                    placeholder="Brief description..."
+                    rows={2}
+                    className="rounded-xl resize-none"
+                  />
+                </div>
+              ))}
+            </div>
+
             <div className="space-y-2">
-              <Label htmlFor="avatarUrl">Avatar URL</Label>
-              <Input
-                id="avatarUrl"
-                name="avatarUrl"
-                value={formData.avatarUrl}
-                onChange={handleInputChange}
-                placeholder="https://..."
-                className="rounded-xl"
-              />
+              <Label>Profile Picture</Label>
+              <div className="flex items-center gap-4">
+                <div className="h-16 w-16 rounded-xl overflow-hidden bg-muted shrink-0">
+                  {avatarPreview || formData.avatarUrl ? (
+                    <img
+                      src={avatarPreview || (formData.avatarUrl.startsWith("/media") ? `${API_BASE}${formData.avatarUrl}` : formData.avatarUrl)}
+                      alt="Avatar preview"
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="h-full w-full flex items-center justify-center text-muted-foreground text-xl font-serif">
+                      {formData.name?.[0] || "?"}
+                    </div>
+                  )}
+                </div>
+                <div className="flex-1 space-y-2">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/png,image/jpeg,image/jpg"
+                    onChange={handleAvatarChange}
+                    className="hidden"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="rounded-xl gap-1"
+                  >
+                    <Plus className="h-4 w-4" /> Upload Image
+                  </Button>
+                  <p className="text-xs text-muted-foreground">PNG, JPEG, JPG. Max 4MB.</p>
+                </div>
+              </div>
             </div>
           </div>
 

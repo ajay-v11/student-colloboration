@@ -81,7 +81,7 @@ export function initSocket(server) {
     });
 
     // Send message to channel
-    socket.on("channel:message", async ({ channelId, groupId, content }) => {
+    socket.on("channel:message", async ({ channelId, groupId, content, fileUrl, fileName, fileType }) => {
       try {
         // Verify membership
         const membership = await prisma.groupMemberShip.findUnique({
@@ -104,6 +104,9 @@ export function initSocket(server) {
             content,
             senderId: socket.user.id,
             channelId: channelId,
+            fileUrl,
+            fileName,
+            fileType,
           },
           include: {
             sender: {

@@ -29,6 +29,9 @@ export type GroupMessageMinAggregateOutputType = {
   content: string | null
   senderId: string | null
   channelId: string | null
+  fileUrl: string | null
+  fileName: string | null
+  fileType: string | null
   createdAt: Date | null
 }
 
@@ -37,6 +40,9 @@ export type GroupMessageMaxAggregateOutputType = {
   content: string | null
   senderId: string | null
   channelId: string | null
+  fileUrl: string | null
+  fileName: string | null
+  fileType: string | null
   createdAt: Date | null
 }
 
@@ -45,6 +51,9 @@ export type GroupMessageCountAggregateOutputType = {
   content: number
   senderId: number
   channelId: number
+  fileUrl: number
+  fileName: number
+  fileType: number
   createdAt: number
   _all: number
 }
@@ -55,6 +64,9 @@ export type GroupMessageMinAggregateInputType = {
   content?: true
   senderId?: true
   channelId?: true
+  fileUrl?: true
+  fileName?: true
+  fileType?: true
   createdAt?: true
 }
 
@@ -63,6 +75,9 @@ export type GroupMessageMaxAggregateInputType = {
   content?: true
   senderId?: true
   channelId?: true
+  fileUrl?: true
+  fileName?: true
+  fileType?: true
   createdAt?: true
 }
 
@@ -71,6 +86,9 @@ export type GroupMessageCountAggregateInputType = {
   content?: true
   senderId?: true
   channelId?: true
+  fileUrl?: true
+  fileName?: true
+  fileType?: true
   createdAt?: true
   _all?: true
 }
@@ -152,6 +170,9 @@ export type GroupMessageGroupByOutputType = {
   content: string
   senderId: string
   channelId: string
+  fileUrl: string | null
+  fileName: string | null
+  fileType: string | null
   createdAt: Date
   _count: GroupMessageCountAggregateOutputType | null
   _min: GroupMessageMinAggregateOutputType | null
@@ -181,6 +202,9 @@ export type GroupMessageWhereInput = {
   content?: Prisma.StringFilter<"GroupMessage"> | string
   senderId?: Prisma.StringFilter<"GroupMessage"> | string
   channelId?: Prisma.StringFilter<"GroupMessage"> | string
+  fileUrl?: Prisma.StringNullableFilter<"GroupMessage"> | string | null
+  fileName?: Prisma.StringNullableFilter<"GroupMessage"> | string | null
+  fileType?: Prisma.StringNullableFilter<"GroupMessage"> | string | null
   createdAt?: Prisma.DateTimeFilter<"GroupMessage"> | Date | string
   sender?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   channel?: Prisma.XOR<Prisma.ChannelScalarRelationFilter, Prisma.ChannelWhereInput>
@@ -191,6 +215,9 @@ export type GroupMessageOrderByWithRelationInput = {
   content?: Prisma.SortOrder
   senderId?: Prisma.SortOrder
   channelId?: Prisma.SortOrder
+  fileUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  fileName?: Prisma.SortOrderInput | Prisma.SortOrder
+  fileType?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   sender?: Prisma.UserOrderByWithRelationInput
   channel?: Prisma.ChannelOrderByWithRelationInput
@@ -204,6 +231,9 @@ export type GroupMessageWhereUniqueInput = Prisma.AtLeast<{
   content?: Prisma.StringFilter<"GroupMessage"> | string
   senderId?: Prisma.StringFilter<"GroupMessage"> | string
   channelId?: Prisma.StringFilter<"GroupMessage"> | string
+  fileUrl?: Prisma.StringNullableFilter<"GroupMessage"> | string | null
+  fileName?: Prisma.StringNullableFilter<"GroupMessage"> | string | null
+  fileType?: Prisma.StringNullableFilter<"GroupMessage"> | string | null
   createdAt?: Prisma.DateTimeFilter<"GroupMessage"> | Date | string
   sender?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   channel?: Prisma.XOR<Prisma.ChannelScalarRelationFilter, Prisma.ChannelWhereInput>
@@ -214,6 +244,9 @@ export type GroupMessageOrderByWithAggregationInput = {
   content?: Prisma.SortOrder
   senderId?: Prisma.SortOrder
   channelId?: Prisma.SortOrder
+  fileUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  fileName?: Prisma.SortOrderInput | Prisma.SortOrder
+  fileType?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.GroupMessageCountOrderByAggregateInput
   _max?: Prisma.GroupMessageMaxOrderByAggregateInput
@@ -228,12 +261,18 @@ export type GroupMessageScalarWhereWithAggregatesInput = {
   content?: Prisma.StringWithAggregatesFilter<"GroupMessage"> | string
   senderId?: Prisma.StringWithAggregatesFilter<"GroupMessage"> | string
   channelId?: Prisma.StringWithAggregatesFilter<"GroupMessage"> | string
+  fileUrl?: Prisma.StringNullableWithAggregatesFilter<"GroupMessage"> | string | null
+  fileName?: Prisma.StringNullableWithAggregatesFilter<"GroupMessage"> | string | null
+  fileType?: Prisma.StringNullableWithAggregatesFilter<"GroupMessage"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"GroupMessage"> | Date | string
 }
 
 export type GroupMessageCreateInput = {
   id?: string
   content: string
+  fileUrl?: string | null
+  fileName?: string | null
+  fileType?: string | null
   createdAt?: Date | string
   sender: Prisma.UserCreateNestedOneWithoutGroupMessageInput
   channel: Prisma.ChannelCreateNestedOneWithoutGroupMessageInput
@@ -244,12 +283,18 @@ export type GroupMessageUncheckedCreateInput = {
   content: string
   senderId: string
   channelId: string
+  fileUrl?: string | null
+  fileName?: string | null
+  fileType?: string | null
   createdAt?: Date | string
 }
 
 export type GroupMessageUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  fileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sender?: Prisma.UserUpdateOneRequiredWithoutGroupMessageNestedInput
   channel?: Prisma.ChannelUpdateOneRequiredWithoutGroupMessageNestedInput
@@ -260,6 +305,9 @@ export type GroupMessageUncheckedUpdateInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   senderId?: Prisma.StringFieldUpdateOperationsInput | string
   channelId?: Prisma.StringFieldUpdateOperationsInput | string
+  fileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -268,12 +316,18 @@ export type GroupMessageCreateManyInput = {
   content: string
   senderId: string
   channelId: string
+  fileUrl?: string | null
+  fileName?: string | null
+  fileType?: string | null
   createdAt?: Date | string
 }
 
 export type GroupMessageUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  fileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -282,6 +336,9 @@ export type GroupMessageUncheckedUpdateManyInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   senderId?: Prisma.StringFieldUpdateOperationsInput | string
   channelId?: Prisma.StringFieldUpdateOperationsInput | string
+  fileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -300,6 +357,9 @@ export type GroupMessageCountOrderByAggregateInput = {
   content?: Prisma.SortOrder
   senderId?: Prisma.SortOrder
   channelId?: Prisma.SortOrder
+  fileUrl?: Prisma.SortOrder
+  fileName?: Prisma.SortOrder
+  fileType?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -308,6 +368,9 @@ export type GroupMessageMaxOrderByAggregateInput = {
   content?: Prisma.SortOrder
   senderId?: Prisma.SortOrder
   channelId?: Prisma.SortOrder
+  fileUrl?: Prisma.SortOrder
+  fileName?: Prisma.SortOrder
+  fileType?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -316,6 +379,9 @@ export type GroupMessageMinOrderByAggregateInput = {
   content?: Prisma.SortOrder
   senderId?: Prisma.SortOrder
   channelId?: Prisma.SortOrder
+  fileUrl?: Prisma.SortOrder
+  fileName?: Prisma.SortOrder
+  fileType?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -406,6 +472,9 @@ export type GroupMessageUncheckedUpdateManyWithoutChannelNestedInput = {
 export type GroupMessageCreateWithoutSenderInput = {
   id?: string
   content: string
+  fileUrl?: string | null
+  fileName?: string | null
+  fileType?: string | null
   createdAt?: Date | string
   channel: Prisma.ChannelCreateNestedOneWithoutGroupMessageInput
 }
@@ -414,6 +483,9 @@ export type GroupMessageUncheckedCreateWithoutSenderInput = {
   id?: string
   content: string
   channelId: string
+  fileUrl?: string | null
+  fileName?: string | null
+  fileType?: string | null
   createdAt?: Date | string
 }
 
@@ -451,12 +523,18 @@ export type GroupMessageScalarWhereInput = {
   content?: Prisma.StringFilter<"GroupMessage"> | string
   senderId?: Prisma.StringFilter<"GroupMessage"> | string
   channelId?: Prisma.StringFilter<"GroupMessage"> | string
+  fileUrl?: Prisma.StringNullableFilter<"GroupMessage"> | string | null
+  fileName?: Prisma.StringNullableFilter<"GroupMessage"> | string | null
+  fileType?: Prisma.StringNullableFilter<"GroupMessage"> | string | null
   createdAt?: Prisma.DateTimeFilter<"GroupMessage"> | Date | string
 }
 
 export type GroupMessageCreateWithoutChannelInput = {
   id?: string
   content: string
+  fileUrl?: string | null
+  fileName?: string | null
+  fileType?: string | null
   createdAt?: Date | string
   sender: Prisma.UserCreateNestedOneWithoutGroupMessageInput
 }
@@ -465,6 +543,9 @@ export type GroupMessageUncheckedCreateWithoutChannelInput = {
   id?: string
   content: string
   senderId: string
+  fileUrl?: string | null
+  fileName?: string | null
+  fileType?: string | null
   createdAt?: Date | string
 }
 
@@ -498,12 +579,18 @@ export type GroupMessageCreateManySenderInput = {
   id?: string
   content: string
   channelId: string
+  fileUrl?: string | null
+  fileName?: string | null
+  fileType?: string | null
   createdAt?: Date | string
 }
 
 export type GroupMessageUpdateWithoutSenderInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  fileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   channel?: Prisma.ChannelUpdateOneRequiredWithoutGroupMessageNestedInput
 }
@@ -512,6 +599,9 @@ export type GroupMessageUncheckedUpdateWithoutSenderInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
   channelId?: Prisma.StringFieldUpdateOperationsInput | string
+  fileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -519,6 +609,9 @@ export type GroupMessageUncheckedUpdateManyWithoutSenderInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
   channelId?: Prisma.StringFieldUpdateOperationsInput | string
+  fileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -526,12 +619,18 @@ export type GroupMessageCreateManyChannelInput = {
   id?: string
   content: string
   senderId: string
+  fileUrl?: string | null
+  fileName?: string | null
+  fileType?: string | null
   createdAt?: Date | string
 }
 
 export type GroupMessageUpdateWithoutChannelInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  fileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sender?: Prisma.UserUpdateOneRequiredWithoutGroupMessageNestedInput
 }
@@ -540,6 +639,9 @@ export type GroupMessageUncheckedUpdateWithoutChannelInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
   senderId?: Prisma.StringFieldUpdateOperationsInput | string
+  fileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -547,6 +649,9 @@ export type GroupMessageUncheckedUpdateManyWithoutChannelInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
   senderId?: Prisma.StringFieldUpdateOperationsInput | string
+  fileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -557,6 +662,9 @@ export type GroupMessageSelect<ExtArgs extends runtime.Types.Extensions.Internal
   content?: boolean
   senderId?: boolean
   channelId?: boolean
+  fileUrl?: boolean
+  fileName?: boolean
+  fileType?: boolean
   createdAt?: boolean
   sender?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   channel?: boolean | Prisma.ChannelDefaultArgs<ExtArgs>
@@ -567,6 +675,9 @@ export type GroupMessageSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   content?: boolean
   senderId?: boolean
   channelId?: boolean
+  fileUrl?: boolean
+  fileName?: boolean
+  fileType?: boolean
   createdAt?: boolean
   sender?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   channel?: boolean | Prisma.ChannelDefaultArgs<ExtArgs>
@@ -577,6 +688,9 @@ export type GroupMessageSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   content?: boolean
   senderId?: boolean
   channelId?: boolean
+  fileUrl?: boolean
+  fileName?: boolean
+  fileType?: boolean
   createdAt?: boolean
   sender?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   channel?: boolean | Prisma.ChannelDefaultArgs<ExtArgs>
@@ -587,10 +701,13 @@ export type GroupMessageSelectScalar = {
   content?: boolean
   senderId?: boolean
   channelId?: boolean
+  fileUrl?: boolean
+  fileName?: boolean
+  fileType?: boolean
   createdAt?: boolean
 }
 
-export type GroupMessageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "content" | "senderId" | "channelId" | "createdAt", ExtArgs["result"]["groupMessage"]>
+export type GroupMessageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "content" | "senderId" | "channelId" | "fileUrl" | "fileName" | "fileType" | "createdAt", ExtArgs["result"]["groupMessage"]>
 export type GroupMessageInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   sender?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   channel?: boolean | Prisma.ChannelDefaultArgs<ExtArgs>
@@ -615,6 +732,9 @@ export type $GroupMessagePayload<ExtArgs extends runtime.Types.Extensions.Intern
     content: string
     senderId: string
     channelId: string
+    fileUrl: string | null
+    fileName: string | null
+    fileType: string | null
     createdAt: Date
   }, ExtArgs["result"]["groupMessage"]>
   composites: {}
@@ -1045,6 +1165,9 @@ export interface GroupMessageFieldRefs {
   readonly content: Prisma.FieldRef<"GroupMessage", 'String'>
   readonly senderId: Prisma.FieldRef<"GroupMessage", 'String'>
   readonly channelId: Prisma.FieldRef<"GroupMessage", 'String'>
+  readonly fileUrl: Prisma.FieldRef<"GroupMessage", 'String'>
+  readonly fileName: Prisma.FieldRef<"GroupMessage", 'String'>
+  readonly fileType: Prisma.FieldRef<"GroupMessage", 'String'>
   readonly createdAt: Prisma.FieldRef<"GroupMessage", 'DateTime'>
 }
     

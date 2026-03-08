@@ -76,8 +76,8 @@ export function SocketProvider({ children }) {
     socketRef.current?.emit('channel:leave', { channelId });
   }, []);
 
-  const sendChannelMessage = useCallback((channelId, groupId, content) => {
-    socketRef.current?.emit('channel:message', { channelId, groupId, content });
+  const sendChannelMessage = useCallback((channelId, groupId, content, fileData) => {
+    socketRef.current?.emit('channel:message', { channelId, groupId, content, ...fileData });
   }, []);
 
   const setChannelTyping = useCallback((channelId, isTyping) => {

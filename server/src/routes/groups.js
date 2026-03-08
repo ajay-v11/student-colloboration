@@ -18,8 +18,14 @@ const createChannelSchema = z.object({
 });
 
 const sendMessageSchema = z.object({
-  content: z.string().min(1, "Message cannot be empty"),
-});
+  content: z.string().optional().default(""),
+  fileUrl: z.string().optional(),
+  fileName: z.string().optional(),
+  fileType: z.string().optional(),
+}).refine(
+  (data) => data.content.length > 0 || data.fileUrl,
+  { message: "Message must have content or a file attachment" }
+);
 
 // Create a group
 router.post("/createGroup", authMiddleware, async (req, res) => {
@@ -446,7 +452,7 @@ router.post("/:groupId/channels/:channelId/messages", authMiddleware, async (req
   try {
     const userId = req.user.id;
     const { groupId, channelId } = req.params;
-    const { content } = sendMessageSchema.parse(req.body);
+    const { content, fileUrl, fileName, fileType } = sendMessageSchema.parse(req.body);
 
     // Verify membership
     const membership = await prisma.groupMemberShip.findUnique({
@@ -467,6 +473,9 @@ router.post("/:groupId/channels/:channelId/messages", authMiddleware, async (req
         content,
         senderId: userId,
         channelId: channelId,
+        fileUrl,
+        fileName,
+        fileType,
       },
       include: {
         sender: {

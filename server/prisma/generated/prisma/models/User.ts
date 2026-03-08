@@ -44,6 +44,9 @@ export type UserMinAggregateOutputType = {
   college: string | null
   bio: string | null
   avatarUrl: string | null
+  github: string | null
+  linkedin: string | null
+  twitter: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -58,6 +61,9 @@ export type UserMaxAggregateOutputType = {
   college: string | null
   bio: string | null
   avatarUrl: string | null
+  github: string | null
+  linkedin: string | null
+  twitter: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -74,6 +80,10 @@ export type UserCountAggregateOutputType = {
   interests: number
   bio: number
   avatarUrl: number
+  github: number
+  linkedin: number
+  twitter: number
+  experience: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -98,6 +108,9 @@ export type UserMinAggregateInputType = {
   college?: true
   bio?: true
   avatarUrl?: true
+  github?: true
+  linkedin?: true
+  twitter?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -112,6 +125,9 @@ export type UserMaxAggregateInputType = {
   college?: true
   bio?: true
   avatarUrl?: true
+  github?: true
+  linkedin?: true
+  twitter?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -128,6 +144,10 @@ export type UserCountAggregateInputType = {
   interests?: true
   bio?: true
   avatarUrl?: true
+  github?: true
+  linkedin?: true
+  twitter?: true
+  experience?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -231,6 +251,10 @@ export type UserGroupByOutputType = {
   interests: string[]
   bio: string | null
   avatarUrl: string | null
+  github: string | null
+  linkedin: string | null
+  twitter: string | null
+  experience: runtime.JsonValue[]
   createdAt: Date
   updatedAt: Date
   _count: UserCountAggregateOutputType | null
@@ -270,6 +294,10 @@ export type UserWhereInput = {
   interests?: Prisma.StringNullableListFilter<"User">
   bio?: Prisma.StringNullableFilter<"User"> | string | null
   avatarUrl?: Prisma.StringNullableFilter<"User"> | string | null
+  github?: Prisma.StringNullableFilter<"User"> | string | null
+  linkedin?: Prisma.StringNullableFilter<"User"> | string | null
+  twitter?: Prisma.StringNullableFilter<"User"> | string | null
+  experience?: Prisma.JsonNullableListFilter<"User">
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   GroupMemberShip?: Prisma.GroupMemberShipListRelationFilter
@@ -296,6 +324,10 @@ export type UserOrderByWithRelationInput = {
   interests?: Prisma.SortOrder
   bio?: Prisma.SortOrderInput | Prisma.SortOrder
   avatarUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  github?: Prisma.SortOrderInput | Prisma.SortOrder
+  linkedin?: Prisma.SortOrderInput | Prisma.SortOrder
+  twitter?: Prisma.SortOrderInput | Prisma.SortOrder
+  experience?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   GroupMemberShip?: Prisma.GroupMemberShipOrderByRelationAggregateInput
@@ -325,6 +357,10 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   interests?: Prisma.StringNullableListFilter<"User">
   bio?: Prisma.StringNullableFilter<"User"> | string | null
   avatarUrl?: Prisma.StringNullableFilter<"User"> | string | null
+  github?: Prisma.StringNullableFilter<"User"> | string | null
+  linkedin?: Prisma.StringNullableFilter<"User"> | string | null
+  twitter?: Prisma.StringNullableFilter<"User"> | string | null
+  experience?: Prisma.JsonNullableListFilter<"User">
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   GroupMemberShip?: Prisma.GroupMemberShipListRelationFilter
@@ -351,6 +387,10 @@ export type UserOrderByWithAggregationInput = {
   interests?: Prisma.SortOrder
   bio?: Prisma.SortOrderInput | Prisma.SortOrder
   avatarUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  github?: Prisma.SortOrderInput | Prisma.SortOrder
+  linkedin?: Prisma.SortOrderInput | Prisma.SortOrder
+  twitter?: Prisma.SortOrderInput | Prisma.SortOrder
+  experience?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
@@ -375,6 +415,10 @@ export type UserScalarWhereWithAggregatesInput = {
   interests?: Prisma.StringNullableListFilter<"User">
   bio?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   avatarUrl?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  github?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  linkedin?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  twitter?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  experience?: Prisma.JsonNullableListFilter<"User">
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
 }
@@ -391,6 +435,10 @@ export type UserCreateInput = {
   interests?: Prisma.UserCreateinterestsInput | string[]
   bio?: string | null
   avatarUrl?: string | null
+  github?: string | null
+  linkedin?: string | null
+  twitter?: string | null
+  experience?: Prisma.UserCreateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Date | string
   updatedAt?: Date | string
   GroupMemberShip?: Prisma.GroupMemberShipCreateNestedManyWithoutUserInput
@@ -417,6 +465,10 @@ export type UserUncheckedCreateInput = {
   interests?: Prisma.UserCreateinterestsInput | string[]
   bio?: string | null
   avatarUrl?: string | null
+  github?: string | null
+  linkedin?: string | null
+  twitter?: string | null
+  experience?: Prisma.UserCreateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Date | string
   updatedAt?: Date | string
   GroupMemberShip?: Prisma.GroupMemberShipUncheckedCreateNestedManyWithoutUserInput
@@ -443,6 +495,10 @@ export type UserUpdateInput = {
   interests?: Prisma.UserUpdateinterestsInput | string[]
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  github?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  twitter?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experience?: Prisma.UserUpdateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   GroupMemberShip?: Prisma.GroupMemberShipUpdateManyWithoutUserNestedInput
@@ -469,6 +525,10 @@ export type UserUncheckedUpdateInput = {
   interests?: Prisma.UserUpdateinterestsInput | string[]
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  github?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  twitter?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experience?: Prisma.UserUpdateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   GroupMemberShip?: Prisma.GroupMemberShipUncheckedUpdateManyWithoutUserNestedInput
@@ -495,6 +555,10 @@ export type UserCreateManyInput = {
   interests?: Prisma.UserCreateinterestsInput | string[]
   bio?: string | null
   avatarUrl?: string | null
+  github?: string | null
+  linkedin?: string | null
+  twitter?: string | null
+  experience?: Prisma.UserCreateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -511,6 +575,10 @@ export type UserUpdateManyMutationInput = {
   interests?: Prisma.UserUpdateinterestsInput | string[]
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  github?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  twitter?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experience?: Prisma.UserUpdateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -527,6 +595,10 @@ export type UserUncheckedUpdateManyInput = {
   interests?: Prisma.UserUpdateinterestsInput | string[]
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  github?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  twitter?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experience?: Prisma.UserUpdateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -536,6 +608,21 @@ export type StringNullableListFilter<$PrismaModel = never> = {
   has?: string | Prisma.StringFieldRefInput<$PrismaModel> | null
   hasEvery?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
   hasSome?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
+  isEmpty?: boolean
+}
+
+export type JsonNullableListFilter<$PrismaModel = never> =
+| Prisma.PatchUndefined<
+    Prisma.Either<Required<JsonNullableListFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableListFilterBase<$PrismaModel>>, 'path'>>,
+    Required<JsonNullableListFilterBase<$PrismaModel>>
+  >
+| Prisma.OptionalFlat<Omit<Required<JsonNullableListFilterBase<$PrismaModel>>, 'path'>>
+
+export type JsonNullableListFilterBase<$PrismaModel = never> = {
+  equals?: runtime.InputJsonValue[] | Prisma.ListJsonFieldRefInput<$PrismaModel> | null
+  has?: runtime.InputJsonValue | Prisma.JsonFieldRefInput<$PrismaModel> | null
+  hasEvery?: runtime.InputJsonValue[] | Prisma.ListJsonFieldRefInput<$PrismaModel>
+  hasSome?: runtime.InputJsonValue[] | Prisma.ListJsonFieldRefInput<$PrismaModel>
   isEmpty?: boolean
 }
 
@@ -551,6 +638,10 @@ export type UserCountOrderByAggregateInput = {
   interests?: Prisma.SortOrder
   bio?: Prisma.SortOrder
   avatarUrl?: Prisma.SortOrder
+  github?: Prisma.SortOrder
+  linkedin?: Prisma.SortOrder
+  twitter?: Prisma.SortOrder
+  experience?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -569,6 +660,9 @@ export type UserMaxOrderByAggregateInput = {
   college?: Prisma.SortOrder
   bio?: Prisma.SortOrder
   avatarUrl?: Prisma.SortOrder
+  github?: Prisma.SortOrder
+  linkedin?: Prisma.SortOrder
+  twitter?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -583,6 +677,9 @@ export type UserMinOrderByAggregateInput = {
   college?: Prisma.SortOrder
   bio?: Prisma.SortOrder
   avatarUrl?: Prisma.SortOrder
+  github?: Prisma.SortOrder
+  linkedin?: Prisma.SortOrder
+  twitter?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -609,6 +706,10 @@ export type UserCreateinterestsInput = {
   set: string[]
 }
 
+export type UserCreateexperienceInput = {
+  set: runtime.InputJsonValue[]
+}
+
 export type StringFieldUpdateOperationsInput = {
   set?: string
 }
@@ -633,6 +734,11 @@ export type UserUpdateskillsInput = {
 export type UserUpdateinterestsInput = {
   set?: string[]
   push?: string | string[]
+}
+
+export type UserUpdateexperienceInput = {
+  set?: runtime.InputJsonValue[]
+  push?: runtime.InputJsonValue | runtime.InputJsonValue[]
 }
 
 export type DateTimeFieldUpdateOperationsInput = {
@@ -793,6 +899,10 @@ export type UserCreateWithoutGroupInput = {
   interests?: Prisma.UserCreateinterestsInput | string[]
   bio?: string | null
   avatarUrl?: string | null
+  github?: string | null
+  linkedin?: string | null
+  twitter?: string | null
+  experience?: Prisma.UserCreateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Date | string
   updatedAt?: Date | string
   GroupMemberShip?: Prisma.GroupMemberShipCreateNestedManyWithoutUserInput
@@ -818,6 +928,10 @@ export type UserUncheckedCreateWithoutGroupInput = {
   interests?: Prisma.UserCreateinterestsInput | string[]
   bio?: string | null
   avatarUrl?: string | null
+  github?: string | null
+  linkedin?: string | null
+  twitter?: string | null
+  experience?: Prisma.UserCreateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Date | string
   updatedAt?: Date | string
   GroupMemberShip?: Prisma.GroupMemberShipUncheckedCreateNestedManyWithoutUserInput
@@ -859,6 +973,10 @@ export type UserUpdateWithoutGroupInput = {
   interests?: Prisma.UserUpdateinterestsInput | string[]
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  github?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  twitter?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experience?: Prisma.UserUpdateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   GroupMemberShip?: Prisma.GroupMemberShipUpdateManyWithoutUserNestedInput
@@ -884,6 +1002,10 @@ export type UserUncheckedUpdateWithoutGroupInput = {
   interests?: Prisma.UserUpdateinterestsInput | string[]
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  github?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  twitter?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experience?: Prisma.UserUpdateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   GroupMemberShip?: Prisma.GroupMemberShipUncheckedUpdateManyWithoutUserNestedInput
@@ -909,6 +1031,10 @@ export type UserCreateWithoutGroupMemberShipInput = {
   interests?: Prisma.UserCreateinterestsInput | string[]
   bio?: string | null
   avatarUrl?: string | null
+  github?: string | null
+  linkedin?: string | null
+  twitter?: string | null
+  experience?: Prisma.UserCreateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Date | string
   updatedAt?: Date | string
   Group?: Prisma.GroupCreateNestedManyWithoutUserInput
@@ -934,6 +1060,10 @@ export type UserUncheckedCreateWithoutGroupMemberShipInput = {
   interests?: Prisma.UserCreateinterestsInput | string[]
   bio?: string | null
   avatarUrl?: string | null
+  github?: string | null
+  linkedin?: string | null
+  twitter?: string | null
+  experience?: Prisma.UserCreateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Date | string
   updatedAt?: Date | string
   Group?: Prisma.GroupUncheckedCreateNestedManyWithoutUserInput
@@ -975,6 +1105,10 @@ export type UserUpdateWithoutGroupMemberShipInput = {
   interests?: Prisma.UserUpdateinterestsInput | string[]
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  github?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  twitter?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experience?: Prisma.UserUpdateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   Group?: Prisma.GroupUpdateManyWithoutUserNestedInput
@@ -1000,6 +1134,10 @@ export type UserUncheckedUpdateWithoutGroupMemberShipInput = {
   interests?: Prisma.UserUpdateinterestsInput | string[]
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  github?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  twitter?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experience?: Prisma.UserUpdateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   Group?: Prisma.GroupUncheckedUpdateManyWithoutUserNestedInput
@@ -1025,6 +1163,10 @@ export type UserCreateWithoutGroupMessageInput = {
   interests?: Prisma.UserCreateinterestsInput | string[]
   bio?: string | null
   avatarUrl?: string | null
+  github?: string | null
+  linkedin?: string | null
+  twitter?: string | null
+  experience?: Prisma.UserCreateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Date | string
   updatedAt?: Date | string
   GroupMemberShip?: Prisma.GroupMemberShipCreateNestedManyWithoutUserInput
@@ -1050,6 +1192,10 @@ export type UserUncheckedCreateWithoutGroupMessageInput = {
   interests?: Prisma.UserCreateinterestsInput | string[]
   bio?: string | null
   avatarUrl?: string | null
+  github?: string | null
+  linkedin?: string | null
+  twitter?: string | null
+  experience?: Prisma.UserCreateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Date | string
   updatedAt?: Date | string
   GroupMemberShip?: Prisma.GroupMemberShipUncheckedCreateNestedManyWithoutUserInput
@@ -1091,6 +1237,10 @@ export type UserUpdateWithoutGroupMessageInput = {
   interests?: Prisma.UserUpdateinterestsInput | string[]
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  github?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  twitter?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experience?: Prisma.UserUpdateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   GroupMemberShip?: Prisma.GroupMemberShipUpdateManyWithoutUserNestedInput
@@ -1116,6 +1266,10 @@ export type UserUncheckedUpdateWithoutGroupMessageInput = {
   interests?: Prisma.UserUpdateinterestsInput | string[]
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  github?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  twitter?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experience?: Prisma.UserUpdateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   GroupMemberShip?: Prisma.GroupMemberShipUncheckedUpdateManyWithoutUserNestedInput
@@ -1141,6 +1295,10 @@ export type UserCreateWithoutSentMessagesInput = {
   interests?: Prisma.UserCreateinterestsInput | string[]
   bio?: string | null
   avatarUrl?: string | null
+  github?: string | null
+  linkedin?: string | null
+  twitter?: string | null
+  experience?: Prisma.UserCreateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Date | string
   updatedAt?: Date | string
   GroupMemberShip?: Prisma.GroupMemberShipCreateNestedManyWithoutUserInput
@@ -1166,6 +1324,10 @@ export type UserUncheckedCreateWithoutSentMessagesInput = {
   interests?: Prisma.UserCreateinterestsInput | string[]
   bio?: string | null
   avatarUrl?: string | null
+  github?: string | null
+  linkedin?: string | null
+  twitter?: string | null
+  experience?: Prisma.UserCreateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Date | string
   updatedAt?: Date | string
   GroupMemberShip?: Prisma.GroupMemberShipUncheckedCreateNestedManyWithoutUserInput
@@ -1196,6 +1358,10 @@ export type UserCreateWithoutReceivedMessagesInput = {
   interests?: Prisma.UserCreateinterestsInput | string[]
   bio?: string | null
   avatarUrl?: string | null
+  github?: string | null
+  linkedin?: string | null
+  twitter?: string | null
+  experience?: Prisma.UserCreateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Date | string
   updatedAt?: Date | string
   GroupMemberShip?: Prisma.GroupMemberShipCreateNestedManyWithoutUserInput
@@ -1221,6 +1387,10 @@ export type UserUncheckedCreateWithoutReceivedMessagesInput = {
   interests?: Prisma.UserCreateinterestsInput | string[]
   bio?: string | null
   avatarUrl?: string | null
+  github?: string | null
+  linkedin?: string | null
+  twitter?: string | null
+  experience?: Prisma.UserCreateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Date | string
   updatedAt?: Date | string
   GroupMemberShip?: Prisma.GroupMemberShipUncheckedCreateNestedManyWithoutUserInput
@@ -1262,6 +1432,10 @@ export type UserUpdateWithoutSentMessagesInput = {
   interests?: Prisma.UserUpdateinterestsInput | string[]
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  github?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  twitter?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experience?: Prisma.UserUpdateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   GroupMemberShip?: Prisma.GroupMemberShipUpdateManyWithoutUserNestedInput
@@ -1287,6 +1461,10 @@ export type UserUncheckedUpdateWithoutSentMessagesInput = {
   interests?: Prisma.UserUpdateinterestsInput | string[]
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  github?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  twitter?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experience?: Prisma.UserUpdateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   GroupMemberShip?: Prisma.GroupMemberShipUncheckedUpdateManyWithoutUserNestedInput
@@ -1323,6 +1501,10 @@ export type UserUpdateWithoutReceivedMessagesInput = {
   interests?: Prisma.UserUpdateinterestsInput | string[]
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  github?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  twitter?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experience?: Prisma.UserUpdateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   GroupMemberShip?: Prisma.GroupMemberShipUpdateManyWithoutUserNestedInput
@@ -1348,6 +1530,10 @@ export type UserUncheckedUpdateWithoutReceivedMessagesInput = {
   interests?: Prisma.UserUpdateinterestsInput | string[]
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  github?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  twitter?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experience?: Prisma.UserUpdateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   GroupMemberShip?: Prisma.GroupMemberShipUncheckedUpdateManyWithoutUserNestedInput
@@ -1373,6 +1559,10 @@ export type UserCreateWithoutProjectsInput = {
   interests?: Prisma.UserCreateinterestsInput | string[]
   bio?: string | null
   avatarUrl?: string | null
+  github?: string | null
+  linkedin?: string | null
+  twitter?: string | null
+  experience?: Prisma.UserCreateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Date | string
   updatedAt?: Date | string
   GroupMemberShip?: Prisma.GroupMemberShipCreateNestedManyWithoutUserInput
@@ -1398,6 +1588,10 @@ export type UserUncheckedCreateWithoutProjectsInput = {
   interests?: Prisma.UserCreateinterestsInput | string[]
   bio?: string | null
   avatarUrl?: string | null
+  github?: string | null
+  linkedin?: string | null
+  twitter?: string | null
+  experience?: Prisma.UserCreateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Date | string
   updatedAt?: Date | string
   GroupMemberShip?: Prisma.GroupMemberShipUncheckedCreateNestedManyWithoutUserInput
@@ -1439,6 +1633,10 @@ export type UserUpdateWithoutProjectsInput = {
   interests?: Prisma.UserUpdateinterestsInput | string[]
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  github?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  twitter?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experience?: Prisma.UserUpdateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   GroupMemberShip?: Prisma.GroupMemberShipUpdateManyWithoutUserNestedInput
@@ -1464,6 +1662,10 @@ export type UserUncheckedUpdateWithoutProjectsInput = {
   interests?: Prisma.UserUpdateinterestsInput | string[]
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  github?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  twitter?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experience?: Prisma.UserUpdateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   GroupMemberShip?: Prisma.GroupMemberShipUncheckedUpdateManyWithoutUserNestedInput
@@ -1489,6 +1691,10 @@ export type UserCreateWithoutProjectResourcesInput = {
   interests?: Prisma.UserCreateinterestsInput | string[]
   bio?: string | null
   avatarUrl?: string | null
+  github?: string | null
+  linkedin?: string | null
+  twitter?: string | null
+  experience?: Prisma.UserCreateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Date | string
   updatedAt?: Date | string
   GroupMemberShip?: Prisma.GroupMemberShipCreateNestedManyWithoutUserInput
@@ -1514,6 +1720,10 @@ export type UserUncheckedCreateWithoutProjectResourcesInput = {
   interests?: Prisma.UserCreateinterestsInput | string[]
   bio?: string | null
   avatarUrl?: string | null
+  github?: string | null
+  linkedin?: string | null
+  twitter?: string | null
+  experience?: Prisma.UserCreateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Date | string
   updatedAt?: Date | string
   GroupMemberShip?: Prisma.GroupMemberShipUncheckedCreateNestedManyWithoutUserInput
@@ -1555,6 +1765,10 @@ export type UserUpdateWithoutProjectResourcesInput = {
   interests?: Prisma.UserUpdateinterestsInput | string[]
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  github?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  twitter?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experience?: Prisma.UserUpdateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   GroupMemberShip?: Prisma.GroupMemberShipUpdateManyWithoutUserNestedInput
@@ -1580,6 +1794,10 @@ export type UserUncheckedUpdateWithoutProjectResourcesInput = {
   interests?: Prisma.UserUpdateinterestsInput | string[]
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  github?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  twitter?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experience?: Prisma.UserUpdateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   GroupMemberShip?: Prisma.GroupMemberShipUncheckedUpdateManyWithoutUserNestedInput
@@ -1605,6 +1823,10 @@ export type UserCreateWithoutPostedInternshipsInput = {
   interests?: Prisma.UserCreateinterestsInput | string[]
   bio?: string | null
   avatarUrl?: string | null
+  github?: string | null
+  linkedin?: string | null
+  twitter?: string | null
+  experience?: Prisma.UserCreateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Date | string
   updatedAt?: Date | string
   GroupMemberShip?: Prisma.GroupMemberShipCreateNestedManyWithoutUserInput
@@ -1630,6 +1852,10 @@ export type UserUncheckedCreateWithoutPostedInternshipsInput = {
   interests?: Prisma.UserCreateinterestsInput | string[]
   bio?: string | null
   avatarUrl?: string | null
+  github?: string | null
+  linkedin?: string | null
+  twitter?: string | null
+  experience?: Prisma.UserCreateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Date | string
   updatedAt?: Date | string
   GroupMemberShip?: Prisma.GroupMemberShipUncheckedCreateNestedManyWithoutUserInput
@@ -1671,6 +1897,10 @@ export type UserUpdateWithoutPostedInternshipsInput = {
   interests?: Prisma.UserUpdateinterestsInput | string[]
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  github?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  twitter?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experience?: Prisma.UserUpdateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   GroupMemberShip?: Prisma.GroupMemberShipUpdateManyWithoutUserNestedInput
@@ -1696,6 +1926,10 @@ export type UserUncheckedUpdateWithoutPostedInternshipsInput = {
   interests?: Prisma.UserUpdateinterestsInput | string[]
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  github?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  twitter?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experience?: Prisma.UserUpdateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   GroupMemberShip?: Prisma.GroupMemberShipUncheckedUpdateManyWithoutUserNestedInput
@@ -1721,6 +1955,10 @@ export type UserCreateWithoutNotificationsInput = {
   interests?: Prisma.UserCreateinterestsInput | string[]
   bio?: string | null
   avatarUrl?: string | null
+  github?: string | null
+  linkedin?: string | null
+  twitter?: string | null
+  experience?: Prisma.UserCreateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Date | string
   updatedAt?: Date | string
   GroupMemberShip?: Prisma.GroupMemberShipCreateNestedManyWithoutUserInput
@@ -1746,6 +1984,10 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   interests?: Prisma.UserCreateinterestsInput | string[]
   bio?: string | null
   avatarUrl?: string | null
+  github?: string | null
+  linkedin?: string | null
+  twitter?: string | null
+  experience?: Prisma.UserCreateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Date | string
   updatedAt?: Date | string
   GroupMemberShip?: Prisma.GroupMemberShipUncheckedCreateNestedManyWithoutUserInput
@@ -1776,6 +2018,10 @@ export type UserCreateWithoutSentNotificationsInput = {
   interests?: Prisma.UserCreateinterestsInput | string[]
   bio?: string | null
   avatarUrl?: string | null
+  github?: string | null
+  linkedin?: string | null
+  twitter?: string | null
+  experience?: Prisma.UserCreateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Date | string
   updatedAt?: Date | string
   GroupMemberShip?: Prisma.GroupMemberShipCreateNestedManyWithoutUserInput
@@ -1801,6 +2047,10 @@ export type UserUncheckedCreateWithoutSentNotificationsInput = {
   interests?: Prisma.UserCreateinterestsInput | string[]
   bio?: string | null
   avatarUrl?: string | null
+  github?: string | null
+  linkedin?: string | null
+  twitter?: string | null
+  experience?: Prisma.UserCreateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Date | string
   updatedAt?: Date | string
   GroupMemberShip?: Prisma.GroupMemberShipUncheckedCreateNestedManyWithoutUserInput
@@ -1842,6 +2092,10 @@ export type UserUpdateWithoutNotificationsInput = {
   interests?: Prisma.UserUpdateinterestsInput | string[]
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  github?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  twitter?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experience?: Prisma.UserUpdateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   GroupMemberShip?: Prisma.GroupMemberShipUpdateManyWithoutUserNestedInput
@@ -1867,6 +2121,10 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   interests?: Prisma.UserUpdateinterestsInput | string[]
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  github?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  twitter?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experience?: Prisma.UserUpdateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   GroupMemberShip?: Prisma.GroupMemberShipUncheckedUpdateManyWithoutUserNestedInput
@@ -1903,6 +2161,10 @@ export type UserUpdateWithoutSentNotificationsInput = {
   interests?: Prisma.UserUpdateinterestsInput | string[]
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  github?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  twitter?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experience?: Prisma.UserUpdateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   GroupMemberShip?: Prisma.GroupMemberShipUpdateManyWithoutUserNestedInput
@@ -1928,6 +2190,10 @@ export type UserUncheckedUpdateWithoutSentNotificationsInput = {
   interests?: Prisma.UserUpdateinterestsInput | string[]
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  github?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  twitter?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experience?: Prisma.UserUpdateexperienceInput | runtime.InputJsonValue[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   GroupMemberShip?: Prisma.GroupMemberShipUncheckedUpdateManyWithoutUserNestedInput
@@ -2065,6 +2331,10 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   interests?: boolean
   bio?: boolean
   avatarUrl?: boolean
+  github?: boolean
+  linkedin?: boolean
+  twitter?: boolean
+  experience?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   GroupMemberShip?: boolean | Prisma.User$GroupMemberShipArgs<ExtArgs>
@@ -2092,6 +2362,10 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   interests?: boolean
   bio?: boolean
   avatarUrl?: boolean
+  github?: boolean
+  linkedin?: boolean
+  twitter?: boolean
+  experience?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -2108,6 +2382,10 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   interests?: boolean
   bio?: boolean
   avatarUrl?: boolean
+  github?: boolean
+  linkedin?: boolean
+  twitter?: boolean
+  experience?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -2124,11 +2402,15 @@ export type UserSelectScalar = {
   interests?: boolean
   bio?: boolean
   avatarUrl?: boolean
+  github?: boolean
+  linkedin?: boolean
+  twitter?: boolean
+  experience?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "password" | "name" | "course" | "semester" | "college" | "skills" | "interests" | "bio" | "avatarUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "password" | "name" | "course" | "semester" | "college" | "skills" | "interests" | "bio" | "avatarUrl" | "github" | "linkedin" | "twitter" | "experience" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   GroupMemberShip?: boolean | Prisma.User$GroupMemberShipArgs<ExtArgs>
   Group?: boolean | Prisma.User$GroupArgs<ExtArgs>
@@ -2171,6 +2453,10 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     interests: string[]
     bio: string | null
     avatarUrl: string | null
+    github: string | null
+    linkedin: string | null
+    twitter: string | null
+    experience: runtime.JsonValue[]
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["user"]>
@@ -2617,6 +2903,10 @@ export interface UserFieldRefs {
   readonly interests: Prisma.FieldRef<"User", 'String[]'>
   readonly bio: Prisma.FieldRef<"User", 'String'>
   readonly avatarUrl: Prisma.FieldRef<"User", 'String'>
+  readonly github: Prisma.FieldRef<"User", 'String'>
+  readonly linkedin: Prisma.FieldRef<"User", 'String'>
+  readonly twitter: Prisma.FieldRef<"User", 'String'>
+  readonly experience: Prisma.FieldRef<"User", 'Json[]'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
 }

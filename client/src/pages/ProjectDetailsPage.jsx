@@ -22,7 +22,6 @@ import {
 } from "@/components/ui/select";
 import {
   Send,
-  Settings,
   Search,
   Paperclip,
   Hash,
@@ -39,6 +38,7 @@ import {
   Video,
   File,
   Loader2,
+  X,
 } from "lucide-react";
 import { useState, useEffect, useCallback, useRef } from "react";
 import {
@@ -103,10 +103,13 @@ export default function ProjectDetailsPage() {
   const [resourceUrl, setResourceUrl] = useState("");
   const [resourceType, setResourceType] = useState("link");
   const [addingResource, setAddingResource] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [uploadingFile, setUploadingFile] = useState(false);
 
   const messagesEndRef = useRef(null);
   const typingTimeoutRef = useRef(null);
   const previousChannelRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -140,7 +143,7 @@ export default function ProjectDetailsPage() {
       if (!project?.group?.id) return;
       try {
         const data = await api.get(
-          `/groups/${project.group.id}/channels/${channelId}/messages`
+          `/groups/${project.group.id}/channels/${channelId}/messages`,
         );
         setMessages(data);
         setTimeout(scrollToBottom, 100);
@@ -148,7 +151,7 @@ export default function ProjectDetailsPage() {
         console.error("Failed to fetch messages", error);
       }
     },
-    [project?.group?.id]
+    [project?.group?.id],
   );
 
   // Fetch project data
@@ -159,7 +162,11 @@ export default function ProjectDetailsPage() {
 
   // Set initial channel when switching to chat tab
   useEffect(() => {
-    if (activeTab === TABS.CHAT && project?.channels?.length > 0 && !activeChannel) {
+    if (
+      activeTab === TABS.CHAT &&
+      project?.channels?.length > 0 &&
+      !activeChannel
+    ) {
       setActiveChannel(project.channels[0].id);
     }
   }, [project, activeChannel, activeTab]);
@@ -175,7 +182,10 @@ export default function ProjectDetailsPage() {
   useEffect(() => {
     if (!activeChannel || !project?.group?.id || !isConnected) return;
 
-    if (previousChannelRef.current && previousChannelRef.current !== activeChannel) {
+    if (
+      previousChannelRef.current &&
+      previousChannelRef.current !== activeChannel
+    ) {
       leaveChannel(previousChannelRef.current);
     }
 
@@ -188,7 +198,13 @@ export default function ProjectDetailsPage() {
         leaveChannel(activeChannel);
       }
     };
-  }, [activeChannel, project?.group?.id, isConnected, joinChannel, leaveChannel]);
+  }, [
+    activeChannel,
+    project?.group?.id,
+    isConnected,
+    joinChannel,
+    leaveChannel,
+  ]);
 
   // Socket event listeners
   useEffect(() => {
@@ -241,9 +257,54 @@ export default function ProjectDetailsPage() {
     }
   };
 
+  const handleFileSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const maxSize = 10 * 1024 * 1024;
+    if (file.size > maxSize) {
+      toast.error("File size must be under 10MB");
+      return;
+    }
+
+    const allowedTypes = [
+      "image/png",
+      "image/jpeg",
+      "image/jpg",
+      "application/pdf",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "application/msword",
+    ];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error("Only images, PDF, and DOCX files are allowed");
+      return;
+    }
+
+    setSelectedFile(file);
+  };
+
+  const clearSelectedFile = () => {
+    setSelectedFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const uploadFile = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    const res = await api.post("/uploads/channel", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return res;
+  };
+
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (!messageInput.trim() || !activeChannel || !project?.group?.id) return;
+    if (
+      (!messageInput.trim() && !selectedFile) ||
+      !activeChannel ||
+      !project?.group?.id
+    )
+      return;
 
     const content = messageInput.trim();
     setMessageInput("");
@@ -252,14 +313,39 @@ export default function ProjectDetailsPage() {
       clearTimeout(typingTimeoutRef.current);
     }
 
+    let fileData = null;
+    if (selectedFile) {
+      setUploadingFile(true);
+      try {
+        const uploaded = await uploadFile(selectedFile);
+        fileData = {
+          fileUrl: uploaded.url,
+          fileName: uploaded.fileName,
+          fileType: uploaded.fileType,
+        };
+      } catch {
+        toast.error("Failed to upload file");
+        setUploadingFile(false);
+        setMessageInput(content);
+        return;
+      }
+      clearSelectedFile();
+      setUploadingFile(false);
+    }
+
     if (isConnected) {
-      sendChannelMessage(activeChannel, project.group.id, content);
+      sendChannelMessage(
+        activeChannel,
+        project.group.id,
+        content || "",
+        fileData,
+      );
       setChannelTyping(activeChannel, false);
     } else {
       try {
         const newMsg = await api.post(
           `/groups/${project.group.id}/channels/${activeChannel}/messages`,
-          { content }
+          { content: content || "", ...fileData },
         );
         setMessages((prev) => [...prev, newMsg]);
         setTimeout(scrollToBottom, 100);
@@ -276,10 +362,13 @@ export default function ProjectDetailsPage() {
 
     setCreatingChannel(true);
     try {
-      const newChannel = await api.post(`/groups/${project.group.id}/channels`, {
-        name: newChannelName.trim().toLowerCase().replace(/\s+/g, "-"),
-        type: "TEXT",
-      });
+      const newChannel = await api.post(
+        `/groups/${project.group.id}/channels`,
+        {
+          name: newChannelName.trim().toLowerCase().replace(/\s+/g, "-"),
+          type: "TEXT",
+        },
+      );
 
       setProject((prev) => ({
         ...prev,
@@ -301,7 +390,9 @@ export default function ProjectDetailsPage() {
     if (!channelToDelete || !project?.group?.id) return;
     setDeletingChannel(true);
     try {
-      await api.delete(`/groups/${project.group.id}/channels/${channelToDelete.id}`);
+      await api.delete(
+        `/groups/${project.group.id}/channels/${channelToDelete.id}`,
+      );
       setProject((prev) => ({
         ...prev,
         channels: prev.channels.filter((c) => c.id !== channelToDelete.id),
@@ -309,9 +400,11 @@ export default function ProjectDetailsPage() {
 
       if (activeChannel === channelToDelete.id) {
         const remainingChannels = project.channels.filter(
-          (c) => c.id !== channelToDelete.id
+          (c) => c.id !== channelToDelete.id,
         );
-        setActiveChannel(remainingChannels.length > 0 ? remainingChannels[0].id : null);
+        setActiveChannel(
+          remainingChannels.length > 0 ? remainingChannels[0].id : null,
+        );
       }
 
       toast.success("Channel deleted");
@@ -381,7 +474,9 @@ export default function ProjectDetailsPage() {
   };
 
   const isAdmin = project?.memberRole === "ADMIN";
-  const currentChannel = project?.channels?.find((c) => c.id === activeChannel) || project?.channels?.[0];
+  const currentChannel =
+    project?.channels?.find((c) => c.id === activeChannel) ||
+    project?.channels?.[0];
 
   if (loading) {
     return (
@@ -402,7 +497,9 @@ export default function ProjectDetailsPage() {
   if (!project.isMember) {
     return (
       <div className="h-screen flex flex-col items-center justify-center gap-4">
-        <h2 className="text-xl font-bold">You are not a member of this project</h2>
+        <h2 className="text-xl font-bold">
+          You are not a member of this project
+        </h2>
         <Button onClick={() => navigate("/projects")}>Back to Projects</Button>
       </div>
     );
@@ -525,8 +622,12 @@ export default function ProjectDetailsPage() {
                         : "text-muted-foreground hover:bg-white/40 hover:text-foreground"
                     }`}
                   >
-                    <Hash className={`h-4 w-4 ${activeChannel === channel.id ? "text-primary" : "text-muted-foreground/50"}`} />
-                    <span className="text-sm truncate flex-1">{channel.name}</span>
+                    <Hash
+                      className={`h-4 w-4 ${activeChannel === channel.id ? "text-primary" : "text-muted-foreground/50"}`}
+                    />
+                    <span className="text-sm truncate flex-1">
+                      {channel.name}
+                    </span>
                     {isAdmin && (
                       <button
                         onClick={(e) => {
@@ -564,20 +665,24 @@ export default function ProjectDetailsPage() {
         <div className="p-3 bg-white/30 border-t border-white/10 flex items-center gap-2">
           <Avatar className="h-9 w-9 border border-white shadow-sm">
             <AvatarImage
-              src={user?.avatarUrl || `https://ui-avatars.com/api/?name=${user?.name || "User"}&background=random`}
+              src={
+                user?.avatarUrl ||
+                `https://ui-avatars.com/api/?name=${user?.name || "User"}&background=random`
+              }
             />
             <AvatarFallback>{user?.name?.[0] || "U"}</AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
-            <div className="text-sm font-bold truncate">{user?.name || "Me"}</div>
+            <div className="text-sm font-bold truncate">
+              {user?.name || "Me"}
+            </div>
             <div className="text-[10px] text-muted-foreground truncate flex items-center gap-1">
-              <span className={`h-2 w-2 rounded-full ${isConnected ? "bg-green-500" : "bg-yellow-500"}`}></span>
+              <span
+                className={`h-2 w-2 rounded-full ${isConnected ? "bg-green-500" : "bg-yellow-500"}`}
+              ></span>
               {isConnected ? "Online" : "Connecting..."}
             </div>
           </div>
-          <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full">
-            <Settings className="h-4 w-4" />
-          </Button>
         </div>
       </div>
 
@@ -596,22 +701,32 @@ export default function ProjectDetailsPage() {
                     <AvatarFallback>{project.author?.name?.[0]}</AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="text-sm font-medium">{project.author?.name}</p>
-                    <p className="text-xs text-muted-foreground">Project Creator</p>
+                    <p className="text-sm font-medium">
+                      {project.author?.name}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Project Creator
+                    </p>
                   </div>
                 </div>
               </div>
 
               {/* Description */}
               <div className="space-y-2">
-                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Description</h3>
-                <p className="text-foreground/90 leading-relaxed">{project.description}</p>
+                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+                  Description
+                </h3>
+                <p className="text-foreground/90 leading-relaxed">
+                  {project.description}
+                </p>
               </div>
 
               {/* Tech Stack */}
               {project.tags?.length > 0 && (
                 <div className="space-y-2">
-                  <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Tech Stack</h3>
+                  <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+                    Tech Stack
+                  </h3>
                   <div className="flex flex-wrap gap-2">
                     {project.tags.map((tag) => (
                       <Badge key={tag} variant="secondary">
@@ -625,7 +740,11 @@ export default function ProjectDetailsPage() {
               {/* Links */}
               <div className="flex gap-3">
                 {project.githubUrl && (
-                  <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
+                  <a
+                    href={project.githubUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     <Button variant="outline" className="gap-2">
                       <Github className="h-4 w-4" />
                       GitHub
@@ -633,7 +752,11 @@ export default function ProjectDetailsPage() {
                   </a>
                 )}
                 {project.demoUrl && (
-                  <a href={project.demoUrl} target="_blank" rel="noopener noreferrer">
+                  <a
+                    href={project.demoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     <Button variant="outline" className="gap-2">
                       <ExternalLink className="h-4 w-4" />
                       Live Demo
@@ -645,11 +768,15 @@ export default function ProjectDetailsPage() {
               {/* Stats */}
               <div className="grid grid-cols-2 gap-4 pt-4 border-t">
                 <div className="bg-white/30 rounded-xl p-4 text-center">
-                  <p className="text-2xl font-bold text-primary">{project.participants?.length || 0}</p>
+                  <p className="text-2xl font-bold text-primary">
+                    {project.participants?.length || 0}
+                  </p>
                   <p className="text-sm text-muted-foreground">Team Members</p>
                 </div>
                 <div className="bg-white/30 rounded-xl p-4 text-center">
-                  <p className="text-2xl font-bold text-primary">{project.resources?.length || 0}</p>
+                  <p className="text-2xl font-bold text-primary">
+                    {project.resources?.length || 0}
+                  </p>
                   <p className="text-sm text-muted-foreground">Resources</p>
                 </div>
               </div>
@@ -664,7 +791,9 @@ export default function ProjectDetailsPage() {
             <div className="h-16 border-b border-white/10 bg-white/30 backdrop-blur-md flex items-center justify-between px-6 shrink-0">
               <div className="flex items-center gap-3">
                 <Hash className="h-5 w-5 text-muted-foreground" />
-                <h3 className="font-bold text-lg">{currentChannel?.name || "select-channel"}</h3>
+                <h3 className="font-bold text-lg">
+                  {currentChannel?.name || "select-channel"}
+                </h3>
               </div>
               <div className="relative hidden md:block">
                 <Search className="absolute left-2.5 top-2.5 h-3 w-3 text-muted-foreground" />
@@ -682,29 +811,82 @@ export default function ProjectDetailsPage() {
                   <div className="h-16 w-16 rounded-[1.5rem] bg-primary/10 flex items-center justify-center mb-4">
                     <Hash className="h-8 w-8 text-primary" />
                   </div>
-                  <h1 className="text-3xl font-bold font-serif mb-2">Welcome to #{currentChannel?.name}!</h1>
+                  <h1 className="text-3xl font-bold font-serif mb-2">
+                    Welcome to #{currentChannel?.name}!
+                  </h1>
                   <p className="text-muted-foreground">
-                    This is the start of the <span className="font-bold text-foreground">#{currentChannel?.name}</span> channel.
+                    This is the start of the{" "}
+                    <span className="font-bold text-foreground">
+                      #{currentChannel?.name}
+                    </span>{" "}
+                    channel.
                   </p>
                 </div>
               )}
 
               {messages.map((msg) => (
-                <div key={msg.id} className="group flex gap-4 hover:bg-black/5 -mx-4 px-4 py-1 rounded-lg transition-colors">
+                <div
+                  key={msg.id}
+                  className="group flex gap-4 hover:bg-black/5 -mx-4 px-4 py-1 rounded-lg transition-colors"
+                >
                   <Avatar className="h-10 w-10 border border-white/50 shadow-sm mt-0.5">
                     <AvatarImage src={msg.sender?.avatarUrl} />
                     <AvatarFallback>{msg.sender?.name?.[0]}</AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-baseline gap-2">
-                      <span className={`text-sm font-bold ${msg.sender?.id === user?.id ? "text-primary" : "text-foreground"}`}>
+                      <span
+                        className={`text-sm font-bold ${msg.sender?.id === user?.id ? "text-primary" : "text-foreground"}`}
+                      >
                         {msg.sender?.name}
                       </span>
                       <span className="text-[10px] text-muted-foreground">
-                        {msg.createdAt ? formatDistanceToNow(new Date(msg.createdAt), { addSuffix: true }) : ""}
+                        {msg.createdAt
+                          ? formatDistanceToNow(new Date(msg.createdAt), {
+                              addSuffix: true,
+                            })
+                          : ""}
                       </span>
                     </div>
-                    <p className="text-sm text-foreground/90 leading-relaxed mt-0.5">{msg.content}</p>
+                    {msg.content && (
+                      <p className="text-sm text-foreground/90 leading-relaxed mt-0.5">
+                        {msg.content}
+                      </p>
+                    )}
+                    {msg.fileUrl && (
+                      <div className="mt-2">
+                        {msg.fileType?.startsWith("image/") ? (
+                          <a
+                            href={`${import.meta.env.VITE_API_URL?.replace("/api", "") || "http://localhost:5000"}${msg.fileUrl}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <img
+                              src={`${import.meta.env.VITE_API_URL?.replace("/api", "") || "http://localhost:5000"}${msg.fileUrl}`}
+                              alt={msg.fileName || "attachment"}
+                              className="max-w-xs max-h-60 rounded-lg border border-white/40 shadow-sm cursor-pointer hover:shadow-md transition-shadow"
+                            />
+                          </a>
+                        ) : (
+                          <a
+                            href={`${import.meta.env.VITE_API_URL?.replace("/api", "") || "http://localhost:5000"}${msg.fileUrl}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 bg-white/60 border border-white/40 rounded-lg px-3 py-2 hover:bg-white/80 transition-colors"
+                          >
+                            <FileText className="h-5 w-5 text-primary shrink-0" />
+                            <div className="min-w-0">
+                              <p className="text-sm font-medium truncate">
+                                {msg.fileName || "File"}
+                              </p>
+                              <p className="text-[10px] text-muted-foreground">
+                                Click to open
+                              </p>
+                            </div>
+                          </a>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
@@ -720,12 +902,64 @@ export default function ProjectDetailsPage() {
               </div>
             )}
 
+            {/* File Preview */}
+            {selectedFile && (
+              <div className="px-4 pb-2">
+                <div className="bg-white/60 border border-white/40 rounded-lg p-3 flex items-center gap-3">
+                  {selectedFile.type.startsWith("image/") ? (
+                    <div className="h-12 w-12 rounded-lg overflow-hidden bg-black/5 shrink-0">
+                      <img
+                        src={URL.createObjectURL(selectedFile)}
+                        alt="preview"
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                      <FileText className="h-6 w-6 text-primary" />
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">
+                      {selectedFile.name}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={clearSelectedFile}
+                    className="p-1 rounded-full hover:bg-black/10 transition-colors"
+                  >
+                    <X className="h-4 w-4 text-muted-foreground" />
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* Input Area */}
-            <form onSubmit={handleSendMessage} className="p-4 bg-white/30 backdrop-blur-md mb-2 mx-4 rounded-xl">
+            <form
+              onSubmit={handleSendMessage}
+              className="p-4 bg-white/30 backdrop-blur-md mb-2 mx-4 rounded-xl"
+            >
               <div className="bg-white/60 border border-white/40 rounded-xl p-1 flex items-center shadow-sm focus-within:ring-2 focus-within:ring-primary/20">
-                <Button type="button" variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-muted-foreground hover:bg-black/5">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 rounded-lg text-muted-foreground hover:bg-black/5"
+                  onClick={() => fileInputRef.current?.click()}
+                >
                   <Paperclip className="h-4 w-4" />
                 </Button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  className="hidden"
+                  accept="image/png,image/jpeg,image/jpg,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/msword"
+                  onChange={handleFileSelect}
+                />
                 <input
                   className="flex-1 bg-transparent border-none outline-none text-sm px-2 py-2 placeholder:text-muted-foreground/70"
                   placeholder={`Message #${currentChannel?.name || "channel"}`}
@@ -736,7 +970,9 @@ export default function ProjectDetailsPage() {
                   type="submit"
                   size="icon"
                   className="h-8 w-8 rounded-lg bg-transparent text-primary hover:bg-primary/10 shadow-none disabled:opacity-50"
-                  disabled={!messageInput.trim()}
+                  disabled={
+                    (!messageInput.trim() && !selectedFile) || uploadingFile
+                  }
                 >
                   <Send className="h-4 w-4" />
                 </Button>
@@ -751,7 +987,10 @@ export default function ProjectDetailsPage() {
             <div className="max-w-2xl mx-auto space-y-4">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-bold">Project Resources</h2>
-                <Button onClick={() => setShowAddResource(true)} className="gap-2">
+                <Button
+                  onClick={() => setShowAddResource(true)}
+                  className="gap-2"
+                >
                   <Plus className="h-4 w-4" />
                   Add Resource
                 </Button>
@@ -760,7 +999,10 @@ export default function ProjectDetailsPage() {
               {project.resources?.length === 0 && (
                 <div className="text-center py-12 text-muted-foreground">
                   <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>No resources yet. Add documentation, links, or files to help your team.</p>
+                  <p>
+                    No resources yet. Add documentation, links, or files to help
+                    your team.
+                  </p>
                 </div>
               )}
 
@@ -785,7 +1027,10 @@ export default function ProjectDetailsPage() {
                           {resource.title}
                         </a>
                         <p className="text-xs text-muted-foreground truncate">
-                          Added by {resource.addedBy?.name} • {formatDistanceToNow(new Date(resource.createdAt), { addSuffix: true })}
+                          Added by {resource.addedBy?.name} •{" "}
+                          {formatDistanceToNow(new Date(resource.createdAt), {
+                            addSuffix: true,
+                          })}
                         </p>
                       </div>
                       {(resource.addedById === user?.id || isAdmin) && (
@@ -808,7 +1053,9 @@ export default function ProjectDetailsPage() {
         {activeTab === TABS.TEAM && (
           <ScrollArea className="flex-1 p-6">
             <div className="max-w-2xl mx-auto">
-              <h2 className="text-xl font-bold mb-6">Team Members ({project.participants?.length || 0})</h2>
+              <h2 className="text-xl font-bold mb-6">
+                Team Members ({project.participants?.length || 0})
+              </h2>
               <div className="space-y-3">
                 {project.participants?.map((member) => (
                   <div
@@ -821,10 +1068,15 @@ export default function ProjectDetailsPage() {
                     </Avatar>
                     <div className="flex-1">
                       <p className="font-medium">{member.name}</p>
-                      <p className="text-xs text-muted-foreground capitalize">{member.role?.toLowerCase()}</p>
+                      <p className="text-xs text-muted-foreground capitalize">
+                        {member.role?.toLowerCase()}
+                      </p>
                     </div>
                     {member.role === "ADMIN" && (
-                      <Badge variant="secondary" className="bg-primary/10 text-primary border-0">
+                      <Badge
+                        variant="secondary"
+                        className="bg-primary/10 text-primary border-0"
+                      >
                         Admin
                       </Badge>
                     )}
@@ -854,7 +1106,9 @@ export default function ProjectDetailsPage() {
                     <AvatarFallback>{member.name?.[0]}</AvatarFallback>
                   </Avatar>
                   <div>
-                    <div className="text-sm font-medium leading-none">{member.name}</div>
+                    <div className="text-sm font-medium leading-none">
+                      {member.name}
+                    </div>
                     <div className="text-[10px] text-muted-foreground mt-0.5 capitalize">
                       {member.role?.toLowerCase()}
                     </div>
@@ -872,14 +1126,19 @@ export default function ProjectDetailsPage() {
           <DialogHeader>
             <DialogTitle>Leave Project</DialogTitle>
             <DialogDescription>
-              Are you sure you want to leave <strong>{project.title}</strong>? You can rejoin from the projects page.
+              Are you sure you want to leave <strong>{project.title}</strong>?
+              You can rejoin from the projects page.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2">
             <Button variant="outline" onClick={() => setShowLeaveDialog(false)}>
               Cancel
             </Button>
-            <Button variant="destructive" onClick={handleLeaveProject} disabled={leavingProject}>
+            <Button
+              variant="destructive"
+              onClick={handleLeaveProject}
+              disabled={leavingProject}
+            >
               {leavingProject ? "Leaving..." : "Leave Project"}
             </Button>
           </DialogFooter>
@@ -890,7 +1149,9 @@ export default function ProjectDetailsPage() {
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Create Channel</DialogTitle>
-            <DialogDescription>Create a new channel for your project discussions.</DialogDescription>
+            <DialogDescription>
+              Create a new channel for your project discussions.
+            </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
@@ -908,29 +1169,47 @@ export default function ProjectDetailsPage() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowCreateChannel(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setShowCreateChannel(false)}
+            >
               Cancel
             </Button>
-            <Button onClick={handleCreateChannel} disabled={!newChannelName.trim() || creatingChannel}>
+            <Button
+              onClick={handleCreateChannel}
+              disabled={!newChannelName.trim() || creatingChannel}
+            >
               {creatingChannel ? "Creating..." : "Create Channel"}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      <Dialog open={showDeleteChannelDialog} onOpenChange={setShowDeleteChannelDialog}>
+      <Dialog
+        open={showDeleteChannelDialog}
+        onOpenChange={setShowDeleteChannelDialog}
+      >
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Delete Channel</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete <strong>#{channelToDelete?.name}</strong>? All messages will be lost.
+              Are you sure you want to delete{" "}
+              <strong>#{channelToDelete?.name}</strong>? All messages will be
+              lost.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2">
-            <Button variant="outline" onClick={() => setShowDeleteChannelDialog(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setShowDeleteChannelDialog(false)}
+            >
               Cancel
             </Button>
-            <Button variant="destructive" onClick={handleDeleteChannel} disabled={deletingChannel}>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteChannel}
+              disabled={deletingChannel}
+            >
               {deletingChannel ? "Deleting..." : "Delete Channel"}
             </Button>
           </DialogFooter>
@@ -941,7 +1220,9 @@ export default function ProjectDetailsPage() {
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Add Resource</DialogTitle>
-            <DialogDescription>Add a link, document, or file reference for your team.</DialogDescription>
+            <DialogDescription>
+              Add a link, document, or file reference for your team.
+            </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleAddResource} className="space-y-4 py-4">
             <div className="space-y-2">
@@ -977,10 +1258,19 @@ export default function ProjectDetailsPage() {
               </Select>
             </div>
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setShowAddResource(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowAddResource(false)}
+              >
                 Cancel
               </Button>
-              <Button type="submit" disabled={!resourceTitle.trim() || !resourceUrl.trim() || addingResource}>
+              <Button
+                type="submit"
+                disabled={
+                  !resourceTitle.trim() || !resourceUrl.trim() || addingResource
+                }
+              >
                 {addingResource ? "Adding..." : "Add Resource"}
               </Button>
             </DialogFooter>

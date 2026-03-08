@@ -14,6 +14,7 @@ import ProjectDetailsPage from './pages/ProjectDetailsPage';
 import InternshipsPage from './pages/InternshipsPage';
 import MessagesPage from './pages/MessagesPage';
 import ProfilePage from './pages/ProfilePage';
+import TestPage from './pages/TestPage';
 
 export default function App() {
   return (
@@ -36,6 +37,7 @@ export default function App() {
             <Route path="/internships" element={<InternshipsPage />} />
             <Route path="/messages/:userId?" element={<MessagesPage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/test" element={<TestPage />} />
           </Route>
         </Route>
       </Routes>

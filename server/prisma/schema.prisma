@@ -18,29 +18,33 @@ enum ChannelType {
 }
 
 model User {
-  id                    String            @id @default(cuid())
-  email                 String            @unique
-  password              String
-  name                  String
-  course                String?
-  semester              Int?
-  college               String?
-  skills                String[]          @default([])
-  interests             String[]          @default([])
-  bio                   String?
-  avatarUrl             String?
-  createdAt             DateTime          @default(now())
-  updatedAt             DateTime          @updatedAt
-  GroupMemberShip       GroupMemberShip[]
-  Group                 Group[]
-  GroupMessage          GroupMessage[]
-  sentMessages          DirectMessage[]   @relation("SentMessages")
-  receivedMessages      DirectMessage[]   @relation("ReceivedMessages")
-  projects              Project[]
-  postedInternships     Internship[]
-  notifications         Notification[]    @relation("UserNotifications")
-  sentNotifications     Notification[]    @relation("SentNotifications")
-  projectResources      ProjectResource[]
+  id                String            @id @default(cuid())
+  email             String            @unique
+  password          String
+  name              String
+  course            String?
+  semester          Int?
+  college           String?
+  skills            String[]          @default([])
+  interests         String[]          @default([])
+  bio               String?
+  avatarUrl         String?
+  github            String?
+  linkedin          String?
+  twitter           String?
+  experience        Json[]            @default([])
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  GroupMemberShip   GroupMemberShip[]
+  Group             Group[]
+  GroupMessage      GroupMessage[]
+  sentMessages      DirectMessage[]   @relation("SentMessages")
+  receivedMessages  DirectMessage[]   @relation("ReceivedMessages")
+  projects          Project[]
+  postedInternships Internship[]
+  notifications     Notification[]    @relation("UserNotifications")
+  sentNotifications Notification[]    @relation("SentNotifications")
+  projectResources  ProjectResource[]
 }
 
 model Group {
@@ -89,6 +93,9 @@ model GroupMessage {
   senderId  String
   channel   Channel  @relation(fields: [channelId], references: [id], onDelete: Cascade)
   channelId String
+  fileUrl   String?
+  fileName  String?
+  fileType  String?
   createdAt DateTime @default(now())
 }
 
@@ -120,15 +127,15 @@ model Project {
 }
 
 model ProjectResource {
-  id          String   @id @default(cuid())
-  title       String
-  url         String
-  type        String   // "link", "doc", "file", "video"
-  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  projectId   String
-  addedBy     User     @relation(fields: [addedById], references: [id])
-  addedById   String
-  createdAt   DateTime @default(now())
+  id        String   @id @default(cuid())
+  title     String
+  url       String
+  type      String // "link", "doc", "file", "video"
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String
+  addedBy   User     @relation(fields: [addedById], references: [id])
+  addedById String
+  createdAt DateTime @default(now())
 }
 
 model Internship {
@@ -137,7 +144,7 @@ model Internship {
   role        String
   description String
   location    String
-  type        String   // Remote, On-site, Hybrid
+  type        String // Remote, On-site, Hybrid
   applyUrl    String
   postedBy    User     @relation(fields: [postedById], references: [id])
   postedById  String

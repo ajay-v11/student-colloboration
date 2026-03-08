@@ -1204,6 +1204,10 @@ export const UserScalarFieldEnum = {
   interests: 'interests',
   bio: 'bio',
   avatarUrl: 'avatarUrl',
+  github: 'github',
+  linkedin: 'linkedin',
+  twitter: 'twitter',
+  experience: 'experience',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1252,6 +1256,9 @@ export const GroupMessageScalarFieldEnum = {
   content: 'content',
   senderId: 'senderId',
   channelId: 'channelId',
+  fileUrl: 'fileUrl',
+  fileName: 'fileName',
+  fileType: 'fileType',
   createdAt: 'createdAt'
 } as const
 
@@ -1408,6 +1415,20 @@ export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel,
 
 
 /**
+ * Reference to a field of type 'Json[]'
+ */
+export type ListJsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Json'
+ */
+export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+/**
  * Reference to a field of type 'DateTime'
  */
 export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
@@ -1460,13 +1481,6 @@ export type EnumNotificationTypeFieldRefInput<$PrismaModel> = FieldRefInputType<
  * Reference to a field of type 'NotificationType[]'
  */
 export type ListEnumNotificationTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotificationType[]'>
-    
-
-
-/**
- * Reference to a field of type 'Json'
- */
-export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
     
 
 

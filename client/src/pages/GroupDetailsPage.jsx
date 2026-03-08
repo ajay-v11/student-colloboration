@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/dialog";
 import {
   Send,
-  Settings,
   Search,
   ChevronDown,
   Paperclip,
@@ -25,6 +24,8 @@ import {
   LogOut,
   X,
   Trash2,
+  FileText,
+  Image as ImageIcon,
 } from "lucide-react";
 import { useState, useEffect, useCallback, useRef } from "react";
 import {
@@ -67,10 +68,13 @@ export default function GroupDetailsPage() {
   const [showDeleteChannelDialog, setShowDeleteChannelDialog] = useState(false);
   const [channelToDelete, setChannelToDelete] = useState(null);
   const [deletingChannel, setDeletingChannel] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [uploadingFile, setUploadingFile] = useState(false);
 
   const messagesEndRef = useRef(null);
   const typingTimeoutRef = useRef(null);
   const previousChannelRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -209,9 +213,50 @@ export default function GroupDetailsPage() {
     }
   };
 
+  const handleFileSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (file.size > maxSize) {
+      toast.error("File size must be under 10MB");
+      return;
+    }
+
+    const allowedTypes = [
+      "image/png",
+      "image/jpeg",
+      "image/jpg",
+      "application/pdf",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "application/msword",
+    ];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error("Only images, PDF, and DOCX files are allowed");
+      return;
+    }
+
+    setSelectedFile(file);
+  };
+
+  const clearSelectedFile = () => {
+    setSelectedFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const uploadFile = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    const res = await api.post("/uploads/channel", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return res;
+  };
+
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (!messageInput.trim() || !activeChannel || !id) return;
+    if ((!messageInput.trim() && !selectedFile) || !activeChannel || !id)
+      return;
 
     const content = messageInput.trim();
     setMessageInput("");
@@ -220,22 +265,40 @@ export default function GroupDetailsPage() {
       clearTimeout(typingTimeoutRef.current);
     }
 
-    // If socket is connected, use real-time
+    let fileData = null;
+    if (selectedFile) {
+      setUploadingFile(true);
+      try {
+        const uploaded = await uploadFile(selectedFile);
+        fileData = {
+          fileUrl: uploaded.url,
+          fileName: uploaded.fileName,
+          fileType: uploaded.fileType,
+        };
+      } catch {
+        toast.error("Failed to upload file");
+        setUploadingFile(false);
+        setMessageInput(content);
+        return;
+      }
+      clearSelectedFile();
+      setUploadingFile(false);
+    }
+
     if (isConnected) {
-      sendChannelMessage(activeChannel, id, content);
+      sendChannelMessage(activeChannel, id, content || "", fileData);
       setChannelTyping(activeChannel, false);
     } else {
-      // Fallback to REST API
       try {
         const newMsg = await api.post(
           `/groups/${id}/channels/${activeChannel}/messages`,
-          { content },
+          { content: content || "", ...fileData },
         );
         setMessages((prev) => [...prev, newMsg]);
         setTimeout(scrollToBottom, 100);
       } catch {
         toast.error("Failed to send message");
-        setMessageInput(content); // Restore input on error
+        setMessageInput(content);
       }
     }
   };
@@ -538,7 +601,9 @@ export default function GroupDetailsPage() {
                   <Hash
                     className={`h-4 w-4 ${activeChannel === channel.id ? "text-primary" : "text-muted-foreground/50 group-hover:text-muted-foreground"}`}
                   />
-                  <span className="text-sm truncate flex-1">{channel.name}</span>
+                  <span className="text-sm truncate flex-1">
+                    {channel.name}
+                  </span>
                   {isAdmin && (
                     <button
                       onClick={(e) => {
@@ -595,9 +660,6 @@ export default function GroupDetailsPage() {
               {isConnected ? "Online" : "Connecting..."}
             </div>
           </div>
-          <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full">
-            <Settings className="h-4 w-4" />
-          </Button>
         </div>
       </div>
 
@@ -670,9 +732,45 @@ export default function GroupDetailsPage() {
                       : ""}
                   </span>
                 </div>
-                <p className="text-sm text-foreground/90 leading-relaxed mt-0.5">
-                  {msg.content}
-                </p>
+                {msg.content && (
+                  <p className="text-sm text-foreground/90 leading-relaxed mt-0.5">
+                    {msg.content}
+                  </p>
+                )}
+                {msg.fileUrl && (
+                  <div className="mt-2">
+                    {msg.fileType?.startsWith("image/") ? (
+                      <a
+                        href={`${import.meta.env.VITE_API_URL?.replace("/api", "") || "http://localhost:5000"}${msg.fileUrl}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <img
+                          src={`${import.meta.env.VITE_API_URL?.replace("/api", "") || "http://localhost:5000"}${msg.fileUrl}`}
+                          alt={msg.fileName || "attachment"}
+                          className="max-w-xs max-h-60 rounded-lg border border-white/40 shadow-sm cursor-pointer hover:shadow-md transition-shadow"
+                        />
+                      </a>
+                    ) : (
+                      <a
+                        href={`${import.meta.env.VITE_API_URL?.replace("/api", "") || "http://localhost:5000"}${msg.fileUrl}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 bg-white/60 border border-white/40 rounded-lg px-3 py-2 hover:bg-white/80 transition-colors"
+                      >
+                        <FileText className="h-5 w-5 text-primary shrink-0" />
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium truncate">
+                            {msg.fileName || "File"}
+                          </p>
+                          <p className="text-[10px] text-muted-foreground">
+                            Click to open
+                          </p>
+                        </div>
+                      </a>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           ))}
@@ -690,6 +788,42 @@ export default function GroupDetailsPage() {
           </div>
         )}
 
+        {/* File Preview */}
+        {selectedFile && (
+          <div className="px-4 pb-2">
+            <div className="bg-white/60 border border-white/40 rounded-lg p-3 flex items-center gap-3">
+              {selectedFile.type.startsWith("image/") ? (
+                <div className="h-12 w-12 rounded-lg overflow-hidden bg-black/5 shrink-0">
+                  <img
+                    src={URL.createObjectURL(selectedFile)}
+                    alt="preview"
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                  <FileText className="h-6 w-6 text-primary" />
+                </div>
+              )}
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate">
+                  {selectedFile.name}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={clearSelectedFile}
+                className="p-1 rounded-full hover:bg-black/10 transition-colors"
+              >
+                <X className="h-4 w-4 text-muted-foreground" />
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Input Area - Always enabled, uses REST fallback */}
         <form
           onSubmit={handleSendMessage}
@@ -701,9 +835,17 @@ export default function GroupDetailsPage() {
               variant="ghost"
               size="icon"
               className="h-8 w-8 rounded-lg text-muted-foreground hover:bg-black/5"
+              onClick={() => fileInputRef.current?.click()}
             >
               <Paperclip className="h-4 w-4" />
             </Button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              className="hidden"
+              accept="image/png,image/jpeg,image/jpg,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/msword"
+              onChange={handleFileSelect}
+            />
             <input
               className="flex-1 bg-transparent border-none outline-none text-sm px-2 py-2 placeholder:text-muted-foreground/70"
               placeholder={`Message #${currentChannel?.name || "channel"}`}
@@ -714,7 +856,9 @@ export default function GroupDetailsPage() {
               type="submit"
               size="icon"
               className="h-8 w-8 rounded-lg bg-transparent text-primary hover:bg-primary/10 shadow-none disabled:opacity-50"
-              disabled={!messageInput.trim()}
+              disabled={
+                (!messageInput.trim() && !selectedFile) || uploadingFile
+              }
             >
               <Send className="h-4 w-4" />
             </Button>
