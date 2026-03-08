@@ -150,6 +150,34 @@ router.put("/mark-as-read/:userId", authMiddleware, async (req, res) => {
   }
 });
 
+// Get available users for a new conversation (excluding current user)
+router.get("/users/available", authMiddleware, async (req, res) => {
+  try {
+    const currentUserId = req.user.id;
+
+    // Get all users except the current user
+    const users = await prisma.user.findMany({
+      where: {
+        id: { not: currentUserId },
+      },
+      select: {
+        id: true,
+        name: true,
+        avatarUrl: true,
+        email: true,
+        course: true,
+      },
+      orderBy: { name: "asc" },
+      // Optional: Add take: 50 if the user base grows too large to prevent huge payloads
+    });
+
+    res.json(users);
+  } catch (error) {
+    console.error("Get available users error:", error);
+    res.status(500).json({ error: "Failed to get available users" });
+  }
+});
+
 // Get user info for starting a new conversation
 router.get("/users/search", authMiddleware, async (req, res) => {
   try {

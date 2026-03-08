@@ -3,13 +3,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Send,
-  Phone,
-  Video,
-  MoreVertical,
-  Edit,
   Search as SearchIcon,
   MessageCircle,
+  Plus,
+  UserPlus,
 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { api } from "@/lib/api";
@@ -34,6 +39,35 @@ export default function MessagesPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [typingUser, setTypingUser] = useState(null);
+
+  const [isNewChatModalOpen, setIsNewChatModalOpen] = useState(false);
+  const [availableUsers, setAvailableUsers] = useState([]);
+  const [isAvailableUsersLoading, setIsAvailableUsersLoading] = useState(false);
+  const [modalSearchQuery, setModalSearchQuery] = useState("");
+
+  const fetchAvailableUsers = async () => {
+    setIsAvailableUsersLoading(true);
+    try {
+      const data = await api.get("/messages/users/available");
+      setAvailableUsers(data);
+    } catch (error) {
+      console.error("Failed to fetch available users", error);
+    } finally {
+      setIsAvailableUsersLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isNewChatModalOpen && availableUsers.length === 0) {
+      fetchAvailableUsers();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isNewChatModalOpen, availableUsers.length]);
+
+  const filteredAvailableUsers = availableUsers.filter(u =>
+      u.name.toLowerCase().includes(modalSearchQuery.toLowerCase()) ||
+      u.email.toLowerCase().includes(modalSearchQuery.toLowerCase())
+  );
 
   const messagesEndRef = useRef(null);
   const typingTimeoutRef = useRef(null);
@@ -103,6 +137,8 @@ export default function MessagesPage() {
       if (updateUrl) {
         navigate(`/messages/${selectedUser.id}`, { replace: true });
       }
+
+      setIsNewChatModalOpen(false);
 
       setConversations((prev) => {
         if (prev.find((c) => c.user.id === selectedUser.id)) return prev;
@@ -332,17 +368,10 @@ export default function MessagesPage() {
   return (
     <div className="h-[calc(100vh-6rem)] flex gap-6 animate-in fade-in duration-500">
       {/* Sidebar List */}
-      <div className="w-80 md:w-96 glass rounded-[2rem] border border-white/40 flex flex-col overflow-hidden shadow-xl">
+      <div className="w-80 md:w-96 glass rounded-[2rem] border border-white/40 flex flex-col overflow-hidden shadow-xl relative">
         <div className="p-6 pb-4 border-b border-white/10">
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-2xl font-serif font-bold">Messages</h1>
-            <Button
-              size="icon"
-              variant="ghost"
-              className="rounded-full hover:bg-white/50"
-            >
-              <Edit className="h-5 w-5" />
-            </Button>
           </div>
           <div className="relative group">
             <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
@@ -447,6 +476,72 @@ export default function MessagesPage() {
             ))
           )}
         </div>
+
+        {/* Floating Action Button */}
+        <Dialog open={isNewChatModalOpen} onOpenChange={setIsNewChatModalOpen}>
+          <DialogTrigger asChild>
+            <Button
+              size="icon"
+              className="absolute bottom-6 right-6 h-14 w-14 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 z-10"
+            >
+              <Plus className="h-6 w-6" />
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-md bg-white/95 backdrop-blur-xl border-white/40 shadow-2xl rounded-3xl overflow-hidden">
+            <DialogHeader className="p-6 pb-2 border-b border-white/20">
+              <DialogTitle className="text-xl font-serif font-bold flex items-center gap-2">
+                <UserPlus className="h-5 w-5 text-primary" />
+                New Chat
+              </DialogTitle>
+              <div className="relative mt-4">
+                <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="text"
+                  placeholder="Search available users..."
+                  className="pl-9 bg-white/50 border-white/40 focus:bg-white focus:ring-primary/20 transition-all rounded-xl"
+                  value={modalSearchQuery}
+                  onChange={(e) => setModalSearchQuery(e.target.value)}
+                />
+              </div>
+            </DialogHeader>
+
+            <div className="max-h-[60vh] overflow-y-auto p-4 space-y-2 custom-scrollbar">
+              {isAvailableUsersLoading ? (
+                <div className="flex justify-center p-8 text-muted-foreground">
+                  Loading users...
+                </div>
+              ) : filteredAvailableUsers.length === 0 ? (
+                <div className="flex flex-col items-center justify-center p-8 text-center text-muted-foreground">
+                  <UserPlus className="h-8 w-8 mb-2 opacity-50" />
+                  <p>No users found</p>
+                </div>
+              ) : (
+                filteredAvailableUsers.map((u) => (
+                  <div
+                    key={u.id}
+                    className="flex items-center gap-4 p-3 rounded-2xl cursor-pointer transition-all duration-200 hover:bg-white/60 border border-transparent hover:border-white/40"
+                    onClick={() => selectChat(u)}
+                  >
+                    <Avatar className="h-12 w-12 border-2 border-white shadow-sm">
+                      <AvatarImage src={u.avatarUrl} />
+                      <AvatarFallback className="bg-primary/10 text-primary font-bold">
+                        {u.name[0]}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-foreground truncate">
+                        {u.name}
+                      </p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {u.course || u.email}
+                      </p>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Main Chat Window */}
