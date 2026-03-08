@@ -3,6 +3,13 @@ import { useNotifications } from "@/context/NotificationContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   MoreHorizontal,
   Plus,
@@ -10,6 +17,8 @@ import {
   Zap,
   Users,
   Loader2,
+  Search as SearchIcon,
+  UserPlus,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect, useMemo } from "react";
@@ -25,6 +34,36 @@ export default function DashboardPage() {
   const [exploreFeed, setExploreFeed] = useState([]);
   const [feedLoading, setFeedLoading] = useState(true);
   const [feedFilter, setFeedFilter] = useState("All");
+  const [appStats, setAppStats] = useState({ users: 0, groups: 0 });
+
+  const [isAllSuggestionsModalOpen, setIsAllSuggestionsModalOpen] = useState(false);
+  const [availableUsers, setAvailableUsers] = useState([]);
+  const [isAvailableUsersLoading, setIsAvailableUsersLoading] = useState(false);
+  const [modalSearchQuery, setModalSearchQuery] = useState("");
+
+  useEffect(() => {
+    if (isAllSuggestionsModalOpen && availableUsers.length === 0) {
+      const fetchAvailableUsers = async () => {
+        setIsAvailableUsersLoading(true);
+        try {
+          const data = await api.get("/messages/users/available");
+          setAvailableUsers(data);
+        } catch (error) {
+          console.error("Failed to fetch available users:", error);
+        } finally {
+          setIsAvailableUsersLoading(false);
+        }
+      };
+      fetchAvailableUsers();
+    }
+  }, [isAllSuggestionsModalOpen, availableUsers.length]);
+
+  const filteredAvailableUsers = useMemo(() => {
+    return availableUsers.filter(u =>
+      u.name.toLowerCase().includes(modalSearchQuery.toLowerCase()) ||
+      (u.email && u.email.toLowerCase().includes(modalSearchQuery.toLowerCase()))
+    );
+  }, [availableUsers, modalSearchQuery]);
 
   // Compute notification stats for briefing
   const notificationStats = useMemo(() => {
@@ -74,8 +113,17 @@ export default function DashboardPage() {
         setFeedLoading(false);
       }
     };
+    const fetchStats = async () => {
+      try {
+        const data = await api.get("/dashboard/stats");
+        setAppStats(data);
+      } catch (error) {
+        console.error("Failed to fetch stats:", error);
+      }
+    };
     fetchSuggestions();
     fetchFeed();
+    fetchStats();
   }, []);
 
   const handleConnectClick = (person) => {
@@ -395,6 +443,7 @@ export default function DashboardPage() {
           <Button
             variant="outline"
             className="w-full mt-6 rounded-xl glass border-dashed hover:border-solid text-xs h-10"
+            onClick={() => setIsAllSuggestionsModalOpen(true)}
           >
             View All Suggestions
           </Button>
@@ -404,22 +453,93 @@ export default function DashboardPage() {
         <div className="grid grid-cols-2 gap-3">
           <div className="glass rounded-[1.5rem] p-4 flex flex-col items-center justify-center text-center gap-1 hover:scale-105 transition-transform group cursor-pointer">
             <span className="text-2xl font-bold text-emerald-600 group-hover:text-emerald-500 transition-colors">
-              1,240
+              {appStats.users}
             </span>
             <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wide">
-              Reputation XP
+              Total Users
             </span>
           </div>
           <div className="glass rounded-[1.5rem] p-4 flex flex-col items-center justify-center text-center gap-1 hover:scale-105 transition-transform group cursor-pointer">
             <span className="text-2xl font-bold text-blue-600 group-hover:text-blue-500 transition-colors">
-              342
+              {appStats.groups}
             </span>
             <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wide">
-              Profile Views
+              Active Groups
             </span>
           </div>
         </div>
       </aside>
+
+      {/* View All Suggestions Modal */}
+      <Dialog open={isAllSuggestionsModalOpen} onOpenChange={setIsAllSuggestionsModalOpen}>
+        <DialogContent className="sm:max-w-md bg-white/95 backdrop-blur-xl border-white/40 shadow-2xl rounded-3xl overflow-hidden">
+          <DialogHeader className="p-6 pb-2 border-b border-white/20">
+            <DialogTitle className="text-xl font-serif font-bold flex items-center gap-2">
+              <UserPlus className="h-5 w-5 text-primary" />
+              All Suggestions
+            </DialogTitle>
+            <div className="relative mt-4">
+              <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="text"
+                placeholder="Search suggestions..."
+                className="pl-9 bg-white/50 border-white/40 focus:bg-white focus:ring-primary/20 transition-all rounded-xl"
+                value={modalSearchQuery}
+                onChange={(e) => setModalSearchQuery(e.target.value)}
+              />
+            </div>
+          </DialogHeader>
+
+          <div className="max-h-[60vh] overflow-y-auto p-4 space-y-2 custom-scrollbar">
+            {isAvailableUsersLoading ? (
+              <div className="flex justify-center p-8 text-muted-foreground">
+                <Loader2 className="w-6 h-6 animate-spin text-primary" />
+              </div>
+            ) : filteredAvailableUsers.length === 0 ? (
+              <div className="flex flex-col items-center justify-center p-8 text-center text-muted-foreground">
+                <UserPlus className="h-8 w-8 mb-2 opacity-50" />
+                <p>No users found</p>
+              </div>
+            ) : (
+              filteredAvailableUsers.map((u) => (
+                <div
+                  key={u.id}
+                  className="flex items-center gap-4 p-3 rounded-2xl cursor-pointer transition-all duration-200 hover:bg-white/60 border border-transparent hover:border-white/40 justify-between"
+                  onClick={() => handleConnectClick(u)}
+                >
+                  <div className="flex items-center gap-4 min-w-0">
+                    <Avatar className="h-12 w-12 border-2 border-white shadow-sm">
+                      <AvatarImage src={u.avatarUrl} />
+                      <AvatarFallback className="bg-primary/10 text-primary font-bold">
+                        {u.name[0]}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-foreground truncate">
+                        {u.name}
+                      </p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {u.course || u.email}
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="h-8 w-8 rounded-full hover:bg-primary/10 hover:text-primary shrink-0"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleConnectClick(u);
+                    }}
+                  >
+                    <Plus className="w-4 h-4" />
+                  </Button>
+                </div>
+              ))
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

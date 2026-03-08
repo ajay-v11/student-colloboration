@@ -107,7 +107,40 @@ router.get("/:id", authMiddleware, async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    res.json({ user });
+    // Calculate stats
+    const [sentMessages, receivedMessages, projectsCount, groupsCount] = await Promise.all([
+      prisma.directMessage.findMany({
+        where: { senderId: req.params.id },
+        select: { receiverId: true },
+        distinct: ["receiverId"],
+      }),
+      prisma.directMessage.findMany({
+        where: { receiverId: req.params.id },
+        select: { senderId: true },
+        distinct: ["senderId"],
+      }),
+      prisma.project.count({
+        where: { authorId: req.params.id }
+      }),
+      prisma.groupMemberShip.count({
+        where: { userId: req.params.id }
+      })
+    ]);
+
+    const uniqueConnections = new Set([
+      ...sentMessages.map((m) => m.receiverId),
+      ...receivedMessages.map((m) => m.senderId),
+    ]);
+    // remove self if present
+    uniqueConnections.delete(req.params.id);
+
+    const stats = {
+      connections: uniqueConnections.size,
+      projects: projectsCount,
+      groups: groupsCount,
+    };
+
+    res.json({ user: { ...user, stats } });
   } catch (error) {
     console.error("Get user error:", error);
     res.status(500).json({ error: "Failed to get user" });

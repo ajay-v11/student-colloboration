@@ -70,4 +70,21 @@ router.get("/feed", authMiddleware, async (req, res) => {
   }
 });
 
+router.get("/stats", authMiddleware, async (req, res) => {
+  try {
+    const [usersCount, groupsCount] = await Promise.all([
+      prisma.user.count(),
+      prisma.group.count(),
+    ]);
+
+    res.json({
+      users: usersCount,
+      groups: groupsCount,
+    });
+  } catch (error) {
+    console.error("Dashboard stats error:", error);
+    res.status(500).json({ error: "Failed to fetch dashboard stats" });
+  }
+});
+
 export default router;

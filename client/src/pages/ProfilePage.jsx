@@ -294,16 +294,16 @@ export default function ProfilePage() {
            {/* Stats Widget */}
            <div className="glass-card rounded-[2rem] p-6 flex justify-between items-center text-center divide-x divide-black/5">
               <div className="flex-1 px-2">
-                 <div className="text-2xl font-bold font-serif text-foreground">0</div>
-                 <div className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground">Followers</div>
+                 <div className="text-2xl font-bold font-serif text-foreground">{profile.stats?.connections || 0}</div>
+                 <div className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground">Connections</div>
               </div>
               <div className="flex-1 px-2">
-                 <div className="text-2xl font-bold font-serif text-foreground">0</div>
-                 <div className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground">Following</div>
+                 <div className="text-2xl font-bold font-serif text-foreground">{profile.stats?.projects || 0}</div>
+                 <div className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground">Projects</div>
               </div>
               <div className="flex-1 px-2">
-                 <div className="text-2xl font-bold font-serif text-emerald-600">0</div>
-                 <div className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground">Reputation</div>
+                 <div className="text-2xl font-bold font-serif text-emerald-600">{profile.stats?.groups || 0}</div>
+                 <div className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground">Groups</div>
               </div>
            </div>
 
