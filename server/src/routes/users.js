@@ -1,6 +1,8 @@
 import express from "express";
 import prisma from "../lib/prisma.js";
 import authMiddleware from "../middleware/auth.js";
+import { validate } from "../middleware/validate.js";
+import { updateUserSchema } from "../validations/users.validation.js";
 
 const router = express.Router();
 
@@ -148,7 +150,7 @@ router.get("/:id", authMiddleware, async (req, res) => {
 });
 
 // PUT /api/users/:id - Update user profile
-router.put("/:id", authMiddleware, async (req, res) => {
+router.put("/:id", authMiddleware, validate(updateUserSchema), async (req, res) => {
   try {
     const userId = req.user.id;
     // Users can only update their own profile

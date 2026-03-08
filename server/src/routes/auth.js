@@ -1,26 +1,12 @@
 import express from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { z } from "zod";
 import prisma from "../lib/prisma.js";
 import authMiddleware from "../middleware/auth.js";
+import { validate } from "../middleware/validate.js";
+import { registerSchema, loginSchema } from "../validations/auth.validation.js";
 
 const router = express.Router();
-
-// Validation schemas
-const registerSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  course: z.string().optional(),
-  semester: z.number().int().min(1).max(10).optional(),
-  college: z.string().optional(),
-});
-
-const loginSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(1, "Password is required"),
-});
 
 // Generate JWT token
 const generateToken = (userId) => {
@@ -28,9 +14,9 @@ const generateToken = (userId) => {
 };
 
 // POST /api/auth/register
-router.post("/register", async (req, res) => {
+router.post("/register", validate(registerSchema), async (req, res) => {
   try {
-    const data = registerSchema.parse(req.body);
+    const data = req.body;
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
@@ -69,18 +55,15 @@ router.post("/register", async (req, res) => {
 
     res.status(201).json({ user, token });
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: error.errors[0].message });
-    }
     console.error("Register error:", error);
     res.status(500).json({ error: "Failed to register" });
   }
 });
 
 // POST /api/auth/login
-router.post("/login", async (req, res) => {
+router.post("/login", validate(loginSchema), async (req, res) => {
   try {
-    const data = loginSchema.parse(req.body);
+    const data = req.body;
 
     // Find user
     const user = await prisma.user.findUnique({
@@ -105,9 +88,6 @@ router.post("/login", async (req, res) => {
 
     res.json({ user: userWithoutPassword, token });
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: error.errors[0].message });
-    }
     console.error("Login error:", error);
     res.status(500).json({ error: "Failed to login" });
   }

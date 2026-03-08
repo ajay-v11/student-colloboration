@@ -1,22 +1,15 @@
 import express from "express";
-import { z } from "zod";
+import { validate } from "../middleware/validate.js";
+import { createProjectSchema, updateProjectSchema, addResourceSchema } from "../validations/projects.validation.js";
 import prisma from "../lib/prisma.js";
 import authMiddleware from "../middleware/auth.js";
 
 const router = express.Router();
 
-const createProjectSchema = z.object({
-  title: z.string().min(2, "Title must be at least 2 chars"),
-  description: z.string().min(10, "Description must be at least 10 chars"),
-  tags: z.array(z.string()).default([]),
-  githubUrl: z.string().url().optional().or(z.literal("")),
-  demoUrl: z.string().url().optional().or(z.literal("")),
-});
-
 // Create a project (with linked group for collaboration)
-router.post("/", authMiddleware, async (req, res) => {
+router.post("/", authMiddleware, validate(createProjectSchema), async (req, res) => {
   try {
-    const projectData = createProjectSchema.parse(req.body);
+    const projectData = req.body;
     const userId = req.user.id;
 
     // Transaction to create project + linked group + channel + membership
@@ -79,9 +72,6 @@ router.post("/", authMiddleware, async (req, res) => {
 
     res.status(201).json(project);
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: error.errors });
-    }
     if (error.code === "P2002") {
       return res.status(409).json({ error: "A project with this name already exists" });
     }
@@ -256,11 +246,11 @@ router.get("/:id", authMiddleware, async (req, res) => {
 });
 
 // Update project
-router.put("/:id", authMiddleware, async (req, res) => {
+router.put("/:id", authMiddleware, validate(updateProjectSchema), async (req, res) => {
   try {
     const userId = req.user.id;
     const projectId = req.params.id;
-    const projectData = createProjectSchema.parse(req.body);
+    const projectData = req.body;
 
     const project = await prisma.project.findUnique({
       where: { id: projectId },
@@ -278,9 +268,6 @@ router.put("/:id", authMiddleware, async (req, res) => {
 
     res.json(updatedProject);
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: error.errors });
-    }
     console.error("Update project error:", error);
     res.status(500).json({ error: "Failed to update project" });
   }
@@ -314,18 +301,12 @@ router.delete("/:id", authMiddleware, async (req, res) => {
 
 // --- Resource Routes ---
 
-const createResourceSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  url: z.string().url("Must be a valid URL"),
-  type: z.enum(["link", "doc", "file", "video"]).default("link"),
-});
-
 // Add a resource to a project
-router.post("/:id/resources", authMiddleware, async (req, res) => {
+router.post("/:id/resources", authMiddleware, validate(addResourceSchema), async (req, res) => {
   try {
     const userId = req.user.id;
     const projectId = req.params.id;
-    const resourceData = createResourceSchema.parse(req.body);
+    const resourceData = req.body;
 
     // Verify project exists and user is a member
     const project = await prisma.project.findUnique({
@@ -362,9 +343,6 @@ router.post("/:id/resources", authMiddleware, async (req, res) => {
 
     res.status(201).json(resource);
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: error.errors });
-    }
     console.error("Add resource error:", error);
     res.status(500).json({ error: "Failed to add resource" });
   }

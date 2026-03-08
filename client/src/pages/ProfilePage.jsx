@@ -42,6 +42,7 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({});
   const [avatarFile, setAvatarFile] = useState(null);
   const [avatarPreview, setAvatarPreview] = useState(null);
   const [uploading, setUploading] = useState(false);
@@ -81,6 +82,7 @@ export default function ProfilePage() {
   }, [fetchProfile]);
 
   const openEditDialog = () => {
+    setFieldErrors({});
     setFormData({
       name: profile?.name || "",
       bio: profile?.bio || "",
@@ -146,8 +148,9 @@ export default function ProfilePage() {
   };
 
   const handleSaveProfile = async () => {
+    setFieldErrors({});
     if (!formData.name.trim()) {
-      toast.error("Name is required");
+      setFieldErrors({ name: "Name is required" });
       return;
     }
 
@@ -194,8 +197,16 @@ export default function ProfilePage() {
       setIsEditOpen(false);
       toast.success("Profile updated successfully");
     } catch (error) {
-      console.error("Failed to update profile:", error);
-      toast.error(error.message || "Failed to update profile");
+      if (error.fieldErrors && error.fieldErrors.length > 0) {
+        const errorsMap = {};
+        error.fieldErrors.forEach((err) => {
+          errorsMap[err.field] = err.message;
+        });
+        setFieldErrors(errorsMap);
+      } else {
+        console.error("Failed to update profile:", error);
+        toast.error(error.message || "Failed to update profile");
+      }
     } finally {
       setSaving(false);
     }
@@ -469,8 +480,11 @@ export default function ProfilePage() {
                 value={formData.name}
                 onChange={handleInputChange}
                 placeholder="Your full name"
-                className="rounded-xl"
+                className={`rounded-xl ${fieldErrors.name ? "border-red-500" : ""}`}
               />
+              {fieldErrors.name && (
+                <span className="text-sm text-red-500">{fieldErrors.name}</span>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -482,8 +496,11 @@ export default function ProfilePage() {
                 onChange={handleInputChange}
                 placeholder="Tell us about yourself..."
                 rows={3}
-                className="rounded-xl resize-none"
+                className={`rounded-xl resize-none ${fieldErrors.bio ? "border-red-500" : ""}`}
               />
+              {fieldErrors.bio && (
+                <span className="text-sm text-red-500">{fieldErrors.bio}</span>
+              )}
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -495,8 +512,11 @@ export default function ProfilePage() {
                   value={formData.course}
                   onChange={handleInputChange}
                   placeholder="e.g., Computer Science"
-                  className="rounded-xl"
+                  className={`rounded-xl ${fieldErrors.course ? "border-red-500" : ""}`}
                 />
+                {fieldErrors.course && (
+                  <span className="text-sm text-red-500">{fieldErrors.course}</span>
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="semester">Semester</Label>
@@ -509,8 +529,11 @@ export default function ProfilePage() {
                   value={formData.semester}
                   onChange={handleInputChange}
                   placeholder="e.g., 5"
-                  className="rounded-xl"
+                  className={`rounded-xl ${fieldErrors.semester ? "border-red-500" : ""}`}
                 />
+                {fieldErrors.semester && (
+                  <span className="text-sm text-red-500">{fieldErrors.semester}</span>
+                )}
               </div>
             </div>
 
@@ -522,8 +545,11 @@ export default function ProfilePage() {
                 value={formData.college}
                 onChange={handleInputChange}
                 placeholder="Your college or university"
-                className="rounded-xl"
+                className={`rounded-xl ${fieldErrors.college ? "border-red-500" : ""}`}
               />
+              {fieldErrors.college && (
+                <span className="text-sm text-red-500">{fieldErrors.college}</span>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -534,8 +560,11 @@ export default function ProfilePage() {
                 value={formData.skills}
                 onChange={handleInputChange}
                 placeholder="React, Node.js, Python, ..."
-                className="rounded-xl"
+                className={`rounded-xl ${fieldErrors.skills ? "border-red-500" : ""}`}
               />
+              {fieldErrors.skills && (
+                <span className="text-sm text-red-500">{fieldErrors.skills}</span>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -546,8 +575,11 @@ export default function ProfilePage() {
                 value={formData.interests}
                 onChange={handleInputChange}
                 placeholder="AI, Web Dev, Machine Learning, ..."
-                className="rounded-xl"
+                className={`rounded-xl ${fieldErrors.interests ? "border-red-500" : ""}`}
               />
+              {fieldErrors.interests && (
+                <span className="text-sm text-red-500">{fieldErrors.interests}</span>
+              )}
             </div>
 
             <div className="space-y-4">
@@ -561,9 +593,12 @@ export default function ProfilePage() {
                     value={formData.github}
                     onChange={handleInputChange}
                     placeholder="GitHub URL (e.g., https://github.com/username)"
-                    className="rounded-xl"
+                    className={`rounded-xl ${fieldErrors.github ? "border-red-500" : ""}`}
                   />
                 </div>
+                {fieldErrors.github && (
+                  <span className="text-sm text-red-500 ml-8">{fieldErrors.github}</span>
+                )}
                 <div className="flex items-center gap-3">
                   <Linkedin className="h-5 w-5 text-muted-foreground shrink-0" />
                   <Input
@@ -572,9 +607,12 @@ export default function ProfilePage() {
                     value={formData.linkedin}
                     onChange={handleInputChange}
                     placeholder="LinkedIn URL (e.g., https://linkedin.com/in/username)"
-                    className="rounded-xl"
+                    className={`rounded-xl ${fieldErrors.linkedin ? "border-red-500" : ""}`}
                   />
                 </div>
+                {fieldErrors.linkedin && (
+                  <span className="text-sm text-red-500 ml-8">{fieldErrors.linkedin}</span>
+                )}
                 <div className="flex items-center gap-3">
                   <Twitter className="h-5 w-5 text-muted-foreground shrink-0" />
                   <Input
@@ -583,9 +621,12 @@ export default function ProfilePage() {
                     value={formData.twitter}
                     onChange={handleInputChange}
                     placeholder="Twitter/X URL (e.g., https://x.com/username)"
-                    className="rounded-xl"
+                    className={`rounded-xl ${fieldErrors.twitter ? "border-red-500" : ""}`}
                   />
                 </div>
+                {fieldErrors.twitter && (
+                  <span className="text-sm text-red-500 ml-8">{fieldErrors.twitter}</span>
+                )}
               </div>
             </div>
 

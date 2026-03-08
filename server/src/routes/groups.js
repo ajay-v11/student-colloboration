@@ -1,36 +1,16 @@
 import express from "express";
-import { z } from "zod";
+import { validate } from "../middleware/validate.js";
+import { createGroupSchema, createChannelSchema, sendMessageSchema } from "../validations/groups.validation.js";
 import prisma from "../lib/prisma.js";
 import authMiddleware from "../middleware/auth.js";
 import NotificationService from "../services/NotificationService.js";
 
 const router = express.Router();
 
-const createGroupSchema = z.object({
-  name: z.string().min(2, "Group name must be at least 2 chars"),
-  description: z.string().min(2, "Description must be at least 2 chars"),
-  interests: z.array(z.string()).default([]),
-});
-
-const createChannelSchema = z.object({
-  name: z.string().min(2, "Channel name must be at least 2 chars"),
-  type: z.enum(["TEXT", "ANNOUNCEMENT"]).default("TEXT"),
-});
-
-const sendMessageSchema = z.object({
-  content: z.string().optional().default(""),
-  fileUrl: z.string().optional(),
-  fileName: z.string().optional(),
-  fileType: z.string().optional(),
-}).refine(
-  (data) => data.content.length > 0 || data.fileUrl,
-  { message: "Message must have content or a file attachment" }
-);
-
 // Create a group
-router.post("/createGroup", authMiddleware, async (req, res) => {
+router.post("/createGroup", authMiddleware, validate(createGroupSchema), async (req, res) => {
   try {
-    const groupData = createGroupSchema.parse(req.body);
+    const groupData = req.body;
     const userId = req.user.id;
 
     // Transaction to create group, add admin, and create default channel
@@ -69,9 +49,6 @@ router.post("/createGroup", authMiddleware, async (req, res) => {
 
     res.status(201).json(newGroup);
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: error.errors });
-    }
     // Handle unique constraint violation (e.g. duplicate group name)
     if (error.code === 'P2002') {
        return res.status(409).json({ error: "Group name already exists" });
@@ -322,11 +299,11 @@ router.get("/", async (req, res) => {
 // --- Channel Routes ---
 
 // Create a channel
-router.post("/:id/channels", authMiddleware, async (req, res) => {
+router.post("/:id/channels", authMiddleware, validate(createChannelSchema), async (req, res) => {
   try {
     const userId = req.user.id;
     const groupId = req.params.id;
-    const channelData = createChannelSchema.parse(req.body);
+    const channelData = req.body;
 
     // Verify user is admin of the group
     const membership = await prisma.groupMemberShip.findUnique({
@@ -358,9 +335,6 @@ router.post("/:id/channels", authMiddleware, async (req, res) => {
 
     res.status(201).json(newChannel);
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: error.errors });
-    }
     console.error("Create channel error:", error);
     res.status(500).json({ error: "Failed to create channel" });
   }
@@ -448,11 +422,11 @@ router.get("/:groupId/channels/:channelId/messages", authMiddleware, async (req,
 });
 
 // Send a message
-router.post("/:groupId/channels/:channelId/messages", authMiddleware, async (req, res) => {
+router.post("/:groupId/channels/:channelId/messages", authMiddleware, validate(sendMessageSchema), async (req, res) => {
   try {
     const userId = req.user.id;
     const { groupId, channelId } = req.params;
-    const { content, fileUrl, fileName, fileType } = sendMessageSchema.parse(req.body);
+    const { content, fileUrl, fileName, fileType } = req.body;
 
     // Verify membership
     const membership = await prisma.groupMemberShip.findUnique({
@@ -492,9 +466,6 @@ router.post("/:groupId/channels/:channelId/messages", authMiddleware, async (req
     
     res.status(201).json(message);
   } catch (error) {
-     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: error.errors });
-    }
     console.error("Send message error:", error);
     res.status(500).json({ error: "Failed to send message" });
   }

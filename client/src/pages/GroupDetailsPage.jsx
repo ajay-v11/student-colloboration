@@ -63,6 +63,7 @@ export default function GroupDetailsPage() {
   const [showCreateChannel, setShowCreateChannel] = useState(false);
   const [newChannelName, setNewChannelName] = useState("");
   const [creatingChannel, setCreatingChannel] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({});
   const [showLeaveDialog, setShowLeaveDialog] = useState(false);
   const [leavingGroup, setLeavingGroup] = useState(false);
   const [showDeleteChannelDialog, setShowDeleteChannelDialog] = useState(false);
@@ -305,7 +306,11 @@ export default function GroupDetailsPage() {
 
   const handleCreateChannel = async (e) => {
     if (e) e.preventDefault();
-    if (!newChannelName.trim()) return;
+    setFieldErrors({});
+    if (!newChannelName.trim()) {
+      setFieldErrors({ name: "Channel name is required" });
+      return;
+    }
 
     setCreatingChannel(true);
     try {
@@ -324,7 +329,15 @@ export default function GroupDetailsPage() {
       setActiveChannel(newChannel.id);
       toast.success("Channel created!");
     } catch (error) {
-      toast.error(error.message || "Failed to create channel");
+      if (error.fieldErrors && error.fieldErrors.length > 0) {
+        const errorsMap = {};
+        error.fieldErrors.forEach((err) => {
+          errorsMap[err.field] = err.message;
+        });
+        setFieldErrors(errorsMap);
+      } else {
+        toast.error(error.message || "Failed to create channel");
+      }
     } finally {
       setCreatingChannel(false);
     }
@@ -506,16 +519,21 @@ export default function GroupDetailsPage() {
                 <Label htmlFor="name" className="text-right">
                   Name
                 </Label>
-                <Input
-                  id="name"
-                  value={newChannelName}
-                  onChange={(e) => setNewChannelName(e.target.value)}
-                  placeholder="new-channel"
-                  className="col-span-3"
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") handleCreateChannel(e);
-                  }}
-                />
+                <div className="col-span-3">
+                  <Input
+                    id="name"
+                    value={newChannelName}
+                    onChange={(e) => setNewChannelName(e.target.value)}
+                    placeholder="new-channel"
+                    className={`w-full ${fieldErrors.name ? "border-red-500" : ""}`}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") handleCreateChannel(e);
+                    }}
+                  />
+                  {fieldErrors.name && (
+                    <span className="text-sm text-red-500 mt-1 block">{fieldErrors.name}</span>
+                  )}
+                </div>
               </div>
             </div>
             <DialogFooter>

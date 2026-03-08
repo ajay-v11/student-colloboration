@@ -96,6 +96,7 @@ export default function ProjectDetailsPage() {
   const [showDeleteChannelDialog, setShowDeleteChannelDialog] = useState(false);
   const [channelToDelete, setChannelToDelete] = useState(null);
   const [deletingChannel, setDeletingChannel] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({});
 
   // Resource states
   const [showAddResource, setShowAddResource] = useState(false);
@@ -358,7 +359,11 @@ export default function ProjectDetailsPage() {
 
   const handleCreateChannel = async (e) => {
     if (e) e.preventDefault();
-    if (!newChannelName.trim() || !project?.group?.id) return;
+    setFieldErrors({});
+    if (!newChannelName.trim() || !project?.group?.id) {
+      if (!newChannelName.trim()) setFieldErrors({ channelName: "Channel name is required" });
+      return;
+    }
 
     setCreatingChannel(true);
     try {
@@ -380,7 +385,15 @@ export default function ProjectDetailsPage() {
       setActiveChannel(newChannel.id);
       toast.success("Channel created!");
     } catch (error) {
-      toast.error(error.message || "Failed to create channel");
+      if (error.fieldErrors && error.fieldErrors.length > 0) {
+        const errorsMap = {};
+        error.fieldErrors.forEach((err) => {
+          errorsMap[err.field] = err.message;
+        });
+        setFieldErrors(errorsMap);
+      } else {
+        toast.error(error.message || "Failed to create channel");
+      }
     } finally {
       setCreatingChannel(false);
     }
@@ -433,7 +446,17 @@ export default function ProjectDetailsPage() {
 
   const handleAddResource = async (e) => {
     e.preventDefault();
-    if (!resourceTitle.trim() || !resourceUrl.trim()) return;
+    setFieldErrors({});
+    
+    let hasError = false;
+    const newErrors = {};
+    if (!resourceTitle.trim()) { newErrors.title = "Title is required"; hasError = true; }
+    if (!resourceUrl.trim()) { newErrors.url = "URL is required"; hasError = true; }
+    
+    if (hasError) {
+      setFieldErrors(newErrors);
+      return;
+    }
 
     setAddingResource(true);
     try {
@@ -454,7 +477,15 @@ export default function ProjectDetailsPage() {
       setShowAddResource(false);
       toast.success("Resource added!");
     } catch (error) {
-      toast.error(error.message || "Failed to add resource");
+      if (error.fieldErrors && error.fieldErrors.length > 0) {
+        const errorsMap = {};
+        error.fieldErrors.forEach((err) => {
+          errorsMap[err.field] = err.message;
+        });
+        setFieldErrors(errorsMap);
+      } else {
+        toast.error(error.message || "Failed to add resource");
+      }
     } finally {
       setAddingResource(false);
     }
@@ -1158,14 +1189,21 @@ export default function ProjectDetailsPage() {
               <Label htmlFor="name" className="text-right">
                 Name
               </Label>
-              <Input
-                id="name"
-                value={newChannelName}
-                onChange={(e) => setNewChannelName(e.target.value)}
-                placeholder="new-channel"
-                className="col-span-3"
-                onKeyDown={(e) => e.key === "Enter" && handleCreateChannel(e)}
-              />
+                <div className="col-span-3">
+                  <Input
+                    id="name"
+                    value={newChannelName}
+                    onChange={(e) => setNewChannelName(e.target.value)}
+                    placeholder="new-channel"
+                    className={`w-full ${fieldErrors.channelName || fieldErrors.name ? "border-red-500" : ""}`}
+                    onKeyDown={(e) => e.key === "Enter" && handleCreateChannel(e)}
+                  />
+                  {(fieldErrors.channelName || fieldErrors.name) && (
+                    <span className="text-sm text-red-500 mt-1 block">
+                      {fieldErrors.channelName || fieldErrors.name}
+                    </span>
+                  )}
+                </div>
             </div>
           </div>
           <DialogFooter>
@@ -1232,7 +1270,11 @@ export default function ProjectDetailsPage() {
                 value={resourceTitle}
                 onChange={(e) => setResourceTitle(e.target.value)}
                 placeholder="Project Documentation"
+                className={fieldErrors.title ? "border-red-500" : ""}
               />
+              {fieldErrors.title && (
+                <span className="text-sm text-red-500">{fieldErrors.title}</span>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="resourceUrl">URL</Label>
@@ -1241,7 +1283,11 @@ export default function ProjectDetailsPage() {
                 value={resourceUrl}
                 onChange={(e) => setResourceUrl(e.target.value)}
                 placeholder="https://..."
+                className={fieldErrors.url ? "border-red-500" : ""}
               />
+              {fieldErrors.url && (
+                <span className="text-sm text-red-500">{fieldErrors.url}</span>
+              )}
             </div>
             <div className="space-y-2">
               <Label>Type</Label>

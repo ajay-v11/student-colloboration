@@ -11,11 +11,13 @@ import { useAuth } from "@/context/AuthContext";
 export default function RegisterPage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({});
   const { register } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setFieldErrors({});
 
     const formData = new FormData(e.target);
     const data = Object.fromEntries(formData.entries());
@@ -29,7 +31,15 @@ export default function RegisterPage() {
       toast.success("Account created successfully!");
       navigate("/dashboard");
     } catch (error) {
-      toast.error(error.message || "Failed to create account");
+      if (error.fieldErrors && error.fieldErrors.length > 0) {
+        const errorsMap = {};
+        error.fieldErrors.forEach((err) => {
+          errorsMap[err.field] = err.message;
+        });
+        setFieldErrors(errorsMap);
+      } else {
+        toast.error(error.message || "Failed to create account");
+      }
     } finally {
       setLoading(false);
     }
@@ -48,7 +58,16 @@ export default function RegisterPage() {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="firstName">First name</Label>
-              <Input id="firstName" name="firstName" placeholder="John" required />
+              <Input 
+                id="firstName" 
+                name="firstName" 
+                placeholder="John" 
+                required 
+                className={fieldErrors.name ? "border-red-500" : ""}
+              />
+              {fieldErrors.name && (
+                <span className="text-sm text-red-500">{fieldErrors.name}</span>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="lastName">Last name</Label>
@@ -57,11 +76,30 @@ export default function RegisterPage() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" name="email" type="email" placeholder="m@example.com" required />
+            <Input 
+              id="email" 
+              name="email" 
+              type="email" 
+              placeholder="m@example.com" 
+              required 
+              className={fieldErrors.email ? "border-red-500" : ""}
+            />
+            {fieldErrors.email && (
+              <span className="text-sm text-red-500">{fieldErrors.email}</span>
+            )}
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
-            <Input id="password" name="password" type="password" required />
+            <Input 
+              id="password" 
+              name="password" 
+              type="password" 
+              required 
+              className={fieldErrors.password ? "border-red-500" : ""}
+            />
+            {fieldErrors.password && (
+              <span className="text-sm text-red-500">{fieldErrors.password}</span>
+            )}
           </div>
         </CardContent>
         <CardFooter className="flex flex-col gap-4">

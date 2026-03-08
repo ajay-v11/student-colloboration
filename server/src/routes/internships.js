@@ -1,23 +1,15 @@
 import express from "express";
-import { z } from "zod";
+import { validate } from "../middleware/validate.js";
+import { internshipSchema } from "../validations/internships.validation.js";
 import prisma from "../lib/prisma.js";
 import authMiddleware from "../middleware/auth.js";
 
 const router = express.Router();
 
-const createInternshipSchema = z.object({
-  company: z.string().min(2, "Company name must be at least 2 chars"),
-  role: z.string().min(2, "Role must be at least 2 chars"),
-  description: z.string().min(10, "Description must be at least 10 chars"),
-  location: z.string().min(2, "Location required"),
-  type: z.enum(["Remote", "On-site", "Hybrid"]),
-  applyUrl: z.string().url("Invalid URL"),
-});
-
 // Create an internship
-router.post("/", authMiddleware, async (req, res) => {
+router.post("/", authMiddleware, validate(internshipSchema), async (req, res) => {
   try {
-    const internshipData = createInternshipSchema.parse(req.body);
+    const internshipData = req.body;
     const userId = req.user.id;
 
     const internship = await prisma.internship.create({
@@ -38,9 +30,6 @@ router.post("/", authMiddleware, async (req, res) => {
 
     res.status(201).json(internship);
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: error.errors });
-    }
     console.error("Create internship error:", error);
     res.status(500).json({ error: "Failed to create internship" });
   }
@@ -96,11 +85,11 @@ router.get("/:id", async (req, res) => {
 });
 
 // Update internship
-router.put("/:id", authMiddleware, async (req, res) => {
+router.put("/:id", authMiddleware, validate(internshipSchema), async (req, res) => {
   try {
     const userId = req.user.id;
     const internshipId = req.params.id;
-    const internshipData = createInternshipSchema.parse(req.body);
+    const internshipData = req.body;
 
     const internship = await prisma.internship.findUnique({
       where: { id: internshipId },
@@ -118,9 +107,6 @@ router.put("/:id", authMiddleware, async (req, res) => {
 
     res.json(updatedInternship);
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: error.errors });
-    }
     console.error("Update internship error:", error);
     res.status(500).json({ error: "Failed to update internship" });
   }

@@ -18,7 +18,12 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response.data,
   (error) => {
+    // Keep the main message
     const message = error.response?.data?.message || error.message;
-    return Promise.reject(new Error(message));
+    // Extract the field-specific errors array
+    const fieldErrors = error.response?.data?.errors || [];
+    
+    // Reject with an object containing both so the UI can parse it
+    return Promise.reject({ message, fieldErrors });
   }
 );

@@ -36,6 +36,7 @@ export default function GroupsPage() {
   const [loading, setLoading] = useState(true);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [creating, setCreating] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({});
   const [formName, setFormName] = useState("");
   const [formDescription, setFormDescription] = useState("");
   const [formInterests, setFormInterests] = useState("");
@@ -103,8 +104,15 @@ export default function GroupsPage() {
 
   const handleCreateGroup = async (e) => {
     e.preventDefault();
-    if (!formName.trim() || !formDescription.trim()) {
-      toast.error("Name and description are required");
+    setFieldErrors({});
+    
+    let hasError = false;
+    const newErrors = {};
+    if (!formName.trim()) { newErrors.name = "Name is required"; hasError = true; }
+    if (!formDescription.trim()) { newErrors.description = "Description is required"; hasError = true; }
+    
+    if (hasError) {
+      setFieldErrors(newErrors);
       return;
     }
     const interestsArray = formInterests
@@ -125,7 +133,15 @@ export default function GroupsPage() {
       setFormInterests("");
       fetchGroups();
     } catch (error) {
-      toast.error(error.message || "Failed to create circle");
+      if (error.fieldErrors && error.fieldErrors.length > 0) {
+        const errorsMap = {};
+        error.fieldErrors.forEach((err) => {
+          errorsMap[err.field] = err.message;
+        });
+        setFieldErrors(errorsMap);
+      } else {
+        toast.error(error.message || "Failed to create circle");
+      }
     } finally {
       setCreating(false);
     }
@@ -458,9 +474,12 @@ export default function GroupsPage() {
                 value={formName}
                 onChange={(e) => setFormName(e.target.value)}
                 placeholder="e.g., Machine Learning Enthusiasts"
-                className="rounded-xl border-white/40 bg-white/60"
+                className={`rounded-xl border-white/40 bg-white/60 ${fieldErrors.name ? "border-red-500" : ""}`}
                 required
               />
+              {fieldErrors.name && (
+                <span className="text-sm text-red-500">{fieldErrors.name}</span>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="description">Description</Label>
@@ -469,9 +488,12 @@ export default function GroupsPage() {
                 value={formDescription}
                 onChange={(e) => setFormDescription(e.target.value)}
                 placeholder="What is this circle about?"
-                className="rounded-xl border-white/40 bg-white/60 min-h-24"
+                className={`rounded-xl border-white/40 bg-white/60 min-h-24 ${fieldErrors.description ? "border-red-500" : ""}`}
                 required
               />
+              {fieldErrors.description && (
+                <span className="text-sm text-red-500">{fieldErrors.description}</span>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="interests">Interests (comma-separated)</Label>
@@ -480,8 +502,11 @@ export default function GroupsPage() {
                 value={formInterests}
                 onChange={(e) => setFormInterests(e.target.value)}
                 placeholder="AI, Python, Deep Learning"
-                className="rounded-xl border-white/40 bg-white/60"
+                className={`rounded-xl border-white/40 bg-white/60 ${fieldErrors.interests ? "border-red-500" : ""}`}
               />
+              {fieldErrors.interests && (
+                <span className="text-sm text-red-500">{fieldErrors.interests}</span>
+              )}
             </div>
             <DialogFooter>
               <Button

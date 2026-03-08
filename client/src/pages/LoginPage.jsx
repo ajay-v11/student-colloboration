@@ -17,6 +17,7 @@ import { useAuth } from "@/context/AuthContext";
 export default function LoginPage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({});
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { login } = useAuth();
@@ -24,12 +25,21 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setFieldErrors({});
 
     try {
       await login(email, password);
       navigate("/dashboard");
     } catch (error) {
-      toast.error(error.message || "Failed to login");
+      if (error.fieldErrors && error.fieldErrors.length > 0) {
+        const errorsMap = {};
+        error.fieldErrors.forEach((err) => {
+          errorsMap[err.field] = err.message;
+        });
+        setFieldErrors(errorsMap);
+      } else {
+        toast.error(error.message || "Failed to login");
+      }
     } finally {
       setLoading(false);
     }
@@ -54,7 +64,11 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              className={fieldErrors.email ? "border-red-500" : ""}
             />
+            {fieldErrors.email && (
+              <span className="text-sm text-red-500">{fieldErrors.email}</span>
+            )}
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
@@ -65,7 +79,11 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              className={fieldErrors.password ? "border-red-500" : ""}
             />
+            {fieldErrors.password && (
+              <span className="text-sm text-red-500">{fieldErrors.password}</span>
+            )}
           </div>
         </CardContent>
         <CardFooter className="flex flex-col gap-4 mt-5">

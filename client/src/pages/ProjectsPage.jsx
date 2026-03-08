@@ -18,6 +18,7 @@ export default function ProjectsPage() {
   const [loading, setLoading] = useState(true);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [creating, setCreating] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({});
   const [joiningId, setJoiningId] = useState(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -52,13 +53,21 @@ export default function ProjectsPage() {
 
   const handleCreateProject = async (e) => {
     e.preventDefault();
+    setFieldErrors({});
     
+    let hasError = false;
+    const newErrors = {};
     if (!title.trim() || title.trim().length < 2) {
-      toast.error("Title must be at least 2 characters");
-      return;
+      newErrors.title = "Title must be at least 2 characters";
+      hasError = true;
     }
     if (!description.trim() || description.trim().length < 10) {
-      toast.error("Description must be at least 10 characters");
+      newErrors.description = "Description must be at least 10 characters";
+      hasError = true;
+    }
+
+    if (hasError) {
+      setFieldErrors(newErrors);
       return;
     }
 
@@ -82,8 +91,16 @@ export default function ProjectsPage() {
       resetForm();
       fetchProjects();
     } catch (error) {
-      console.error("Failed to create project", error);
-      toast.error(error.message || "Failed to create project");
+      if (error.fieldErrors && error.fieldErrors.length > 0) {
+        const errorsMap = {};
+        error.fieldErrors.forEach((err) => {
+          errorsMap[err.field] = err.message;
+        });
+        setFieldErrors(errorsMap);
+      } else {
+        console.error("Failed to create project", error);
+        toast.error(error.message || "Failed to create project");
+      }
     } finally {
       setCreating(false);
     }
@@ -227,7 +244,11 @@ export default function ProjectsPage() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 disabled={creating}
+                className={fieldErrors.title ? "border-red-500" : ""}
               />
+              {fieldErrors.title && (
+                <span className="text-sm text-red-500">{fieldErrors.title}</span>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="description">Description *</Label>
@@ -237,8 +258,11 @@ export default function ProjectsPage() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 disabled={creating}
-                className="min-h-24"
+                className={`min-h-24 ${fieldErrors.description ? "border-red-500" : ""}`}
               />
+              {fieldErrors.description && (
+                <span className="text-sm text-red-500">{fieldErrors.description}</span>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="tags">Tags</Label>
@@ -248,8 +272,13 @@ export default function ProjectsPage() {
                 value={tags}
                 onChange={(e) => setTags(e.target.value)}
                 disabled={creating}
+                className={fieldErrors.tags ? "border-red-500" : ""}
               />
-              <p className="text-xs text-muted-foreground">Separate tags with commas</p>
+              {fieldErrors.tags ? (
+                <span className="text-sm text-red-500">{fieldErrors.tags}</span>
+              ) : (
+                <p className="text-xs text-muted-foreground">Separate tags with commas</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="githubUrl">GitHub URL</Label>
@@ -259,7 +288,11 @@ export default function ProjectsPage() {
                 value={githubUrl}
                 onChange={(e) => setGithubUrl(e.target.value)}
                 disabled={creating}
+                className={fieldErrors.githubUrl ? "border-red-500" : ""}
               />
+              {fieldErrors.githubUrl && (
+                <span className="text-sm text-red-500">{fieldErrors.githubUrl}</span>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="demoUrl">Demo URL</Label>
@@ -269,7 +302,11 @@ export default function ProjectsPage() {
                 value={demoUrl}
                 onChange={(e) => setDemoUrl(e.target.value)}
                 disabled={creating}
+                className={fieldErrors.demoUrl ? "border-red-500" : ""}
               />
+              {fieldErrors.demoUrl && (
+                <span className="text-sm text-red-500">{fieldErrors.demoUrl}</span>
+              )}
             </div>
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setIsCreateOpen(false)} disabled={creating}>
