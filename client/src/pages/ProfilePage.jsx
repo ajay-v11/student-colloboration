@@ -203,6 +203,7 @@ export default function ProfilePage() {
           errorsMap[err.field] = err.message;
         });
         setFieldErrors(errorsMap);
+        toast.error("Please fix the highlighted fields");
       } else {
         console.error("Failed to update profile:", error);
         toast.error(error.message || "Failed to update profile");
@@ -251,7 +252,7 @@ export default function ProfilePage() {
               <div className="relative -mt-20 md:-mt-24 mb-2 md:mb-0 shrink-0">
                  <div className="h-32 w-32 md:h-40 md:w-40 rounded-[2.5rem] p-1.5 bg-white/80 backdrop-blur-sm shadow-xl ring-1 ring-white/50">
                     <Avatar className="h-full w-full rounded-[2rem]">
-                        <AvatarImage src={profile.avatarUrl ? (profile.avatarUrl.startsWith("/media") ? `${API_BASE}${profile.avatarUrl}` : profile.avatarUrl) : `https://i.pravatar.cc/150?u=${profile.id}`} className="object-cover" />
+                        {profile.avatarUrl && <AvatarImage src={profile.avatarUrl.startsWith("/media") ? `${API_BASE}${profile.avatarUrl}` : profile.avatarUrl} className="object-cover" />}
                         <AvatarFallback className="text-4xl font-serif bg-primary/10 text-primary">{profile.name?.[0] || "?"}</AvatarFallback>
                     </Avatar>
                  </div>

@@ -19,7 +19,7 @@ api.interceptors.response.use(
   (response) => response.data,
   (error) => {
     // Keep the main message
-    const message = error.response?.data?.message || error.message;
+    const message = error.response?.data?.message || error.response?.data?.error || error.message;
     // Extract the field-specific errors array
     const fieldErrors = error.response?.data?.errors || [];
     

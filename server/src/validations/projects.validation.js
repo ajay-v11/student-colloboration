@@ -16,7 +16,12 @@ export const updateProjectSchema = createProjectSchema;
 export const addResourceSchema = z.object({
   body: z.object({
     title: z.string().min(2, "Title must be at least 2 characters"),
-    url: z.string().url("Invalid URL"),
+    url: z.string().min(1, "URL is required"),
     type: z.enum(["link", "doc", "file", "video"]),
-  }),
+    fileName: z.string().optional(),
+    fileType: z.string().optional(),
+  }).refine((data) => {
+    if (data.type === "file" && data.url.startsWith("/media/")) return true;
+    try { new URL(data.url); return true; } catch { return false; }
+  }, { message: "Invalid URL", path: ["url"] }),
 });

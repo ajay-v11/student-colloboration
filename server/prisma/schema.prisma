@@ -76,7 +76,7 @@ model GroupMemberShip {
 
 model Channel {
   id            String         @id @default(cuid())
-  name          String         @unique
+  name          String
   type          ChannelType    @default(TEXT)
   position      Int
   group         Group          @relation(fields: [groupId], references: [id])
@@ -84,6 +84,8 @@ model Channel {
   createdAt     DateTime       @default(now())
   GroupMessage  GroupMessage[]
   notifications Notification[]
+
+  @@unique([groupId, name])
 }
 
 model GroupMessage {
@@ -131,6 +133,8 @@ model ProjectResource {
   title     String
   url       String
   type      String // "link", "doc", "file", "video"
+  fileName  String?
+  fileType  String?
   project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
   projectId String
   addedBy   User     @relation(fields: [addedById], references: [id])

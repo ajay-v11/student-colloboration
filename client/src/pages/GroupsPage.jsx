@@ -21,15 +21,18 @@ import {
   Layers,
   Loader2,
   Users,
+  Trash2,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import { toast } from "react-hot-toast";
+import { useAuth } from "@/context/AuthContext";
 
 export default function GroupsPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [joinedGroups, setJoinedGroups] = useState([]);
   const [discoverGroups, setDiscoverGroups] = useState([]);
   const [allGroups, setAllGroups] = useState([]);
@@ -43,6 +46,9 @@ export default function GroupsPage() {
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [joining, setJoining] = useState(false);
   const [showAll, setShowAll] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     fetchGroups();
@@ -72,17 +78,32 @@ export default function GroupsPage() {
     }
   };
 
+  const filterGroups = (groups) => {
+    if (!searchQuery.trim()) return groups;
+    const q = searchQuery.toLowerCase();
+    return groups.filter(
+      (g) =>
+        g.name.toLowerCase().includes(q) ||
+        g.description?.toLowerCase().includes(q) ||
+        g.interests?.some((i) => i.toLowerCase().includes(q)),
+    );
+  };
+
   // Derived lists for display
+  const filteredAll = filterGroups(allGroups);
+
   // Trending = Newest (Latest)
-  const trendingGroups = [...allGroups]
+  const trendingGroups = [...filteredAll]
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
     .slice(0, 3);
 
   // All Circles = Popularity (Member Count)
-  const allCirclesGroups = [...allGroups].sort(
+  const allCirclesGroups = [...filteredAll].sort(
     (a, b) =>
       (b._count?.GroupMemberShip || 0) - (a._count?.GroupMemberShip || 0),
   );
+
+  const filteredJoinedGroups = filterGroups(joinedGroups);
 
   const handleJoinGroup = async (groupId, shouldNavigate = false) => {
     try {
@@ -147,6 +168,21 @@ export default function GroupsPage() {
     }
   };
 
+  const handleDeleteGroup = async () => {
+    if (!deleteTarget) return;
+    try {
+      setDeleting(true);
+      await api.delete(`/groups/${deleteTarget.id}`);
+      toast.success("Circle deleted successfully");
+      setDeleteTarget(null);
+      fetchGroups();
+    } catch (error) {
+      toast.error(error.message || "Failed to delete circle");
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       {/* Header Section */}
@@ -206,6 +242,8 @@ export default function GroupsPage() {
             <Input
               type="text"
               placeholder="Search for 'Machine Learning', 'Calculus', 'Design'..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-11 h-14 rounded-2xl border-white/40 bg-white/60 backdrop-blur-md shadow-sm text-lg focus-visible:ring-primary/20 transition-all hover:bg-white/80 focus:bg-white/90"
             />
           </div>
@@ -401,7 +439,7 @@ export default function GroupsPage() {
 
         <TabsContent value="joined" className="mt-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {joinedGroups.map((group) => (
+            {filteredJoinedGroups.map((group) => (
               <Link
                 to={`/groups/${group.id}`}
                 key={group.id}
@@ -424,6 +462,20 @@ export default function GroupsPage() {
                       <Badge className="bg-primary/10 text-primary border-primary/20">
                         Member
                       </Badge>
+                      {group.adminId === user?.id && (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="text-destructive hover:text-destructive hover:bg-destructive/10 h-7 w-7 p-0"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setDeleteTarget(group);
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
                     </div>
                   </div>
 
@@ -573,6 +625,18 @@ export default function GroupsPage() {
             >
               Cancel
             </Button>
+            {selectedGroup?.adminId === user?.id && (
+              <Button
+                variant="destructive"
+                onClick={() => {
+                  setSelectedGroup(null);
+                  setDeleteTarget(selectedGroup);
+                }}
+                className="rounded-xl"
+              >
+                <Trash2 className="h-4 w-4 mr-2" /> Delete
+              </Button>
+            )}
             {selectedGroup?.isJoined ? (
               <Button
                 onClick={() => navigate(`/groups/${selectedGroup.id}`)}
@@ -590,6 +654,27 @@ export default function GroupsPage() {
                 Join Circle
               </Button>
             )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+        <DialogContent className="rounded-[1.5rem] glass border-white/40 sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-serif">Delete Circle</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            Are you sure you want to delete <strong>{deleteTarget?.name}</strong>? This action cannot be undone and all channels and messages will be lost.
+          </p>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="outline" onClick={() => setDeleteTarget(null)} disabled={deleting} className="rounded-xl">
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDeleteGroup} disabled={deleting} className="rounded-xl">
+              {deleting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              Delete
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

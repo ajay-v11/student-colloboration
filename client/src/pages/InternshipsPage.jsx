@@ -6,10 +6,11 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Briefcase, MapPin, Building2, ExternalLink, Plus, Loader2 } from "lucide-react";
+import { Search, Briefcase, MapPin, Building2, ExternalLink, Plus, Loader2, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import { toast } from "react-hot-toast";
+import { useAuth } from "@/context/AuthContext";
 import { formatDistanceToNow } from "date-fns";
 
 export default function InternshipsPage() {
@@ -23,6 +24,11 @@ export default function InternshipsPage() {
   const [location, setLocation] = useState("");
   const [type, setType] = useState("");
   const [applyUrl, setApplyUrl] = useState("");
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const { user } = useAuth();
 
   useEffect(() => {
     fetchInternships();
@@ -40,6 +46,34 @@ export default function InternshipsPage() {
       setLoading(false);
     }
   };
+
+  const handleDeleteInternship = async () => {
+    if (!deleteTarget) return;
+    try {
+      setDeleting(true);
+      await api.delete(`/internships/${deleteTarget.id}`);
+      toast.success("Internship deleted successfully");
+      setDeleteTarget(null);
+      fetchInternships();
+    } catch (error) {
+      toast.error(error.message || "Failed to delete internship");
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const filteredInternships = searchQuery.trim()
+    ? internships.filter((j) => {
+        const q = searchQuery.toLowerCase();
+        return (
+          j.role.toLowerCase().includes(q) ||
+          j.company.toLowerCase().includes(q) ||
+          j.location?.toLowerCase().includes(q) ||
+          j.type?.toLowerCase().includes(q) ||
+          j.description?.toLowerCase().includes(q)
+        );
+      })
+    : internships;
 
   const resetForm = () => {
     setCompany("");
@@ -207,6 +241,8 @@ export default function InternshipsPage() {
         <Input 
             type="text" 
             placeholder="Search internships..." 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
             className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent" 
         />
       </div>
@@ -215,7 +251,7 @@ export default function InternshipsPage() {
          <div className="text-center py-10">Loading internships...</div>
       ) : (
         <div className="grid gap-4">
-            {internships.map((job) => (
+            {filteredInternships.map((job) => (
             <Card key={job.id} className="border border-border hover:shadow-md transition-shadow group">
                 <CardContent className="p-6">
                 <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
@@ -225,7 +261,19 @@ export default function InternshipsPage() {
                             <Building2 className="h-6 w-6 text-muted-foreground" />
                         </div>
                         <div>
-                            <CardTitle className="text-lg group-hover:text-primary transition-colors">{job.role}</CardTitle>
+                            <div className="flex items-center gap-2">
+                              <CardTitle className="text-lg group-hover:text-primary transition-colors">{job.role}</CardTitle>
+                              {job.postedBy?.id === user?.id && (
+                                <Button
+                                  size="icon"
+                                  variant="ghost"
+                                  className="text-destructive hover:text-destructive hover:bg-destructive/10 h-7 w-7"
+                                  onClick={() => setDeleteTarget(job)}
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                </Button>
+                              )}
+                            </div>
                             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground mt-1">
                                 <span className="flex items-center gap-1"><Building2 className="h-3 w-3" /> {job.company}</span>
                                 <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {job.location}</span>
@@ -250,13 +298,33 @@ export default function InternshipsPage() {
                 </CardContent>
             </Card>
             ))}
-            {internships.length === 0 && (
+            {filteredInternships.length === 0 && (
                 <div className="text-center py-10 text-muted-foreground">
-                    No internships posted yet.
+                    {searchQuery.trim() ? "No internships match your search." : "No internships posted yet."}
                 </div>
             )}
         </div>
       )}
+
+      <Dialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Delete Internship</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            Are you sure you want to delete the <strong>{deleteTarget?.role}</strong> internship at <strong>{deleteTarget?.company}</strong>? This action cannot be undone.
+          </p>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteTarget(null)} disabled={deleting}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDeleteInternship} disabled={deleting}>
+              {deleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

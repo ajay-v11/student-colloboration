@@ -106,11 +106,13 @@ export default function ProjectDetailsPage() {
   const [addingResource, setAddingResource] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploadingFile, setUploadingFile] = useState(false);
+  const [selectedResourceFile, setSelectedResourceFile] = useState(null);
 
   const messagesEndRef = useRef(null);
   const typingTimeoutRef = useRef(null);
   const previousChannelRef = useRef(null);
   const fileInputRef = useRef(null);
+  const resourceFileInputRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -444,6 +446,32 @@ export default function ProjectDetailsPage() {
     }
   };
 
+  const handleResourceFileSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const maxSize = 10 * 1024 * 1024;
+    if (file.size > maxSize) {
+      toast.error("File size must be under 10MB");
+      return;
+    }
+
+    const allowedTypes = [
+      "image/png",
+      "image/jpeg",
+      "image/jpg",
+      "application/pdf",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "application/msword",
+    ];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error("Only images, PDF, and DOCX files are allowed");
+      return;
+    }
+
+    setSelectedResourceFile(file);
+  };
+
   const handleAddResource = async (e) => {
     e.preventDefault();
     setFieldErrors({});
@@ -451,7 +479,10 @@ export default function ProjectDetailsPage() {
     let hasError = false;
     const newErrors = {};
     if (!resourceTitle.trim()) { newErrors.title = "Title is required"; hasError = true; }
-    if (!resourceUrl.trim()) { newErrors.url = "URL is required"; hasError = true; }
+
+    const isFileUpload = resourceType === "file" && selectedResourceFile;
+    if (!isFileUpload && !resourceUrl.trim()) { newErrors.url = "URL is required"; hasError = true; }
+    if (resourceType === "file" && !selectedResourceFile && !resourceUrl.trim()) { newErrors.file = "Please select a file or provide a URL"; hasError = true; }
     
     if (hasError) {
       setFieldErrors(newErrors);
@@ -460,10 +491,27 @@ export default function ProjectDetailsPage() {
 
     setAddingResource(true);
     try {
+      let url = resourceUrl.trim();
+      let fileName = undefined;
+      let fileType = undefined;
+
+      if (isFileUpload) {
+        const formData = new FormData();
+        formData.append("file", selectedResourceFile);
+        const uploaded = await api.post("/uploads/resource", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        url = uploaded.url;
+        fileName = uploaded.fileName;
+        fileType = uploaded.fileType;
+      }
+
       const newResource = await api.post(`/projects/${id}/resources`, {
         title: resourceTitle.trim(),
-        url: resourceUrl.trim(),
+        url,
         type: resourceType,
+        ...(fileName && { fileName }),
+        ...(fileType && { fileType }),
       });
 
       setProject((prev) => ({
@@ -474,6 +522,8 @@ export default function ProjectDetailsPage() {
       setResourceTitle("");
       setResourceUrl("");
       setResourceType("link");
+      setSelectedResourceFile(null);
+      if (resourceFileInputRef.current) resourceFileInputRef.current.value = "";
       setShowAddResource(false);
       toast.success("Resource added!");
     } catch (error) {
@@ -1040,6 +1090,10 @@ export default function ProjectDetailsPage() {
               <div className="space-y-3">
                 {project.resources?.map((resource) => {
                   const Icon = RESOURCE_ICONS[resource.type] || LinkIcon;
+                  const isUploadedFile = resource.url?.startsWith("/media/");
+                  const resourceHref = isUploadedFile
+                    ? `${import.meta.env.VITE_API_URL?.replace("/api", "") || "http://localhost:5000"}${resource.url}`
+                    : resource.url;
                   return (
                     <div
                       key={resource.id}
@@ -1050,7 +1104,7 @@ export default function ProjectDetailsPage() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <a
-                          href={resource.url}
+                          href={resourceHref}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-sm font-medium hover:text-primary transition-colors"
@@ -1058,12 +1112,25 @@ export default function ProjectDetailsPage() {
                           {resource.title}
                         </a>
                         <p className="text-xs text-muted-foreground truncate">
+                          {resource.fileName && (
+                            <span>{resource.fileName} • </span>
+                          )}
                           Added by {resource.addedBy?.name} •{" "}
                           {formatDistanceToNow(new Date(resource.createdAt), {
                             addSuffix: true,
                           })}
                         </p>
                       </div>
+                      {isUploadedFile && (
+                        <a
+                          href={resourceHref}
+                          download={resource.fileName || true}
+                          className="opacity-0 group-hover:opacity-100 transition-opacity text-primary hover:text-primary/80 p-2"
+                          title="Download"
+                        >
+                          <ExternalLink className="h-4 w-4" />
+                        </a>
+                      )}
                       {(resource.addedById === user?.id || isAdmin) && (
                         <button
                           onClick={() => handleDeleteResource(resource.id)}
@@ -1254,15 +1321,42 @@ export default function ProjectDetailsPage() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={showAddResource} onOpenChange={setShowAddResource}>
+      <Dialog open={showAddResource} onOpenChange={(open) => {
+        setShowAddResource(open);
+        if (!open) {
+          setSelectedResourceFile(null);
+          if (resourceFileInputRef.current) resourceFileInputRef.current.value = "";
+        }
+      }}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Add Resource</DialogTitle>
             <DialogDescription>
-              Add a link, document, or file reference for your team.
+              Add a link, document, or upload a file for your team.
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleAddResource} className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>Type</Label>
+              <Select value={resourceType} onValueChange={(val) => {
+                setResourceType(val);
+                setFieldErrors({});
+                if (val !== "file") {
+                  setSelectedResourceFile(null);
+                  if (resourceFileInputRef.current) resourceFileInputRef.current.value = "";
+                }
+              }}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="link">Link</SelectItem>
+                  <SelectItem value="doc">Document</SelectItem>
+                  <SelectItem value="file">File Upload</SelectItem>
+                  <SelectItem value="video">Video</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             <div className="space-y-2">
               <Label htmlFor="resourceTitle">Title</Label>
               <Input
@@ -1276,33 +1370,65 @@ export default function ProjectDetailsPage() {
                 <span className="text-sm text-red-500">{fieldErrors.title}</span>
               )}
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="resourceUrl">URL</Label>
-              <Input
-                id="resourceUrl"
-                value={resourceUrl}
-                onChange={(e) => setResourceUrl(e.target.value)}
-                placeholder="https://..."
-                className={fieldErrors.url ? "border-red-500" : ""}
-              />
-              {fieldErrors.url && (
-                <span className="text-sm text-red-500">{fieldErrors.url}</span>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label>Type</Label>
-              <Select value={resourceType} onValueChange={setResourceType}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="link">Link</SelectItem>
-                  <SelectItem value="doc">Document</SelectItem>
-                  <SelectItem value="file">File</SelectItem>
-                  <SelectItem value="video">Video</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            {resourceType === "file" ? (
+              <div className="space-y-2">
+                <Label>Upload File</Label>
+                <div className="flex flex-col gap-2">
+                  <input
+                    ref={resourceFileInputRef}
+                    type="file"
+                    accept="image/png,image/jpeg,image/jpg,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/msword"
+                    onChange={handleResourceFileSelect}
+                    className="hidden"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="gap-2 w-full justify-start"
+                    onClick={() => resourceFileInputRef.current?.click()}
+                  >
+                    <Paperclip className="h-4 w-4" />
+                    {selectedResourceFile ? selectedResourceFile.name : "Choose a file..."}
+                  </Button>
+                  {selectedResourceFile && (
+                    <div className="flex items-center gap-2 bg-white/60 border border-white/40 rounded-lg px-3 py-2">
+                      <FileText className="h-4 w-4 text-primary shrink-0" />
+                      <span className="text-sm truncate flex-1">{selectedResourceFile.name}</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedResourceFile(null);
+                          if (resourceFileInputRef.current) resourceFileInputRef.current.value = "";
+                        }}
+                        className="text-muted-foreground hover:text-destructive"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                  )}
+                  <p className="text-xs text-muted-foreground">
+                    Images, PDF, DOCX up to 10MB
+                  </p>
+                  {fieldErrors.file && (
+                    <span className="text-sm text-red-500">{fieldErrors.file}</span>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <Label htmlFor="resourceUrl">URL</Label>
+                <Input
+                  id="resourceUrl"
+                  value={resourceUrl}
+                  onChange={(e) => setResourceUrl(e.target.value)}
+                  placeholder="https://..."
+                  className={fieldErrors.url ? "border-red-500" : ""}
+                />
+                {fieldErrors.url && (
+                  <span className="text-sm text-red-500">{fieldErrors.url}</span>
+                )}
+              </div>
+            )}
             <DialogFooter>
               <Button
                 type="button"
@@ -1314,10 +1440,17 @@ export default function ProjectDetailsPage() {
               <Button
                 type="submit"
                 disabled={
-                  !resourceTitle.trim() || !resourceUrl.trim() || addingResource
+                  !resourceTitle.trim() ||
+                  (resourceType === "file" ? !selectedResourceFile : !resourceUrl.trim()) ||
+                  addingResource
                 }
               >
-                {addingResource ? "Adding..." : "Add Resource"}
+                {addingResource ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    {selectedResourceFile ? "Uploading..." : "Adding..."}
+                  </>
+                ) : "Add Resource"}
               </Button>
             </DialogFooter>
           </form>

@@ -185,6 +185,8 @@ export const ProjectResourceScalarFieldEnum = {
   title: 'title',
   url: 'url',
   type: 'type',
+  fileName: 'fileName',
+  fileType: 'fileType',
   projectId: 'projectId',
   addedById: 'addedById',
   createdAt: 'createdAt'

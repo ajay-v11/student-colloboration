@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
@@ -12,6 +13,7 @@ export default function RegisterPage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
+  const [semester, setSemester] = useState("");
   const { register } = useAuth();
 
   const handleSubmit = async (e) => {
@@ -26,7 +28,10 @@ export default function RegisterPage() {
       await register({
         name: `${data.firstName} ${data.lastName}`,
         email: data.email,
-        password: data.password
+        password: data.password,
+        course: data.course,
+        semester: semester ? Number(semester) : undefined,
+        college: data.college,
       });
       toast.success("Account created successfully!");
       navigate("/dashboard");
@@ -37,6 +42,7 @@ export default function RegisterPage() {
           errorsMap[err.field] = err.message;
         });
         setFieldErrors(errorsMap);
+        toast.error("Please fix the highlighted fields");
       } else {
         toast.error(error.message || "Failed to create account");
       }
@@ -100,6 +106,52 @@ export default function RegisterPage() {
             {fieldErrors.password && (
               <span className="text-sm text-red-500">{fieldErrors.password}</span>
             )}
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="course">Course</Label>
+            <Input 
+              id="course" 
+              name="course" 
+              placeholder="e.g. B.Tech Computer Science" 
+              required 
+              className={fieldErrors.course ? "border-red-500" : ""}
+            />
+            {fieldErrors.course && (
+              <span className="text-sm text-red-500">{fieldErrors.course}</span>
+            )}
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="semester">Semester</Label>
+              <Select value={semester} onValueChange={setSemester} required>
+                <SelectTrigger className={fieldErrors.semester ? "border-red-500" : ""}>
+                  <SelectValue placeholder="Select semester" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Array.from({ length: 10 }, (_, i) => i + 1).map((num) => (
+                    <SelectItem key={num} value={String(num)}>
+                      Semester {num}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {fieldErrors.semester && (
+                <span className="text-sm text-red-500">{fieldErrors.semester}</span>
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="college">College</Label>
+              <Input 
+                id="college" 
+                name="college" 
+                placeholder="Your college name" 
+                required 
+                className={fieldErrors.college ? "border-red-500" : ""}
+              />
+              {fieldErrors.college && (
+                <span className="text-sm text-red-500">{fieldErrors.college}</span>
+              )}
+            </div>
           </div>
         </CardContent>
         <CardFooter className="flex flex-col gap-4">

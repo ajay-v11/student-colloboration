@@ -8,6 +8,7 @@ router.get("/feed", authMiddleware, async (req, res) => {
   try {
     const [groups, projects, internships] = await Promise.all([
       prisma.group.findMany({
+        where: { project: null },
         orderBy: { createdAt: "desc" },
         take: 5,
         include: {

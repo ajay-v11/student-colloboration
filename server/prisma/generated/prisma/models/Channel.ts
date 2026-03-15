@@ -243,10 +243,11 @@ export type ChannelOrderByWithRelationInput = {
 
 export type ChannelWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  name?: string
+  groupId_name?: Prisma.ChannelGroupIdNameCompoundUniqueInput
   AND?: Prisma.ChannelWhereInput | Prisma.ChannelWhereInput[]
   OR?: Prisma.ChannelWhereInput[]
   NOT?: Prisma.ChannelWhereInput | Prisma.ChannelWhereInput[]
+  name?: Prisma.StringFilter<"Channel"> | string
   type?: Prisma.EnumChannelTypeFilter<"Channel"> | $Enums.ChannelType
   position?: Prisma.IntFilter<"Channel"> | number
   groupId?: Prisma.StringFilter<"Channel"> | string
@@ -254,7 +255,7 @@ export type ChannelWhereUniqueInput = Prisma.AtLeast<{
   group?: Prisma.XOR<Prisma.GroupScalarRelationFilter, Prisma.GroupWhereInput>
   GroupMessage?: Prisma.GroupMessageListRelationFilter
   notifications?: Prisma.NotificationListRelationFilter
-}, "id" | "name">
+}, "id" | "groupId_name">
 
 export type ChannelOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -360,6 +361,11 @@ export type ChannelListRelationFilter = {
 
 export type ChannelOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type ChannelGroupIdNameCompoundUniqueInput = {
+  groupId: string
+  name: string
 }
 
 export type ChannelCountOrderByAggregateInput = {

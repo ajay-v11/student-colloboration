@@ -29,6 +29,8 @@ export type ProjectResourceMinAggregateOutputType = {
   title: string | null
   url: string | null
   type: string | null
+  fileName: string | null
+  fileType: string | null
   projectId: string | null
   addedById: string | null
   createdAt: Date | null
@@ -39,6 +41,8 @@ export type ProjectResourceMaxAggregateOutputType = {
   title: string | null
   url: string | null
   type: string | null
+  fileName: string | null
+  fileType: string | null
   projectId: string | null
   addedById: string | null
   createdAt: Date | null
@@ -49,6 +53,8 @@ export type ProjectResourceCountAggregateOutputType = {
   title: number
   url: number
   type: number
+  fileName: number
+  fileType: number
   projectId: number
   addedById: number
   createdAt: number
@@ -61,6 +67,8 @@ export type ProjectResourceMinAggregateInputType = {
   title?: true
   url?: true
   type?: true
+  fileName?: true
+  fileType?: true
   projectId?: true
   addedById?: true
   createdAt?: true
@@ -71,6 +79,8 @@ export type ProjectResourceMaxAggregateInputType = {
   title?: true
   url?: true
   type?: true
+  fileName?: true
+  fileType?: true
   projectId?: true
   addedById?: true
   createdAt?: true
@@ -81,6 +91,8 @@ export type ProjectResourceCountAggregateInputType = {
   title?: true
   url?: true
   type?: true
+  fileName?: true
+  fileType?: true
   projectId?: true
   addedById?: true
   createdAt?: true
@@ -164,6 +176,8 @@ export type ProjectResourceGroupByOutputType = {
   title: string
   url: string
   type: string
+  fileName: string | null
+  fileType: string | null
   projectId: string
   addedById: string
   createdAt: Date
@@ -195,6 +209,8 @@ export type ProjectResourceWhereInput = {
   title?: Prisma.StringFilter<"ProjectResource"> | string
   url?: Prisma.StringFilter<"ProjectResource"> | string
   type?: Prisma.StringFilter<"ProjectResource"> | string
+  fileName?: Prisma.StringNullableFilter<"ProjectResource"> | string | null
+  fileType?: Prisma.StringNullableFilter<"ProjectResource"> | string | null
   projectId?: Prisma.StringFilter<"ProjectResource"> | string
   addedById?: Prisma.StringFilter<"ProjectResource"> | string
   createdAt?: Prisma.DateTimeFilter<"ProjectResource"> | Date | string
@@ -207,6 +223,8 @@ export type ProjectResourceOrderByWithRelationInput = {
   title?: Prisma.SortOrder
   url?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  fileName?: Prisma.SortOrderInput | Prisma.SortOrder
+  fileType?: Prisma.SortOrderInput | Prisma.SortOrder
   projectId?: Prisma.SortOrder
   addedById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -222,6 +240,8 @@ export type ProjectResourceWhereUniqueInput = Prisma.AtLeast<{
   title?: Prisma.StringFilter<"ProjectResource"> | string
   url?: Prisma.StringFilter<"ProjectResource"> | string
   type?: Prisma.StringFilter<"ProjectResource"> | string
+  fileName?: Prisma.StringNullableFilter<"ProjectResource"> | string | null
+  fileType?: Prisma.StringNullableFilter<"ProjectResource"> | string | null
   projectId?: Prisma.StringFilter<"ProjectResource"> | string
   addedById?: Prisma.StringFilter<"ProjectResource"> | string
   createdAt?: Prisma.DateTimeFilter<"ProjectResource"> | Date | string
@@ -234,6 +254,8 @@ export type ProjectResourceOrderByWithAggregationInput = {
   title?: Prisma.SortOrder
   url?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  fileName?: Prisma.SortOrderInput | Prisma.SortOrder
+  fileType?: Prisma.SortOrderInput | Prisma.SortOrder
   projectId?: Prisma.SortOrder
   addedById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -250,6 +272,8 @@ export type ProjectResourceScalarWhereWithAggregatesInput = {
   title?: Prisma.StringWithAggregatesFilter<"ProjectResource"> | string
   url?: Prisma.StringWithAggregatesFilter<"ProjectResource"> | string
   type?: Prisma.StringWithAggregatesFilter<"ProjectResource"> | string
+  fileName?: Prisma.StringNullableWithAggregatesFilter<"ProjectResource"> | string | null
+  fileType?: Prisma.StringNullableWithAggregatesFilter<"ProjectResource"> | string | null
   projectId?: Prisma.StringWithAggregatesFilter<"ProjectResource"> | string
   addedById?: Prisma.StringWithAggregatesFilter<"ProjectResource"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ProjectResource"> | Date | string
@@ -260,6 +284,8 @@ export type ProjectResourceCreateInput = {
   title: string
   url: string
   type: string
+  fileName?: string | null
+  fileType?: string | null
   createdAt?: Date | string
   project: Prisma.ProjectCreateNestedOneWithoutResourcesInput
   addedBy: Prisma.UserCreateNestedOneWithoutProjectResourcesInput
@@ -270,6 +296,8 @@ export type ProjectResourceUncheckedCreateInput = {
   title: string
   url: string
   type: string
+  fileName?: string | null
+  fileType?: string | null
   projectId: string
   addedById: string
   createdAt?: Date | string
@@ -280,6 +308,8 @@ export type ProjectResourceUpdateInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   project?: Prisma.ProjectUpdateOneRequiredWithoutResourcesNestedInput
   addedBy?: Prisma.UserUpdateOneRequiredWithoutProjectResourcesNestedInput
@@ -290,6 +320,8 @@ export type ProjectResourceUncheckedUpdateInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   addedById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -300,6 +332,8 @@ export type ProjectResourceCreateManyInput = {
   title: string
   url: string
   type: string
+  fileName?: string | null
+  fileType?: string | null
   projectId: string
   addedById: string
   createdAt?: Date | string
@@ -310,6 +344,8 @@ export type ProjectResourceUpdateManyMutationInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -318,6 +354,8 @@ export type ProjectResourceUncheckedUpdateManyInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   addedById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -338,6 +376,8 @@ export type ProjectResourceCountOrderByAggregateInput = {
   title?: Prisma.SortOrder
   url?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  fileName?: Prisma.SortOrder
+  fileType?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   addedById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -348,6 +388,8 @@ export type ProjectResourceMaxOrderByAggregateInput = {
   title?: Prisma.SortOrder
   url?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  fileName?: Prisma.SortOrder
+  fileType?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   addedById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -358,6 +400,8 @@ export type ProjectResourceMinOrderByAggregateInput = {
   title?: Prisma.SortOrder
   url?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  fileName?: Prisma.SortOrder
+  fileType?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   addedById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -452,6 +496,8 @@ export type ProjectResourceCreateWithoutAddedByInput = {
   title: string
   url: string
   type: string
+  fileName?: string | null
+  fileType?: string | null
   createdAt?: Date | string
   project: Prisma.ProjectCreateNestedOneWithoutResourcesInput
 }
@@ -461,6 +507,8 @@ export type ProjectResourceUncheckedCreateWithoutAddedByInput = {
   title: string
   url: string
   type: string
+  fileName?: string | null
+  fileType?: string | null
   projectId: string
   createdAt?: Date | string
 }
@@ -499,6 +547,8 @@ export type ProjectResourceScalarWhereInput = {
   title?: Prisma.StringFilter<"ProjectResource"> | string
   url?: Prisma.StringFilter<"ProjectResource"> | string
   type?: Prisma.StringFilter<"ProjectResource"> | string
+  fileName?: Prisma.StringNullableFilter<"ProjectResource"> | string | null
+  fileType?: Prisma.StringNullableFilter<"ProjectResource"> | string | null
   projectId?: Prisma.StringFilter<"ProjectResource"> | string
   addedById?: Prisma.StringFilter<"ProjectResource"> | string
   createdAt?: Prisma.DateTimeFilter<"ProjectResource"> | Date | string
@@ -509,6 +559,8 @@ export type ProjectResourceCreateWithoutProjectInput = {
   title: string
   url: string
   type: string
+  fileName?: string | null
+  fileType?: string | null
   createdAt?: Date | string
   addedBy: Prisma.UserCreateNestedOneWithoutProjectResourcesInput
 }
@@ -518,6 +570,8 @@ export type ProjectResourceUncheckedCreateWithoutProjectInput = {
   title: string
   url: string
   type: string
+  fileName?: string | null
+  fileType?: string | null
   addedById: string
   createdAt?: Date | string
 }
@@ -553,6 +607,8 @@ export type ProjectResourceCreateManyAddedByInput = {
   title: string
   url: string
   type: string
+  fileName?: string | null
+  fileType?: string | null
   projectId: string
   createdAt?: Date | string
 }
@@ -562,6 +618,8 @@ export type ProjectResourceUpdateWithoutAddedByInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   project?: Prisma.ProjectUpdateOneRequiredWithoutResourcesNestedInput
 }
@@ -571,6 +629,8 @@ export type ProjectResourceUncheckedUpdateWithoutAddedByInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -580,6 +640,8 @@ export type ProjectResourceUncheckedUpdateManyWithoutAddedByInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -589,6 +651,8 @@ export type ProjectResourceCreateManyProjectInput = {
   title: string
   url: string
   type: string
+  fileName?: string | null
+  fileType?: string | null
   addedById: string
   createdAt?: Date | string
 }
@@ -598,6 +662,8 @@ export type ProjectResourceUpdateWithoutProjectInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addedBy?: Prisma.UserUpdateOneRequiredWithoutProjectResourcesNestedInput
 }
@@ -607,6 +673,8 @@ export type ProjectResourceUncheckedUpdateWithoutProjectInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addedById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -616,6 +684,8 @@ export type ProjectResourceUncheckedUpdateManyWithoutProjectInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addedById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -627,6 +697,8 @@ export type ProjectResourceSelect<ExtArgs extends runtime.Types.Extensions.Inter
   title?: boolean
   url?: boolean
   type?: boolean
+  fileName?: boolean
+  fileType?: boolean
   projectId?: boolean
   addedById?: boolean
   createdAt?: boolean
@@ -639,6 +711,8 @@ export type ProjectResourceSelectCreateManyAndReturn<ExtArgs extends runtime.Typ
   title?: boolean
   url?: boolean
   type?: boolean
+  fileName?: boolean
+  fileType?: boolean
   projectId?: boolean
   addedById?: boolean
   createdAt?: boolean
@@ -651,6 +725,8 @@ export type ProjectResourceSelectUpdateManyAndReturn<ExtArgs extends runtime.Typ
   title?: boolean
   url?: boolean
   type?: boolean
+  fileName?: boolean
+  fileType?: boolean
   projectId?: boolean
   addedById?: boolean
   createdAt?: boolean
@@ -663,12 +739,14 @@ export type ProjectResourceSelectScalar = {
   title?: boolean
   url?: boolean
   type?: boolean
+  fileName?: boolean
+  fileType?: boolean
   projectId?: boolean
   addedById?: boolean
   createdAt?: boolean
 }
 
-export type ProjectResourceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "url" | "type" | "projectId" | "addedById" | "createdAt", ExtArgs["result"]["projectResource"]>
+export type ProjectResourceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "url" | "type" | "fileName" | "fileType" | "projectId" | "addedById" | "createdAt", ExtArgs["result"]["projectResource"]>
 export type ProjectResourceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   addedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -693,6 +771,8 @@ export type $ProjectResourcePayload<ExtArgs extends runtime.Types.Extensions.Int
     title: string
     url: string
     type: string
+    fileName: string | null
+    fileType: string | null
     projectId: string
     addedById: string
     createdAt: Date
@@ -1125,6 +1205,8 @@ export interface ProjectResourceFieldRefs {
   readonly title: Prisma.FieldRef<"ProjectResource", 'String'>
   readonly url: Prisma.FieldRef<"ProjectResource", 'String'>
   readonly type: Prisma.FieldRef<"ProjectResource", 'String'>
+  readonly fileName: Prisma.FieldRef<"ProjectResource", 'String'>
+  readonly fileType: Prisma.FieldRef<"ProjectResource", 'String'>
   readonly projectId: Prisma.FieldRef<"ProjectResource", 'String'>
   readonly addedById: Prisma.FieldRef<"ProjectResource", 'String'>
   readonly createdAt: Prisma.FieldRef<"ProjectResource", 'DateTime'>

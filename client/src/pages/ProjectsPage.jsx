@@ -6,18 +6,22 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Search, Plus, Github, ExternalLink, Loader2, MessageCircle } from "lucide-react";
+import { Search, Plus, Github, ExternalLink, Loader2, MessageCircle, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
 import { api } from "@/lib/api";
 import { toast } from "react-hot-toast";
 
 export default function ProjectsPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [creating, setCreating] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
   const [joiningId, setJoiningId] = useState(null);
   const [title, setTitle] = useState("");
@@ -25,6 +29,7 @@ export default function ProjectsPage() {
   const [tags, setTags] = useState("");
   const [githubUrl, setGithubUrl] = useState("");
   const [demoUrl, setDemoUrl] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     fetchProjects();
@@ -121,8 +126,35 @@ export default function ProjectsPage() {
     }
   };
 
+  const filteredProjects = searchQuery.trim()
+    ? projects.filter((p) => {
+        const q = searchQuery.toLowerCase();
+        return (
+          p.title.toLowerCase().includes(q) ||
+          p.description?.toLowerCase().includes(q) ||
+          p.tags?.some((t) => t.toLowerCase().includes(q)) ||
+          p.author?.name?.toLowerCase().includes(q)
+        );
+      })
+    : projects;
+
   const handleViewProject = (projectId) => {
     navigate(`/projects/${projectId}`);
+  };
+
+  const handleDeleteProject = async () => {
+    if (!deleteTarget) return;
+    try {
+      setDeleting(true);
+      await api.delete(`/projects/${deleteTarget.id}`);
+      toast.success("Project deleted successfully");
+      setDeleteTarget(null);
+      fetchProjects();
+    } catch (error) {
+      toast.error(error.message || "Failed to delete project");
+    } finally {
+      setDeleting(false);
+    }
   };
 
   return (
@@ -142,6 +174,8 @@ export default function ProjectsPage() {
         <Input 
             type="text" 
             placeholder="Search projects..." 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
             className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent" 
         />
       </div>
@@ -150,7 +184,7 @@ export default function ProjectsPage() {
         <div className="text-center py-10">Loading projects...</div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {projects.map((project) => (
+            {filteredProjects.map((project) => (
             <Card key={project.id} className="border border-border hover:shadow-md transition-all">
                 <CardHeader>
                 <div className="flex justify-between items-start">
@@ -164,10 +198,21 @@ export default function ProjectsPage() {
                             <p className="text-xs text-muted-foreground">by {project.author?.name || 'Unknown'}</p>
                         </div>
                     </div>
-                    {/* Status badge logic would go here if status was in schema, for now omitting or assuming open */}
-                    <Badge variant="secondary" className="bg-green-500/10 text-green-600 border-0">
-                        Active
-                    </Badge>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="secondary" className="bg-green-500/10 text-green-600 border-0">
+                          Active
+                      </Badge>
+                      {project.author?.id === user?.id && (
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="text-destructive hover:text-destructive hover:bg-destructive/10 h-7 w-7"
+                          onClick={() => setDeleteTarget(project)}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      )}
+                    </div>
                 </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -222,9 +267,9 @@ export default function ProjectsPage() {
                 </CardFooter>
             </Card>
             ))}
-            {projects.length === 0 && (
+            {filteredProjects.length === 0 && (
                 <div className="col-span-1 lg:col-span-2 text-center py-10 text-muted-foreground">
-                    No projects found. Be the first to create one!
+                    {searchQuery.trim() ? "No projects match your search." : "No projects found. Be the first to create one!"}
                 </div>
             )}
         </div>
@@ -318,6 +363,26 @@ export default function ProjectsPage() {
               </Button>
             </DialogFooter>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Delete Project</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            Are you sure you want to delete <strong>{deleteTarget?.title}</strong>? This action cannot be undone.
+          </p>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteTarget(null)} disabled={deleting}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDeleteProject} disabled={deleting}>
+              {deleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Delete
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

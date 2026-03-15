@@ -132,7 +132,7 @@ export default function DashboardPage() {
 
   const filteredFeed = useMemo(() => {
     if (feedFilter === "All") return exploreFeed;
-    const typeMap = { Groups: "group", Projects: "project" };
+    const typeMap = { Groups: "group", Projects: "project", Internships: "internship" };
     return exploreFeed.filter((item) => item.type === typeMap[feedFilter]);
   }, [exploreFeed, feedFilter]);
 
@@ -286,7 +286,7 @@ export default function DashboardPage() {
               Pulse
             </h3>
             <div className="flex gap-2">
-              {["All", "Groups", "Projects"].map((tab) => (
+              {["All", "Groups", "Projects", "Internships"].map((tab) => (
                 <Button
                   key={tab}
                   variant={feedFilter === tab ? "secondary" : "ghost"}
@@ -349,6 +349,13 @@ export default function DashboardPage() {
                       size="sm"
                       variant="ghost"
                       className="rounded-full hover:bg-primary/10 hover:text-primary h-8 px-4"
+                      onClick={() => {
+                        if (item.type === "internship") {
+                          navigate('/internships');
+                        } else {
+                          navigate(`/${item.type}s/${item.id}`);
+                        }
+                      }}
                     >
                       View
                     </Button>
@@ -409,6 +416,7 @@ export default function DashboardPage() {
                 <div
                   key={person.id}
                   className="flex items-center justify-between group p-2 rounded-2xl hover:bg-white/40 transition-colors cursor-pointer"
+                  onClick={() => navigate(`/profile/${person.id}`)}
                 >
                   <div className="flex items-center gap-3">
                     <div className="relative">
@@ -431,7 +439,10 @@ export default function DashboardPage() {
                     size="icon"
                     variant="ghost"
                     className="h-8 w-8 rounded-full hover:bg-primary/10 hover:text-primary"
-                    onClick={() => handleConnectClick(person)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleConnectClick(person);
+                    }}
                   >
                     <Plus className="w-4 h-4" />
                   </Button>
@@ -505,7 +516,10 @@ export default function DashboardPage() {
                 <div
                   key={u.id}
                   className="flex items-center gap-4 p-3 rounded-2xl cursor-pointer transition-all duration-200 hover:bg-white/60 border border-transparent hover:border-white/40 justify-between"
-                  onClick={() => handleConnectClick(u)}
+                  onClick={() => {
+                    setIsAllSuggestionsModalOpen(false);
+                    navigate(`/profile/${u.id}`);
+                  }}
                 >
                   <div className="flex items-center gap-4 min-w-0">
                     <Avatar className="h-12 w-12 border-2 border-white shadow-sm">

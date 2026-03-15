@@ -51,7 +51,7 @@ router.post("/createGroup", authMiddleware, validate(createGroupSchema), async (
   } catch (error) {
     // Handle unique constraint violation (e.g. duplicate group name)
     if (error.code === 'P2002') {
-       return res.status(409).json({ error: "Group name already exists" });
+       return res.status(409).json({ message: "Group name already exists" });
     }
     console.error("Create group error:", error);
     res.status(500).json({ error: "Failed to create group" });
@@ -75,6 +75,7 @@ router.get("/my-groups", authMiddleware, async (req, res) => {
         description: true,
         interests: true,
         groupIconUrl: true,
+        adminId: true,
         createdAt: true,
         _count: {
           select: { GroupMemberShip: true }
@@ -105,6 +106,7 @@ router.get("/discover", authMiddleware, async (req, res) => {
         description: true,
         interests: true,
         groupIconUrl: true,
+        adminId: true,
         createdAt: true,
         _count: {
           select: { GroupMemberShip: true }
@@ -156,6 +158,49 @@ router.post("/:id/leave", authMiddleware, async (req, res) => {
   } catch (error) {
     console.error("Leave group error:", error);
     res.status(500).json({ error: "Failed to leave group" });
+  }
+});
+
+// Delete a group (admin only)
+router.delete("/:groupId", authMiddleware, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const groupId = req.params.groupId;
+
+    const group = await prisma.group.findUnique({
+      where: { id: groupId },
+    });
+
+    if (!group) {
+      return res.status(404).json({ error: "Group not found" });
+    }
+
+    if (group.adminId !== userId) {
+      return res.status(403).json({ error: "Only the group admin can delete this group" });
+    }
+
+    await prisma.$transaction(async (tx) => {
+      const channels = await tx.channel.findMany({
+        where: { groupId },
+        select: { id: true },
+      });
+      const channelIds = channels.map((c) => c.id);
+
+      await tx.notification.deleteMany({
+        where: { OR: [{ groupId }, { channelId: { in: channelIds } }] },
+      });
+      await tx.groupMessage.deleteMany({
+        where: { channelId: { in: channelIds } },
+      });
+      await tx.channel.deleteMany({ where: { groupId } });
+      await tx.groupMemberShip.deleteMany({ where: { groupId } });
+      await tx.group.delete({ where: { id: groupId } });
+    });
+
+    res.json({ message: "Group deleted successfully" });
+  } catch (error) {
+    console.error("Delete group error:", error);
+    res.status(500).json({ error: "Failed to delete group" });
   }
 });
 
